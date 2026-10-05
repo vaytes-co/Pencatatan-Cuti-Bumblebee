@@ -1,0 +1,326 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// =========================================================
+// ENUMS
+// =========================================================
+
+enum UserRole {
+  OWNER
+  HRD
+  BM
+  ADMIN
+  KARYAWAN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum LeaveType {
+  ANNUAL
+  MARRIAGE
+  OTHER
+}
+
+enum LeaveStatus {
+  DRAFT
+  PENDING_MANAGEMENT
+  PENDING_OWNER
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SKIPPED
+}
+
+enum ExceptionType {
+  HOLIDAY_ADJACENCY
+  OVERLAP
+  HOLIDAY_ADJACENCY_AND_OVERLAP
+}
+
+enum ExceptionStatus {
+  NOT_REQUIRED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PermissionEffect {
+  ALLOW
+  DENY
+}
+
+// =========================================================
+// USER
+// =========================================================
+
+model User {
+  id           Int    @id @default(autoincrement())
+  name         String @db.VarChar(150)
+  username     String @unique @db.VarChar(100)
+  passwordHash String @db.VarChar(255)
+
+  role   UserRole
+  status UserStatus @default(ACTIVE)
+
+  employeeId Int?      @unique
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
+  createdLeaveRequests LeaveRequest[] @relation("LeaveCreatedBy")
+
+  managementApprovals LeaveApproval[] @relation("ManagementApprovedBy")
+  ownerApprovals      LeaveApproval[] @relation("OwnerApprovedBy")
+  exceptionApprovals  LeaveApproval[] @relation("ExceptionApprovedBy")
+
+  userPermissions UserPermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}
+
+// =========================================================
+// EMPLOYEE
+// =========================================================
+
+model Employee {
+  id             Int            @id @default(autoincrement())
+  employeeCode   String?        @unique @db.VarChar(50)
+  name           String         @db.VarChar(150)
+  position       String?        @db.VarChar(100)
+  department     String?        @db.VarChar(100)
+  employmentDate DateTime       @db.Date
+  status         EmployeeStatus @default(ACTIVE)
+
+  user User?
+
+  leaveRequests LeaveRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([status])
+  @@index([employmentDate])
+  @@map("employees")
+}
+
+// =========================================================
+// LEAVE REQUEST
+// =========================================================
+
+model LeaveRequest {
+  id Int @id @default(autoincrement())
+
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  totalDays Int
+
+  type   LeaveType
+  reason String?   @db.Text
+  notes  String?   @db.Text
+
+  status LeaveStatus @default(PENDING_MANAGEMENT)
+
+  leavePeriodStart DateTime @db.Date
+  leavePeriodEnd   DateTime @db.Date
+
+  createdById Int
+  createdBy   User @relation("LeaveCreatedBy", fields: [createdById], references: [id])
+
+  approval LeaveApproval?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([startDate, endDate])
+  @@index([status])
+  @@index([leavePeriodStart, leavePeriodEnd])
+  @@map("leave_requests")
+}
+
+// =========================================================
+// LEAVE APPROVAL
+// =========================================================
+
+model LeaveApproval {
+  id Int @id @default(autoincrement())
+
+  leaveRequestId Int          @unique
+  leaveRequest   LeaveRequest @relation(fields: [leaveRequestId], references: [id], onDelete: Cascade)
+
+  // Management Approval
+
+  managementStatus ApprovalStatus @default(PENDING)
+
+  managementApprovedById Int?
+  managementApprovedBy   User? @relation("ManagementApprovedBy", fields: [managementApprovedById], references: [id])
+
+  managementApprovedAt DateTime?
+  managementNotes      String?   @db.Text
+
+  // Owner Approval
+
+  ownerStatus ApprovalStatus @default(PENDING)
+
+  ownerApprovedById Int?
+  ownerApprovedBy   User? @relation("OwnerApprovedBy", fields: [ownerApprovedById], references: [id])
+
+  ownerApprovedAt DateTime?
+  ownerNotes      String?   @db.Text
+
+  // Exception
+
+  needsException Boolean @default(false)
+
+  exceptionType   ExceptionType?
+  exceptionStatus ExceptionStatus @default(NOT_REQUIRED)
+
+  exceptionApprovedById Int?
+  exceptionApprovedBy   User? @relation("ExceptionApprovedBy", fields: [exceptionApprovedById], references: [id])
+
+  exceptionApprovedAt DateTime?
+  exceptionNotes      String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([managementStatus])
+  @@index([ownerStatus])
+  @@index([exceptionStatus])
+  @@map("leave_approvals")
+}
+
+// =========================================================
+// HOLIDAY
+// =========================================================
+
+model Holiday {
+  id Int @id @default(autoincrement())
+
+  date DateTime @db.Date
+  name String   @db.VarChar(150)
+
+  description String? @db.Text
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([date])
+  @@index([isActive])
+  @@map("holidays")
+}
+
+// =========================================================
+// SETTING
+// =========================================================
+
+model Setting {
+  id Int @id @default(autoincrement())
+
+  key         String  @unique @db.VarChar(100)
+  value       String  @db.Text
+  description String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// =========================================================
+// PERMISSION
+// =========================================================
+
+model Permission {
+  id          Int     @id @default(autoincrement())
+  key         String  @unique @db.VarChar(100)
+  name        String  @db.VarChar(150)
+  description String? @db.Text
+
+  module String @db.VarChar(100)
+  action String @db.VarChar(50)
+
+  rolePermissions RolePermission[]
+  userPermissions UserPermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([module])
+  @@index([action])
+  @@map("permissions")
+}
+
+// =========================================================
+// ROLE PERMISSION
+// =========================================================
+
+model RolePermission {
+  id Int @id @default(autoincrement())
+
+  role UserRole
+
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([role, permissionId])
+  @@index([role])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+// =========================================================
+// USER PERMISSION
+// =========================================================
+
+model UserPermission {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  effect PermissionEffect
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, permissionId])
+  @@index([userId])
+  @@index([permissionId])
+  @@index([effect])
+  @@map("user_permissions")
+}

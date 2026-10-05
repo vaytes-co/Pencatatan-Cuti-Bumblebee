@@ -1,0 +1,85 @@
+# =========================
+# Dependencies
+# =========================
+
+node_modules/
+**/node_modules/
+
+
+# =========================
+# Environment Variables
+# =========================
+
+.env
+.env.*
+!.env.example
+
+
+# =========================
+# Build Output
+# =========================
+
+dist/
+**/dist/
+
+build/
+**/build/
+
+
+# =========================
+# Vite
+# =========================
+
+.vite/
+**/.vite/
+
+
+# =========================
+# Logs
+# =========================
+
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+
+# =========================
+# OS Files
+# =========================
+
+.DS_Store
+Thumbs.db
+
+
+# =========================
+# IDE / Editor
+# =========================
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+.idea/
+
+
+# =========================
+# Testing / Coverage
+# =========================
+
+coverage/
+
+
+# =========================
+# Temporary Files
+# =========================
+
+*.tmp
+*.temp
+
+
+# =========================
+# Local Authentication Testing
+# =========================
+
+cookies.txt
