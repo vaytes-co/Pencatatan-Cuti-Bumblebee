@@ -6,8 +6,10 @@ import cookieParser from 'cookie-parser'
 
 import authRoutes from './routes/auth.routes.js'
 import { authMiddleware } from './middlewares/auth.middleware.js'
-import platformAuthRoutes from './routes/platform-auth.routes.js'
 import employeeRoutes from './routes/employee.routes.js'
+
+import platformAuthRoutes from './routes/platform-auth.routes.js'
+import platformCompanyRoutes from './routes/platform-company.routes.js'
 
 const app = express()
 
@@ -58,6 +60,8 @@ app.use(
   '/api/platform/auth',
   platformAuthRoutes,
 )
+app.use('/api/platform/companies', platformCompanyRoutes)
+
 app.use('/api/employees', employeeRoutes)
 
 export default app

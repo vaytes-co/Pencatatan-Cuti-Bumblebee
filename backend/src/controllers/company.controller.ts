@@ -6,6 +6,7 @@ import type {
 import bcrypt from 'bcrypt'
 
 import prisma from '../lib/db.js'
+import { PERMISSIONS } from '../config/permissions.js'
 
 function normalizeString(
   value: unknown,
@@ -157,6 +158,36 @@ export async function createCompany(
         12,
       )
 
+    const permissionKeys =
+      PERMISSIONS.map(
+        (permission) =>
+          permission.key,
+      )
+
+    const permissions =
+      await prisma.permission.findMany({
+        where: {
+          key: {
+            in: permissionKeys,
+          },
+        },
+        select: {
+          id: true,
+          key: true,
+        },
+      })
+
+    if (
+      permissions.length !==
+      permissionKeys.length
+    ) {
+      return res.status(500).json({
+        success: false,
+        message:
+          'Data permission company belum lengkap. Jalankan seed terlebih dahulu.',
+      })
+    }
+
     const result =
       await prisma.$transaction(
         async (tx) => {
@@ -211,6 +242,17 @@ export async function createCompany(
             },
           })
 
+          await tx.rolePermission.createMany({
+            data: permissions.map(
+              (permission) => ({
+                roleId:
+                  ownerRole.id,
+                permissionId:
+                  permission.id,
+              }),
+            ),
+          })
+
           const updatedCompany =
             await tx.company.update({
               where: {
@@ -254,6 +296,8 @@ export async function createCompany(
               isSystemRole:
                 ownerRole.isSystemRole,
             },
+            permissionCount:
+              permissions.length,
           }
         },
       )
