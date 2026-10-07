@@ -694,3 +694,434 @@ export async function activateCompany(
     })
   }
 }
+
+export async function getCompanyModules(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const companyId = Number(req.params.id)
+
+    // --------------------------------------------------
+    // 1. Validasi company ID
+    // --------------------------------------------------
+
+    if (
+      !Number.isSafeInteger(companyId) ||
+      companyId <= 0
+    ) {
+      res.status(400).json({
+        success: false,
+        message: 'ID perusahaan tidak valid.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 2. Pastikan company ada
+    // --------------------------------------------------
+
+    const company =
+      await prisma.company.findUnique({
+        where: {
+          id: companyId,
+        },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+        },
+      })
+
+    if (!company) {
+      res.status(404).json({
+        success: false,
+        message: 'Perusahaan tidak ditemukan.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 3. Ambil seluruh module catalog
+    // --------------------------------------------------
+
+    const modules =
+      await prisma.module.findMany({
+        orderBy: {
+          name: 'asc',
+        },
+        select: {
+          id: true,
+          key: true,
+          name: true,
+          description: true,
+
+          companyModules: {
+            where: {
+              companyId,
+            },
+            select: {
+              id: true,
+              status: true,
+              activatedAt: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+        },
+      })
+
+    // --------------------------------------------------
+    // 4. Normalisasi response
+    // --------------------------------------------------
+
+    const data = modules.map((module) => {
+      const companyModule =
+        module.companyModules[0] ?? null
+
+      return {
+        id: module.id,
+        key: module.key,
+        name: module.name,
+        description: module.description,
+        status:
+          companyModule?.status ??
+          'INACTIVE',
+        companyModuleId:
+          companyModule?.id ?? null,
+        activatedAt:
+          companyModule?.activatedAt ??
+          null,
+        createdAt:
+          companyModule?.createdAt ??
+          null,
+        updatedAt:
+          companyModule?.updatedAt ??
+          null,
+      }
+    })
+
+    res.status(200).json({
+      success: true,
+      data: {
+        company,
+        modules: data,
+      },
+    })
+  } catch (error) {
+    console.error(
+      'Get company modules error:',
+      error,
+    )
+
+    res.status(500).json({
+      success: false,
+      message:
+        'Terjadi kesalahan pada server.',
+    })
+  }
+}
+
+export async function activateCompanyModule(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const companyId = Number(req.params.id)
+    const moduleId = Number(
+      req.params.moduleId,
+    )
+
+    // --------------------------------------------------
+    // 1. Validasi ID
+    // --------------------------------------------------
+
+    if (
+      !Number.isSafeInteger(companyId) ||
+      companyId <= 0
+    ) {
+      res.status(400).json({
+        success: false,
+        message: 'ID perusahaan tidak valid.',
+      })
+      return
+    }
+
+    if (
+      !Number.isSafeInteger(moduleId) ||
+      moduleId <= 0
+    ) {
+      res.status(400).json({
+        success: false,
+        message: 'ID module tidak valid.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 2. Pastikan company ada
+    // --------------------------------------------------
+
+    const company =
+      await prisma.company.findUnique({
+        where: {
+          id: companyId,
+        },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+        },
+      })
+
+    if (!company) {
+      res.status(404).json({
+        success: false,
+        message: 'Perusahaan tidak ditemukan.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 3. Pastikan module ada
+    // --------------------------------------------------
+
+    const module =
+      await prisma.module.findUnique({
+        where: {
+          id: moduleId,
+        },
+        select: {
+          id: true,
+          key: true,
+          name: true,
+          description: true,
+        },
+      })
+
+    if (!module) {
+      res.status(404).json({
+        success: false,
+        message: 'Module tidak ditemukan.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 4. Cek status module untuk company
+    // --------------------------------------------------
+
+    const existingCompanyModule =
+      await prisma.companyModule.findUnique({
+        where: {
+          companyId_moduleId: {
+            companyId,
+            moduleId,
+          },
+        },
+        select: {
+          id: true,
+          status: true,
+        },
+      })
+
+    if (
+      existingCompanyModule?.status ===
+      'ACTIVE'
+    ) {
+      res.status(400).json({
+        success: false,
+        message:
+          'Module sudah aktif untuk perusahaan ini.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 5. Activate / create CompanyModule
+    // --------------------------------------------------
+
+    const companyModule =
+      await prisma.companyModule.upsert({
+        where: {
+          companyId_moduleId: {
+            companyId,
+            moduleId,
+          },
+        },
+        create: {
+          companyId,
+          moduleId,
+          status: 'ACTIVE',
+          activatedAt: new Date(),
+        },
+        update: {
+          status: 'ACTIVE',
+          activatedAt: new Date(),
+        },
+        select: {
+          id: true,
+          companyId: true,
+          moduleId: true,
+          status: true,
+          activatedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      })
+
+    // --------------------------------------------------
+    // 6. Response
+    // --------------------------------------------------
+
+    res.status(200).json({
+      success: true,
+      message:
+        'Module berhasil diaktifkan untuk perusahaan.',
+      data: {
+        company,
+        module,
+        companyModule,
+      },
+    })
+  } catch (error) {
+    console.error(
+      'Activate company module error:',
+      error,
+    )
+
+    res.status(500).json({
+      success: false,
+      message:
+        'Terjadi kesalahan pada server.',
+    })
+  }
+}
+
+export async function deactivateCompanyModule(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const companyId = Number(req.params.id)
+    const moduleId = Number(
+      req.params.moduleId,
+    )
+
+    // --------------------------------------------------
+    // 1. Validasi ID
+    // --------------------------------------------------
+
+    if (
+      !Number.isSafeInteger(companyId) ||
+      companyId <= 0
+    ) {
+      res.status(400).json({
+        success: false,
+        message: 'ID perusahaan tidak valid.',
+      })
+      return
+    }
+
+    if (
+      !Number.isSafeInteger(moduleId) ||
+      moduleId <= 0
+    ) {
+      res.status(400).json({
+        success: false,
+        message: 'ID module tidak valid.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 2. Cari CompanyModule
+    // --------------------------------------------------
+
+    const companyModule =
+      await prisma.companyModule.findUnique({
+        where: {
+          companyId_moduleId: {
+            companyId,
+            moduleId,
+          },
+        },
+        select: {
+          id: true,
+          companyId: true,
+          moduleId: true,
+          status: true,
+        },
+      })
+
+    if (!companyModule) {
+      res.status(404).json({
+        success: false,
+        message:
+          'Module belum dikonfigurasi untuk perusahaan ini.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 3. Pastikan belum inactive
+    // --------------------------------------------------
+
+    if (
+      companyModule.status === 'INACTIVE'
+    ) {
+      res.status(400).json({
+        success: false,
+        message:
+          'Module sudah tidak aktif untuk perusahaan ini.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 4. Deactivate
+    // --------------------------------------------------
+
+    const updatedCompanyModule =
+      await prisma.companyModule.update({
+        where: {
+          id: companyModule.id,
+        },
+        data: {
+          status: 'INACTIVE',
+          activatedAt: null,
+        },
+        select: {
+          id: true,
+          companyId: true,
+          moduleId: true,
+          status: true,
+          activatedAt: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      })
+
+    // --------------------------------------------------
+    // 5. Response
+    // --------------------------------------------------
+
+    res.status(200).json({
+      success: true,
+      message:
+        'Module berhasil dinonaktifkan untuk perusahaan.',
+      data: updatedCompanyModule,
+    })
+  } catch (error) {
+    console.error(
+      'Deactivate company module error:',
+      error,
+    )
+
+    res.status(500).json({
+      success: false,
+      message:
+        'Terjadi kesalahan pada server.',
+    })
+  }
+}

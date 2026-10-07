@@ -6,6 +6,9 @@ import {
   updateCompany,
   suspendCompany,
   activateCompany,
+  getCompanyModules,
+  activateCompanyModule,
+  deactivateCompanyModule,
 } from '../controllers/platform-company.controller.js'
 
 import {
@@ -74,6 +77,33 @@ router.patch(
     'platform.companies.activate',
   ),
   activateCompany,
+)
+
+router.get(
+  '/:id/modules',
+  platformAuthMiddleware,
+  requirePlatformPermission(
+    'platform.modules.read',
+  ),
+  getCompanyModules,
+)
+
+router.patch(
+  '/:id/modules/:moduleId/activate',
+  platformAuthMiddleware,
+  requirePlatformPermission(
+    'platform.modules.manage',
+  ),
+  activateCompanyModule,
+)
+
+router.patch(
+  '/:id/modules/:moduleId/deactivate',
+  platformAuthMiddleware,
+  requirePlatformPermission(
+    'platform.modules.manage',
+  ),
+  deactivateCompanyModule,
 )
 
 export default router
