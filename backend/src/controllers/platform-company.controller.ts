@@ -482,3 +482,215 @@ export async function updateCompany(
     })
   }
 }
+
+export async function suspendCompany(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const companyId = Number(req.params.id)
+
+    // --------------------------------------------------
+    // 1. Validasi ID
+    // --------------------------------------------------
+
+    if (
+      !Number.isSafeInteger(companyId) ||
+      companyId <= 0
+    ) {
+      res.status(400).json({
+        success: false,
+        message: 'ID perusahaan tidak valid.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 2. Cari company
+    // --------------------------------------------------
+
+    const company =
+      await prisma.company.findUnique({
+        where: {
+          id: companyId,
+        },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          status: true,
+        },
+      })
+
+    if (!company) {
+      res.status(404).json({
+        success: false,
+        message: 'Perusahaan tidak ditemukan.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 3. Pastikan belum suspended
+    // --------------------------------------------------
+
+    if (company.status === 'SUSPENDED') {
+      res.status(400).json({
+        success: false,
+        message:
+          'Perusahaan sudah dalam status suspended.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 4. Suspend company
+    // --------------------------------------------------
+
+    const updatedCompany =
+      await prisma.company.update({
+        where: {
+          id: companyId,
+        },
+        data: {
+          status: 'SUSPENDED',
+        },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          status: true,
+          ownerUserId: true,
+          updatedAt: true,
+        },
+      })
+
+    // --------------------------------------------------
+    // 5. Response
+    // --------------------------------------------------
+
+    res.status(200).json({
+      success: true,
+      message:
+        'Perusahaan berhasil dinonaktifkan.',
+      data: updatedCompany,
+    })
+  } catch (error) {
+    console.error(
+      'Suspend company error:',
+      error,
+    )
+
+    res.status(500).json({
+      success: false,
+      message:
+        'Terjadi kesalahan pada server.',
+    })
+  }
+}
+
+export async function activateCompany(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const companyId = Number(req.params.id)
+
+    // --------------------------------------------------
+    // 1. Validasi ID
+    // --------------------------------------------------
+
+    if (
+      !Number.isSafeInteger(companyId) ||
+      companyId <= 0
+    ) {
+      res.status(400).json({
+        success: false,
+        message: 'ID perusahaan tidak valid.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 2. Cari company
+    // --------------------------------------------------
+
+    const company =
+      await prisma.company.findUnique({
+        where: {
+          id: companyId,
+        },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          status: true,
+        },
+      })
+
+    if (!company) {
+      res.status(404).json({
+        success: false,
+        message: 'Perusahaan tidak ditemukan.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 3. Pastikan belum active
+    // --------------------------------------------------
+
+    if (company.status === 'ACTIVE') {
+      res.status(400).json({
+        success: false,
+        message:
+          'Perusahaan sudah dalam status active.',
+      })
+      return
+    }
+
+    // --------------------------------------------------
+    // 4. Activate company
+    // --------------------------------------------------
+
+    const updatedCompany =
+      await prisma.company.update({
+        where: {
+          id: companyId,
+        },
+        data: {
+          status: 'ACTIVE',
+        },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          status: true,
+          ownerUserId: true,
+          updatedAt: true,
+        },
+      })
+
+    // --------------------------------------------------
+    // 5. Response
+    // --------------------------------------------------
+
+    res.status(200).json({
+      success: true,
+      message:
+        'Perusahaan berhasil diaktifkan.',
+      data: updatedCompany,
+    })
+  } catch (error) {
+    console.error(
+      'Activate company error:',
+      error,
+    )
+
+    res.status(500).json({
+      success: false,
+      message:
+        'Terjadi kesalahan pada server.',
+    })
+  }
+}

@@ -4,6 +4,8 @@ import {
   getCompanies,
   getCompanyById,
   updateCompany,
+  suspendCompany,
+  activateCompany,
 } from '../controllers/platform-company.controller.js'
 
 import {
@@ -54,6 +56,24 @@ router.patch(
     'platform.companies.update',
   ),
   updateCompany,
+)
+
+router.patch(
+  '/:id/suspend',
+  platformAuthMiddleware,
+  requirePlatformPermission(
+    'platform.companies.suspend',
+  ),
+  suspendCompany,
+)
+
+router.patch(
+  '/:id/activate',
+  platformAuthMiddleware,
+  requirePlatformPermission(
+    'platform.companies.activate',
+  ),
+  activateCompany,
 )
 
 export default router
