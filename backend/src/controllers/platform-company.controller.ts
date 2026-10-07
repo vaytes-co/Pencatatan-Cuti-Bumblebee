@@ -1,6 +1,46 @@
 import type { Request, Response } from 'express'
 
 import prisma from '../lib/db.js'
+import auditService from '../services/audit.service.js'
+
+type PlatformRequest = Request & {
+  user?: {
+    id: number
+  }
+}
+
+function getPlatformActorId(
+  req: Request,
+): number {
+  const platformRequest =
+    req as PlatformRequest
+
+  if (
+    !platformRequest.user ||
+    !Number.isSafeInteger(
+      platformRequest.user.id,
+    ) ||
+    platformRequest.user.id <= 0
+  ) {
+    throw new Error(
+      'Platform actor tidak valid.',
+    )
+  }
+
+  return platformRequest.user.id
+}
+
+function getRequestIp(
+  req: Request,
+): string | null {
+  return req.ip || null
+}
+
+function getRequestUserAgent(
+  req: Request,
+): string | null {
+  return req.get('user-agent') || null
+}
 
 function normalizeOptionalString(
   value: unknown,
@@ -18,27 +58,30 @@ export async function getCompanies(
   _req: Request,
   res: Response,
 ): Promise<void> {
-  const companies = await prisma.company.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-    select: {
-      id: true,
-      code: true,
-      name: true,
-      status: true,
-      ownerUserId: true,
-      createdAt: true,
-      updatedAt: true,
-      _count: {
-        select: {
-          users: true,
-          employees: true,
-          companyModules: true,
+  const companies =
+    await prisma.company.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        status: true,
+        ownerUserId: true,
+        createdAt: true,
+        updatedAt: true,
+
+        _count: {
+          select: {
+            users: true,
+            employees: true,
+            companyModules: true,
+          },
         },
       },
-    },
-  })
+    })
 
   res.status(200).json({
     success: true,
@@ -51,7 +94,9 @@ export async function getCompanyById(
   res: Response,
 ): Promise<void> {
   try {
-    const companyId = Number(req.params.id)
+    const companyId = Number(
+      req.params.id,
+    )
 
     if (
       !Number.isSafeInteger(companyId) ||
@@ -59,8 +104,10 @@ export async function getCompanyById(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID perusahaan tidak valid.',
+        message:
+          'ID perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -69,6 +116,7 @@ export async function getCompanyById(
         where: {
           id: companyId,
         },
+
         select: {
           id: true,
           code: true,
@@ -119,6 +167,7 @@ export async function getCompanyById(
                 },
               },
             },
+
             orderBy: {
               module: {
                 name: 'asc',
@@ -131,8 +180,10 @@ export async function getCompanyById(
     if (!company) {
       res.status(404).json({
         success: false,
-        message: 'Perusahaan tidak ditemukan.',
+        message:
+          'Perusahaan tidak ditemukan.',
       })
+
       return
     }
 
@@ -159,7 +210,9 @@ export async function updateCompany(
   res: Response,
 ): Promise<void> {
   try {
-    const companyId = Number(req.params.id)
+    const companyId = Number(
+      req.params.id,
+    )
 
     // --------------------------------------------------
     // 1. Validasi ID
@@ -171,8 +224,10 @@ export async function updateCompany(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID perusahaan tidak valid.',
+        message:
+          'ID perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -185,8 +240,20 @@ export async function updateCompany(
         where: {
           id: companyId,
         },
+
         select: {
           id: true,
+          code: true,
+          name: true,
+          legalName: true,
+          email: true,
+          phone: true,
+          address: true,
+          timezone: true,
+          status: true,
+          ownerUserId: true,
+          createdAt: true,
+          updatedAt: true,
         },
       })
 
@@ -196,6 +263,7 @@ export async function updateCompany(
         message:
           'Perusahaan tidak ditemukan.',
       })
+
       return
     }
 
@@ -213,6 +281,7 @@ export async function updateCompany(
         message:
           'Data perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -248,6 +317,7 @@ export async function updateCompany(
           message:
             'Nama perusahaan harus berupa teks.',
         })
+
         return
       }
 
@@ -260,6 +330,7 @@ export async function updateCompany(
           message:
             'Nama perusahaan tidak boleh kosong.',
         })
+
         return
       }
 
@@ -277,8 +348,7 @@ export async function updateCompany(
       )
     ) {
       if (
-        req.body.legalName !==
-          null &&
+        req.body.legalName !== null &&
         typeof req.body.legalName !==
           'string'
       ) {
@@ -287,6 +357,7 @@ export async function updateCompany(
           message:
             'Legal name harus berupa teks.',
         })
+
         return
       }
 
@@ -316,6 +387,7 @@ export async function updateCompany(
           message:
             'Email harus berupa teks.',
         })
+
         return
       }
 
@@ -345,6 +417,7 @@ export async function updateCompany(
           message:
             'Nomor telepon harus berupa teks.',
         })
+
         return
       }
 
@@ -374,6 +447,7 @@ export async function updateCompany(
           message:
             'Alamat harus berupa teks.',
         })
+
         return
       }
 
@@ -402,6 +476,7 @@ export async function updateCompany(
           message:
             'Timezone harus berupa teks.',
         })
+
         return
       }
 
@@ -414,6 +489,7 @@ export async function updateCompany(
           message:
             'Timezone tidak boleh kosong.',
         })
+
         return
       }
 
@@ -434,6 +510,7 @@ export async function updateCompany(
         message:
           'Tidak ada data perusahaan yang perlu diperbarui.',
       })
+
       return
     }
 
@@ -446,7 +523,9 @@ export async function updateCompany(
         where: {
           id: companyId,
         },
+
         data: updateData,
+
         select: {
           id: true,
           code: true,
@@ -462,6 +541,25 @@ export async function updateCompany(
           updatedAt: true,
         },
       })
+
+    // --------------------------------------------------
+    // 13. Audit
+    // --------------------------------------------------
+
+    await auditService.log({
+      actorType: 'PLATFORM',
+      actorId:
+        getPlatformActorId(req),
+      companyId,
+      action: 'UPDATE',
+      entity: 'Company',
+      entityId: companyId,
+      beforeData: existingCompany,
+      afterData: company,
+      ipAddress: getRequestIp(req),
+      userAgent:
+        getRequestUserAgent(req),
+    })
 
     res.status(200).json({
       success: true,
@@ -488,7 +586,9 @@ export async function suspendCompany(
   res: Response,
 ): Promise<void> {
   try {
-    const companyId = Number(req.params.id)
+    const companyId = Number(
+      req.params.id,
+    )
 
     // --------------------------------------------------
     // 1. Validasi ID
@@ -500,8 +600,10 @@ export async function suspendCompany(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID perusahaan tidak valid.',
+        message:
+          'ID perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -514,6 +616,7 @@ export async function suspendCompany(
         where: {
           id: companyId,
         },
+
         select: {
           id: true,
           code: true,
@@ -525,8 +628,10 @@ export async function suspendCompany(
     if (!company) {
       res.status(404).json({
         success: false,
-        message: 'Perusahaan tidak ditemukan.',
+        message:
+          'Perusahaan tidak ditemukan.',
       })
+
       return
     }
 
@@ -534,12 +639,15 @@ export async function suspendCompany(
     // 3. Pastikan belum suspended
     // --------------------------------------------------
 
-    if (company.status === 'SUSPENDED') {
+    if (
+      company.status === 'SUSPENDED'
+    ) {
       res.status(400).json({
         success: false,
         message:
           'Perusahaan sudah dalam status suspended.',
       })
+
       return
     }
 
@@ -552,9 +660,11 @@ export async function suspendCompany(
         where: {
           id: companyId,
         },
+
         data: {
           status: 'SUSPENDED',
         },
+
         select: {
           id: true,
           code: true,
@@ -566,7 +676,26 @@ export async function suspendCompany(
       })
 
     // --------------------------------------------------
-    // 5. Response
+    // 5. Audit
+    // --------------------------------------------------
+
+    await auditService.log({
+      actorType: 'PLATFORM',
+      actorId:
+        getPlatformActorId(req),
+      companyId,
+      action: 'SUSPEND',
+      entity: 'Company',
+      entityId: companyId,
+      beforeData: company,
+      afterData: updatedCompany,
+      ipAddress: getRequestIp(req),
+      userAgent:
+        getRequestUserAgent(req),
+    })
+
+    // --------------------------------------------------
+    // 6. Response
     // --------------------------------------------------
 
     res.status(200).json({
@@ -594,7 +723,9 @@ export async function activateCompany(
   res: Response,
 ): Promise<void> {
   try {
-    const companyId = Number(req.params.id)
+    const companyId = Number(
+      req.params.id,
+    )
 
     // --------------------------------------------------
     // 1. Validasi ID
@@ -606,8 +737,10 @@ export async function activateCompany(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID perusahaan tidak valid.',
+        message:
+          'ID perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -620,6 +753,7 @@ export async function activateCompany(
         where: {
           id: companyId,
         },
+
         select: {
           id: true,
           code: true,
@@ -631,8 +765,10 @@ export async function activateCompany(
     if (!company) {
       res.status(404).json({
         success: false,
-        message: 'Perusahaan tidak ditemukan.',
+        message:
+          'Perusahaan tidak ditemukan.',
       })
+
       return
     }
 
@@ -640,12 +776,15 @@ export async function activateCompany(
     // 3. Pastikan belum active
     // --------------------------------------------------
 
-    if (company.status === 'ACTIVE') {
+    if (
+      company.status === 'ACTIVE'
+    ) {
       res.status(400).json({
         success: false,
         message:
           'Perusahaan sudah dalam status active.',
       })
+
       return
     }
 
@@ -658,9 +797,11 @@ export async function activateCompany(
         where: {
           id: companyId,
         },
+
         data: {
           status: 'ACTIVE',
         },
+
         select: {
           id: true,
           code: true,
@@ -672,7 +813,26 @@ export async function activateCompany(
       })
 
     // --------------------------------------------------
-    // 5. Response
+    // 5. Audit
+    // --------------------------------------------------
+
+    await auditService.log({
+      actorType: 'PLATFORM',
+      actorId:
+        getPlatformActorId(req),
+      companyId,
+      action: 'ACTIVATE',
+      entity: 'Company',
+      entityId: companyId,
+      beforeData: company,
+      afterData: updatedCompany,
+      ipAddress: getRequestIp(req),
+      userAgent:
+        getRequestUserAgent(req),
+    })
+
+    // --------------------------------------------------
+    // 6. Response
     // --------------------------------------------------
 
     res.status(200).json({
@@ -700,7 +860,9 @@ export async function getCompanyModules(
   res: Response,
 ): Promise<void> {
   try {
-    const companyId = Number(req.params.id)
+    const companyId = Number(
+      req.params.id,
+    )
 
     // --------------------------------------------------
     // 1. Validasi company ID
@@ -712,8 +874,10 @@ export async function getCompanyModules(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID perusahaan tidak valid.',
+        message:
+          'ID perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -726,6 +890,7 @@ export async function getCompanyModules(
         where: {
           id: companyId,
         },
+
         select: {
           id: true,
           code: true,
@@ -736,8 +901,10 @@ export async function getCompanyModules(
     if (!company) {
       res.status(404).json({
         success: false,
-        message: 'Perusahaan tidak ditemukan.',
+        message:
+          'Perusahaan tidak ditemukan.',
       })
+
       return
     }
 
@@ -750,6 +917,7 @@ export async function getCompanyModules(
         orderBy: {
           name: 'asc',
         },
+
         select: {
           id: true,
           key: true,
@@ -760,6 +928,7 @@ export async function getCompanyModules(
             where: {
               companyId,
             },
+
             select: {
               id: true,
               status: true,
@@ -775,31 +944,40 @@ export async function getCompanyModules(
     // 4. Normalisasi response
     // --------------------------------------------------
 
-    const data = modules.map((module) => {
-      const companyModule =
-        module.companyModules[0] ?? null
+    const data = modules.map(
+      (module) => {
+        const companyModule =
+          module.companyModules[0] ??
+          null
 
-      return {
-        id: module.id,
-        key: module.key,
-        name: module.name,
-        description: module.description,
-        status:
-          companyModule?.status ??
-          'INACTIVE',
-        companyModuleId:
-          companyModule?.id ?? null,
-        activatedAt:
-          companyModule?.activatedAt ??
-          null,
-        createdAt:
-          companyModule?.createdAt ??
-          null,
-        updatedAt:
-          companyModule?.updatedAt ??
-          null,
-      }
-    })
+        return {
+          id: module.id,
+          key: module.key,
+          name: module.name,
+          description:
+            module.description,
+
+          status:
+            companyModule?.status ??
+            'INACTIVE',
+
+          companyModuleId:
+            companyModule?.id ?? null,
+
+          activatedAt:
+            companyModule?.activatedAt ??
+            null,
+
+          createdAt:
+            companyModule?.createdAt ??
+            null,
+
+          updatedAt:
+            companyModule?.updatedAt ??
+            null,
+        }
+      },
+    )
 
     res.status(200).json({
       success: true,
@@ -827,7 +1005,10 @@ export async function activateCompanyModule(
   res: Response,
 ): Promise<void> {
   try {
-    const companyId = Number(req.params.id)
+    const companyId = Number(
+      req.params.id,
+    )
+
     const moduleId = Number(
       req.params.moduleId,
     )
@@ -842,8 +1023,10 @@ export async function activateCompanyModule(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID perusahaan tidak valid.',
+        message:
+          'ID perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -853,8 +1036,10 @@ export async function activateCompanyModule(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID module tidak valid.',
+        message:
+          'ID module tidak valid.',
       })
+
       return
     }
 
@@ -867,6 +1052,7 @@ export async function activateCompanyModule(
         where: {
           id: companyId,
         },
+
         select: {
           id: true,
           code: true,
@@ -877,8 +1063,10 @@ export async function activateCompanyModule(
     if (!company) {
       res.status(404).json({
         success: false,
-        message: 'Perusahaan tidak ditemukan.',
+        message:
+          'Perusahaan tidak ditemukan.',
       })
+
       return
     }
 
@@ -891,6 +1079,7 @@ export async function activateCompanyModule(
         where: {
           id: moduleId,
         },
+
         select: {
           id: true,
           key: true,
@@ -902,8 +1091,10 @@ export async function activateCompanyModule(
     if (!module) {
       res.status(404).json({
         success: false,
-        message: 'Module tidak ditemukan.',
+        message:
+          'Module tidak ditemukan.',
       })
+
       return
     }
 
@@ -912,18 +1103,21 @@ export async function activateCompanyModule(
     // --------------------------------------------------
 
     const existingCompanyModule =
-      await prisma.companyModule.findUnique({
-        where: {
-          companyId_moduleId: {
-            companyId,
-            moduleId,
+      await prisma.companyModule.findUnique(
+        {
+          where: {
+            companyId_moduleId: {
+              companyId,
+              moduleId,
+            },
+          },
+
+          select: {
+            id: true,
+            status: true,
           },
         },
-        select: {
-          id: true,
-          status: true,
-        },
-      })
+      )
 
     if (
       existingCompanyModule?.status ===
@@ -934,6 +1128,7 @@ export async function activateCompanyModule(
         message:
           'Module sudah aktif untuk perusahaan ini.',
       })
+
       return
     }
 
@@ -949,16 +1144,19 @@ export async function activateCompanyModule(
             moduleId,
           },
         },
+
         create: {
           companyId,
           moduleId,
           status: 'ACTIVE',
           activatedAt: new Date(),
         },
+
         update: {
           status: 'ACTIVE',
           activatedAt: new Date(),
         },
+
         select: {
           id: true,
           companyId: true,
@@ -971,7 +1169,27 @@ export async function activateCompanyModule(
       })
 
     // --------------------------------------------------
-    // 6. Response
+    // 6. Audit
+    // --------------------------------------------------
+
+    await auditService.log({
+      actorType: 'PLATFORM',
+      actorId:
+        getPlatformActorId(req),
+      companyId,
+      action: 'ACTIVATE',
+      entity: 'CompanyModule',
+      entityId: companyModule.id,
+      beforeData:
+        existingCompanyModule,
+      afterData: companyModule,
+      ipAddress: getRequestIp(req),
+      userAgent:
+        getRequestUserAgent(req),
+    })
+
+    // --------------------------------------------------
+    // 7. Response
     // --------------------------------------------------
 
     res.status(200).json({
@@ -1003,7 +1221,10 @@ export async function deactivateCompanyModule(
   res: Response,
 ): Promise<void> {
   try {
-    const companyId = Number(req.params.id)
+    const companyId = Number(
+      req.params.id,
+    )
+
     const moduleId = Number(
       req.params.moduleId,
     )
@@ -1018,8 +1239,10 @@ export async function deactivateCompanyModule(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID perusahaan tidak valid.',
+        message:
+          'ID perusahaan tidak valid.',
       })
+
       return
     }
 
@@ -1029,8 +1252,10 @@ export async function deactivateCompanyModule(
     ) {
       res.status(400).json({
         success: false,
-        message: 'ID module tidak valid.',
+        message:
+          'ID module tidak valid.',
       })
+
       return
     }
 
@@ -1039,20 +1264,23 @@ export async function deactivateCompanyModule(
     // --------------------------------------------------
 
     const companyModule =
-      await prisma.companyModule.findUnique({
-        where: {
-          companyId_moduleId: {
-            companyId,
-            moduleId,
+      await prisma.companyModule.findUnique(
+        {
+          where: {
+            companyId_moduleId: {
+              companyId,
+              moduleId,
+            },
+          },
+
+          select: {
+            id: true,
+            companyId: true,
+            moduleId: true,
+            status: true,
           },
         },
-        select: {
-          id: true,
-          companyId: true,
-          moduleId: true,
-          status: true,
-        },
-      })
+      )
 
     if (!companyModule) {
       res.status(404).json({
@@ -1060,6 +1288,7 @@ export async function deactivateCompanyModule(
         message:
           'Module belum dikonfigurasi untuk perusahaan ini.',
       })
+
       return
     }
 
@@ -1068,13 +1297,15 @@ export async function deactivateCompanyModule(
     // --------------------------------------------------
 
     if (
-      companyModule.status === 'INACTIVE'
+      companyModule.status ===
+      'INACTIVE'
     ) {
       res.status(400).json({
         success: false,
         message:
           'Module sudah tidak aktif untuk perusahaan ini.',
       })
+
       return
     }
 
@@ -1087,10 +1318,12 @@ export async function deactivateCompanyModule(
         where: {
           id: companyModule.id,
         },
+
         data: {
           status: 'INACTIVE',
           activatedAt: null,
         },
+
         select: {
           id: true,
           companyId: true,
@@ -1103,7 +1336,28 @@ export async function deactivateCompanyModule(
       })
 
     // --------------------------------------------------
-    // 5. Response
+    // 5. Audit
+    // --------------------------------------------------
+
+    await auditService.log({
+      actorType: 'PLATFORM',
+      actorId:
+        getPlatformActorId(req),
+      companyId,
+      action: 'DEACTIVATE',
+      entity: 'CompanyModule',
+      entityId:
+        updatedCompanyModule.id,
+      beforeData: companyModule,
+      afterData:
+        updatedCompanyModule,
+      ipAddress: getRequestIp(req),
+      userAgent:
+        getRequestUserAgent(req),
+    })
+
+    // --------------------------------------------------
+    // 6. Response
     // --------------------------------------------------
 
     res.status(200).json({

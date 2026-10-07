@@ -97,6 +97,12 @@ enum PlatformUserStatus {
   INACTIVE
 }
 
+enum AuditActorType {
+  PLATFORM
+  COMPANY
+  SYSTEM
+}
+
 model Company {
   id                    Int                    @id @default(autoincrement())
   code                  String                 @unique @db.VarChar(50)
@@ -454,21 +460,30 @@ model Setting {
 }
 
 model AuditLog {
-  id         Int      @id @default(autoincrement())
-  companyId  Int
-  company    Company  @relation(fields: [companyId], references: [id])
-  userId     Int?
-  user       User?    @relation(fields: [userId], references: [id])
-  action     String   @db.VarChar(100)
-  entity     String   @db.VarChar(100)
-  entityId   String?  @db.VarChar(100)
+  id        Int      @id @default(autoincrement())
+  companyId Int?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  actorType AuditActorType
+  actorId   Int?
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
+
+  action   String  @db.VarChar(100)
+  entity   String  @db.VarChar(100)
+  entityId String? @db.VarChar(100)
+
   beforeData Json?
   afterData  Json?
-  ipAddress  String?  @db.VarChar(45)
-  userAgent  String?  @db.Text
-  createdAt  DateTime @default(now())
+
+  ipAddress String? @db.VarChar(45)
+  userAgent String? @db.Text
+
+  createdAt DateTime @default(now())
 
   @@index([companyId])
+  @@index([actorType, actorId])
   @@index([userId])
   @@index([action])
   @@index([entity])

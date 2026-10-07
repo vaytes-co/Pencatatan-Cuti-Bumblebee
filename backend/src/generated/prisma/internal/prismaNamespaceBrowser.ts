@@ -349,6 +349,8 @@ export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeo
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
+  actorType: 'actorType',
+  actorId: 'actorId',
   userId: 'userId',
   action: 'action',
   entity: 'entity',

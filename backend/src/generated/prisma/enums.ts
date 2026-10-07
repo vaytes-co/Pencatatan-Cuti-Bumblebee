@@ -139,3 +139,12 @@ export const PlatformUserStatus = {
 } as const
 
 export type PlatformUserStatus = (typeof PlatformUserStatus)[keyof typeof PlatformUserStatus]
+
+
+export const AuditActorType = {
+  PLATFORM: 'PLATFORM',
+  COMPANY: 'COMPANY',
+  SYSTEM: 'SYSTEM'
+} as const
+
+export type AuditActorType = (typeof AuditActorType)[keyof typeof AuditActorType]

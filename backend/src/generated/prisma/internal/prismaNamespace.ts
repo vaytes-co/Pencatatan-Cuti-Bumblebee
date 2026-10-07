@@ -2385,6 +2385,8 @@ export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeo
 export const AuditLogScalarFieldEnum = {
   id: 'id',
   companyId: 'companyId',
+  actorType: 'actorType',
+  actorId: 'actorId',
   userId: 'userId',
   action: 'action',
   entity: 'entity',
@@ -2815,6 +2817,13 @@ export type EnumExceptionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'ExceptionStatus'
  */
 export type EnumExceptionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExceptionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AuditActorType'
+ */
+export type EnumAuditActorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditActorType'>
     
 
 
