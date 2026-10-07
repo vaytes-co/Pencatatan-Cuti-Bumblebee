@@ -265,6 +265,14 @@ export const PLATFORM_PERMISSIONS = [
     action: 'suspend',
   },
 
+  {
+    key: 'platform.companies.activate',
+    name: 'Aktifkan Perusahaan',
+    description: 'Mengaktifkan kembali akses perusahaan.',
+    module: 'platform.companies',
+    action: 'activate',
+  },
+
   // =====================================================
   // PLATFORM MODULES
   // =====================================================

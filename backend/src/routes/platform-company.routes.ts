@@ -3,6 +3,7 @@ import { Router } from 'express'
 import {
   getCompanies,
   getCompanyById,
+  updateCompany,
 } from '../controllers/platform-company.controller.js'
 
 import {
@@ -44,6 +45,15 @@ router.post(
     'platform.companies.create',
   ),
   createCompany,
+)
+
+router.patch(
+  '/:id',
+  platformAuthMiddleware,
+  requirePlatformPermission(
+    'platform.companies.update',
+  ),
+  updateCompany,
 )
 
 export default router
