@@ -2,6 +2,7 @@ import { Router } from 'express'
 
 import {
   getCompanies,
+  getCompanyById,
 } from '../controllers/platform-company.controller.js'
 
 import {
@@ -25,6 +26,15 @@ router.get(
     'platform.companies.read',
   ),
   getCompanies,
+)
+
+router.get(
+  '/:id',
+  platformAuthMiddleware,
+  requirePlatformPermission(
+    'platform.companies.read',
+  ),
+  getCompanyById,
 )
 
 router.post(
