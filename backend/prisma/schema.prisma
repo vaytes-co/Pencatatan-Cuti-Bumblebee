@@ -7,16 +7,10 @@ datasource db {
   provider = "mysql"
 }
 
-// =========================================================
-// ENUMS
-// =========================================================
-
-enum UserRole {
-  OWNER
-  HRD
-  BM
-  ADMIN
-  KARYAWAN
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
 enum UserStatus {
@@ -27,6 +21,13 @@ enum UserStatus {
 enum EmployeeStatus {
   ACTIVE
   INACTIVE
+  RESIGNED
+  TERMINATED
+}
+
+enum PermissionEffect {
+  ALLOW
+  DENY
 }
 
 enum LeaveType {
@@ -64,100 +65,325 @@ enum ExceptionStatus {
   REJECTED
 }
 
-enum PermissionEffect {
-  ALLOW
-  DENY
+enum ModuleStatus {
+  ACTIVE
+  INACTIVE
 }
 
-// =========================================================
-// USER
-// =========================================================
+enum MigrationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  COMPLETED_WITH_ERRORS
+  FAILED
+  CANCELLED
+}
+
+enum MigrationMode {
+  CREATE_ONLY
+  UPDATE_ONLY
+  UPSERT
+}
+
+enum MigrationAction {
+  CREATED
+  UPDATED
+  SKIPPED
+  FAILED
+}
+
+enum PlatformUserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Company {
+  id                    Int                    @id @default(autoincrement())
+  code                  String                 @unique @db.VarChar(50)
+  name                  String                 @db.VarChar(150)
+  legalName             String?                @db.VarChar(200)
+  email                 String?                @db.VarChar(150)
+  phone                 String?                @db.VarChar(50)
+  address               String?                @db.Text
+  timezone              String                 @default("Asia/Jakarta") @db.VarChar(100)
+  status                CompanyStatus          @default(ACTIVE)
+  ownerUserId           Int?
+  ownerUser             User?                  @relation("CompanyOwner", fields: [ownerUserId], references: [id])
+  users                 User[]
+  employees             Employee[]
+  departments           Department[]
+  positions             Position[]
+  roles                 Role[]
+  companyModules        CompanyModule[]
+  holidays              Holiday[]
+  leaveRequests         LeaveRequest[]
+  auditLogs             AuditLog[]
+  migrationJobs         MigrationJob[]
+  settings              Setting[]
+  permissionDelegations PermissionDelegation[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@index([status])
+  @@map("companies")
+}
 
 model User {
-  id           Int    @id @default(autoincrement())
-  name         String @db.VarChar(150)
-  username     String @unique @db.VarChar(100)
-  passwordHash String @db.VarChar(255)
+  id                   Int                    @id @default(autoincrement())
+  companyId            Int
+  company              Company                @relation(fields: [companyId], references: [id])
+  name                 String                 @db.VarChar(150)
+  username             String                 @unique @db.VarChar(100)
+  passwordHash         String                 @db.VarChar(255)
+  status               UserStatus             @default(ACTIVE)
+  employeeId           Int?                   @unique
+  employee             Employee?              @relation(fields: [employeeId], references: [id])
+  ownedCompanies       Company[]              @relation("CompanyOwner")
+  userRoles            UserRole[]
+  userPermissions      UserPermission[]
+  delegatedFrom        PermissionDelegation[] @relation("DelegationFrom")
+  delegatedTo          PermissionDelegation[] @relation("DelegationTo")
+  createdLeaveRequests LeaveRequest[]         @relation("LeaveCreatedBy")
+  managementApprovals  LeaveApproval[]        @relation("ManagementApprovedBy")
+  ownerApprovals       LeaveApproval[]        @relation("OwnerApprovedBy")
+  exceptionApprovals   LeaveApproval[]        @relation("ExceptionApprovedBy")
+  auditLogs            AuditLog[]
+  migrationJobs        MigrationJob[]
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
 
-  role   UserRole
-  status UserStatus @default(ACTIVE)
-
-  employeeId Int?      @unique
-  employee   Employee? @relation(fields: [employeeId], references: [id])
-
-  createdLeaveRequests LeaveRequest[] @relation("LeaveCreatedBy")
-
-  managementApprovals LeaveApproval[] @relation("ManagementApprovedBy")
-  ownerApprovals      LeaveApproval[] @relation("OwnerApprovedBy")
-  exceptionApprovals  LeaveApproval[] @relation("ExceptionApprovedBy")
-
-  userPermissions UserPermission[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([role])
+  @@index([companyId])
   @@index([status])
   @@map("users")
 }
 
-// =========================================================
-// EMPLOYEE
-// =========================================================
-
 model Employee {
   id             Int            @id @default(autoincrement())
-  employeeCode   String?        @unique @db.VarChar(50)
+  companyId      Int
+  company        Company        @relation(fields: [companyId], references: [id])
+  employeeCode   String?
   name           String         @db.VarChar(150)
-  position       String?        @db.VarChar(100)
-  department     String?        @db.VarChar(100)
+  departmentId   Int?
+  department     Department?    @relation(fields: [departmentId], references: [id])
+  positionId     Int?
+  position       Position?      @relation(fields: [positionId], references: [id])
   employmentDate DateTime       @db.Date
   status         EmployeeStatus @default(ACTIVE)
+  user           User?
+  leaveRequests  LeaveRequest[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
-  user User?
-
-  leaveRequests LeaveRequest[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  @@unique([companyId, employeeCode])
+  @@index([companyId])
   @@index([name])
+  @@index([departmentId])
+  @@index([positionId])
   @@index([status])
   @@index([employmentDate])
   @@map("employees")
 }
 
-// =========================================================
-// LEAVE REQUEST
-// =========================================================
+model Department {
+  id          Int        @id @default(autoincrement())
+  companyId   Int
+  company     Company    @relation(fields: [companyId], references: [id])
+  code        String?
+  name        String     @db.VarChar(150)
+  description String?    @db.Text
+  employees   Employee[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@map("departments")
+}
+
+model Position {
+  id          Int        @id @default(autoincrement())
+  companyId   Int
+  company     Company    @relation(fields: [companyId], references: [id])
+  code        String?
+  name        String     @db.VarChar(150)
+  description String?    @db.Text
+  employees   Employee[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@map("positions")
+}
+
+model Role {
+  id                    Int                    @id @default(autoincrement())
+  companyId             Int
+  company               Company                @relation(fields: [companyId], references: [id])
+  name                  String                 @db.VarChar(100)
+  description           String?                @db.Text
+  level                 Int                    @default(100)
+  isSystemRole          Boolean                @default(false)
+  userRoles             UserRole[]
+  rolePermissions       RolePermission[]
+  permissionDelegations PermissionDelegation[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  @@unique([companyId, name])
+  @@index([companyId])
+  @@index([level])
+  @@index([isSystemRole])
+  @@map("roles")
+}
+
+model UserRole {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  roleId    Int
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+  @@map("user_roles")
+}
+
+model Permission {
+  id                      Int                      @id @default(autoincrement())
+  key                     String                   @unique @db.VarChar(100)
+  name                    String                   @db.VarChar(150)
+  description             String?                  @db.Text
+  module                  String                   @db.VarChar(100)
+  action                  String                   @db.VarChar(50)
+  rolePermissions         RolePermission[]
+  platformRolePermissions PlatformRolePermission[]
+  userPermissions         UserPermission[]
+  delegations             PermissionDelegation[]
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+
+  @@index([module])
+  @@index([action])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           Int        @id @default(autoincrement())
+  roleId       Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permissionId Int
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model UserPermission {
+  id           Int              @id @default(autoincrement())
+  userId       Int
+  user         User             @relation(fields: [userId], references: [id])
+  permissionId Int
+  permission   Permission       @relation(fields: [permissionId], references: [id])
+  effect       PermissionEffect
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([userId, permissionId])
+  @@index([userId])
+  @@index([permissionId])
+  @@index([effect])
+  @@map("user_permissions")
+}
+
+model PermissionDelegation {
+  id              Int        @id @default(autoincrement())
+  companyId       Int
+  company         Company    @relation(fields: [companyId], references: [id])
+  delegatorUserId Int
+  delegatorUser   User       @relation("DelegationFrom", fields: [delegatorUserId], references: [id])
+  delegateUserId  Int
+  delegateUser    User       @relation("DelegationTo", fields: [delegateUserId], references: [id])
+  permissionId    Int
+  permission      Permission @relation(fields: [permissionId], references: [id])
+  targetUserId    Int?
+  targetRoleId    Int?
+  targetRole      Role?      @relation(fields: [targetRoleId], references: [id])
+  canDelegate     Boolean    @default(false)
+  expiresAt       DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([companyId])
+  @@index([delegatorUserId])
+  @@index([delegateUserId])
+  @@index([permissionId])
+  @@index([targetUserId])
+  @@index([targetRoleId])
+  @@index([expiresAt])
+  @@map("permission_delegations")
+}
+
+model Module {
+  id             Int             @id @default(autoincrement())
+  key            String          @unique @db.VarChar(100)
+  name           String          @db.VarChar(150)
+  description    String?         @db.Text
+  isSystemModule Boolean         @default(false)
+  companyModules CompanyModule[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("modules")
+}
+
+model CompanyModule {
+  id          Int          @id @default(autoincrement())
+  companyId   Int
+  company     Company      @relation(fields: [companyId], references: [id])
+  moduleId    Int
+  module      Module       @relation(fields: [moduleId], references: [id])
+  status      ModuleStatus @default(ACTIVE)
+  settings    Json?
+  activatedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@unique([companyId, moduleId])
+  @@index([companyId])
+  @@index([moduleId])
+  @@index([status])
+  @@map("company_modules")
+}
 
 model LeaveRequest {
-  id Int @id @default(autoincrement())
+  id               Int            @id @default(autoincrement())
+  companyId        Int
+  company          Company        @relation(fields: [companyId], references: [id])
+  employeeId       Int
+  employee         Employee       @relation(fields: [employeeId], references: [id])
+  startDate        DateTime       @db.Date
+  endDate          DateTime       @db.Date
+  totalDays        Int
+  type             LeaveType
+  reason           String?        @db.Text
+  notes            String?        @db.Text
+  status           LeaveStatus    @default(PENDING_MANAGEMENT)
+  leavePeriodStart DateTime       @db.Date
+  leavePeriodEnd   DateTime       @db.Date
+  createdById      Int
+  createdBy        User           @relation("LeaveCreatedBy", fields: [createdById], references: [id])
+  approval         LeaveApproval?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 
-  employeeId Int
-  employee   Employee @relation(fields: [employeeId], references: [id])
-
-  startDate DateTime @db.Date
-  endDate   DateTime @db.Date
-  totalDays Int
-
-  type   LeaveType
-  reason String?   @db.Text
-  notes  String?   @db.Text
-
-  status LeaveStatus @default(PENDING_MANAGEMENT)
-
-  leavePeriodStart DateTime @db.Date
-  leavePeriodEnd   DateTime @db.Date
-
-  createdById Int
-  createdBy   User @relation("LeaveCreatedBy", fields: [createdById], references: [id])
-
-  approval LeaveApproval?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  @@index([companyId])
   @@index([employeeId])
   @@index([startDate, endDate])
   @@index([status])
@@ -165,51 +391,29 @@ model LeaveRequest {
   @@map("leave_requests")
 }
 
-// =========================================================
-// LEAVE APPROVAL
-// =========================================================
-
 model LeaveApproval {
-  id Int @id @default(autoincrement())
-
-  leaveRequestId Int          @unique
-  leaveRequest   LeaveRequest @relation(fields: [leaveRequestId], references: [id], onDelete: Cascade)
-
-  // Management Approval
-
-  managementStatus ApprovalStatus @default(PENDING)
-
+  id                     Int             @id @default(autoincrement())
+  leaveRequestId         Int             @unique
+  leaveRequest           LeaveRequest    @relation(fields: [leaveRequestId], references: [id])
+  managementStatus       ApprovalStatus  @default(PENDING)
   managementApprovedById Int?
-  managementApprovedBy   User? @relation("ManagementApprovedBy", fields: [managementApprovedById], references: [id])
-
-  managementApprovedAt DateTime?
-  managementNotes      String?   @db.Text
-
-  // Owner Approval
-
-  ownerStatus ApprovalStatus @default(PENDING)
-
-  ownerApprovedById Int?
-  ownerApprovedBy   User? @relation("OwnerApprovedBy", fields: [ownerApprovedById], references: [id])
-
-  ownerApprovedAt DateTime?
-  ownerNotes      String?   @db.Text
-
-  // Exception
-
-  needsException Boolean @default(false)
-
-  exceptionType   ExceptionType?
-  exceptionStatus ExceptionStatus @default(NOT_REQUIRED)
-
-  exceptionApprovedById Int?
-  exceptionApprovedBy   User? @relation("ExceptionApprovedBy", fields: [exceptionApprovedById], references: [id])
-
-  exceptionApprovedAt DateTime?
-  exceptionNotes      String?   @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  managementApprovedBy   User?           @relation("ManagementApprovedBy", fields: [managementApprovedById], references: [id])
+  managementApprovedAt   DateTime?
+  managementNotes        String?         @db.Text
+  ownerStatus            ApprovalStatus  @default(PENDING)
+  ownerApprovedById      Int?
+  ownerApprovedBy        User?           @relation("OwnerApprovedBy", fields: [ownerApprovedById], references: [id])
+  ownerApprovedAt        DateTime?
+  ownerNotes             String?         @db.Text
+  needsException         Boolean         @default(false)
+  exceptionType          ExceptionType?
+  exceptionStatus        ExceptionStatus @default(NOT_REQUIRED)
+  exceptionApprovedById  Int?
+  exceptionApprovedBy    User?           @relation("ExceptionApprovedBy", fields: [exceptionApprovedById], references: [id])
+  exceptionApprovedAt    DateTime?
+  exceptionNotes         String?         @db.Text
+  createdAt              DateTime        @default(now())
+  updatedAt              DateTime        @updatedAt
 
   @@index([managementStatus])
   @@index([ownerStatus])
@@ -217,110 +421,179 @@ model LeaveApproval {
   @@map("leave_approvals")
 }
 
-// =========================================================
-// HOLIDAY
-// =========================================================
-
 model Holiday {
-  id Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
+  companyId   Int
+  company     Company  @relation(fields: [companyId], references: [id])
+  date        DateTime @db.Date
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  date DateTime @db.Date
-  name String   @db.VarChar(150)
-
-  description String? @db.Text
-  isActive    Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([date])
+  @@unique([companyId, date])
+  @@index([companyId])
   @@index([isActive])
   @@map("holidays")
 }
 
-// =========================================================
-// SETTING
-// =========================================================
-
 model Setting {
-  id Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
+  companyId   Int
+  company     Company  @relation(fields: [companyId], references: [id])
+  key         String   @db.VarChar(100)
+  value       String   @db.Text
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  key         String  @unique @db.VarChar(100)
-  value       String  @db.Text
-  description String? @db.Text
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  @@unique([companyId, key])
+  @@index([companyId])
   @@map("settings")
 }
 
-// =========================================================
-// PERMISSION
-// =========================================================
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  companyId  Int
+  company    Company  @relation(fields: [companyId], references: [id])
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String   @db.VarChar(100)
+  entity     String   @db.VarChar(100)
+  entityId   String?  @db.VarChar(100)
+  beforeData Json?
+  afterData  Json?
+  ipAddress  String?  @db.VarChar(45)
+  userAgent  String?  @db.Text
+  createdAt  DateTime @default(now())
 
-model Permission {
-  id          Int     @id @default(autoincrement())
-  key         String  @unique @db.VarChar(100)
-  name        String  @db.VarChar(150)
-  description String? @db.Text
-
-  module String @db.VarChar(100)
-  action String @db.VarChar(50)
-
-  rolePermissions RolePermission[]
-  userPermissions UserPermission[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([module])
-  @@index([action])
-  @@map("permissions")
-}
-
-// =========================================================
-// ROLE PERMISSION
-// =========================================================
-
-model RolePermission {
-  id Int @id @default(autoincrement())
-
-  role UserRole
-
-  permissionId Int
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([role, permissionId])
-  @@index([role])
-  @@index([permissionId])
-  @@map("role_permissions")
-}
-
-// =========================================================
-// USER PERMISSION
-// =========================================================
-
-model UserPermission {
-  id Int @id @default(autoincrement())
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  permissionId Int
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  effect PermissionEffect
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, permissionId])
+  @@index([companyId])
   @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model MigrationJob {
+  id          Int              @id @default(autoincrement())
+  companyId   Int
+  company     Company          @relation(fields: [companyId], references: [id])
+  createdById Int
+  createdBy   User             @relation(fields: [createdById], references: [id])
+  type        String           @db.VarChar(100)
+  fileName    String?          @db.VarChar(255)
+  status      MigrationStatus  @default(PENDING)
+  mode        MigrationMode    @default(UPSERT)
+  totalRows   Int              @default(0)
+  createdRows Int              @default(0)
+  updatedRows Int              @default(0)
+  skippedRows Int              @default(0)
+  failedRows  Int              @default(0)
+  startedAt   DateTime?
+  completedAt DateTime?
+  items       MigrationItem[]
+  errors      MigrationError[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([companyId])
+  @@index([createdById])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("migration_jobs")
+}
+
+model MigrationItem {
+  id               Int             @id @default(autoincrement())
+  migrationJobId   Int
+  migrationJob     MigrationJob    @relation(fields: [migrationJobId], references: [id])
+  rowNumber        Int
+  action           MigrationAction
+  sourceIdentifier String?         @db.VarChar(255)
+  targetIdentifier String?         @db.VarChar(255)
+  message          String?         @db.Text
+  createdAt        DateTime        @default(now())
+
+  @@index([migrationJobId])
+  @@index([rowNumber])
+  @@index([action])
+  @@map("migration_items")
+}
+
+model MigrationError {
+  id             Int          @id @default(autoincrement())
+  migrationJobId Int
+  migrationJob   MigrationJob @relation(fields: [migrationJobId], references: [id])
+  rowNumber      Int
+  field          String?      @db.VarChar(100)
+  value          String?      @db.Text
+  message        String       @db.Text
+  createdAt      DateTime     @default(now())
+
+  @@index([migrationJobId])
+  @@index([rowNumber])
+  @@map("migration_errors")
+}
+
+model PlatformUser {
+  id                Int                @id @default(autoincrement())
+  name              String             @db.VarChar(150)
+  username          String             @unique @db.VarChar(100)
+  passwordHash      String             @db.VarChar(255)
+  status            PlatformUserStatus @default(ACTIVE)
+  platformUserRoles PlatformUserRole[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([status])
+  @@map("platform_users")
+}
+
+model PlatformRole {
+  id                      Int                      @id @default(autoincrement())
+  name                    String                   @unique @db.VarChar(100)
+  description             String?                  @db.Text
+  level                   Int                      @default(100)
+  isSystemRole            Boolean                  @default(false)
+  platformUserRoles       PlatformUserRole[]
+  platformRolePermissions PlatformRolePermission[]
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+
+  @@index([level])
+  @@index([isSystemRole])
+  @@map("platform_roles")
+}
+
+model PlatformUserRole {
+  id             Int          @id @default(autoincrement())
+  platformUserId Int
+  platformUser   PlatformUser @relation(fields: [platformUserId], references: [id])
+  platformRoleId Int
+  platformRole   PlatformRole @relation(fields: [platformRoleId], references: [id])
+  createdAt      DateTime     @default(now())
+
+  @@unique([platformUserId, platformRoleId])
+  @@index([platformUserId])
+  @@index([platformRoleId])
+  @@map("platform_user_roles")
+}
+
+model PlatformRolePermission {
+  id             Int          @id @default(autoincrement())
+  platformRoleId Int
+  platformRole   PlatformRole @relation(fields: [platformRoleId], references: [id])
+  permissionId   Int
+  permission     Permission   @relation(fields: [permissionId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([platformRoleId, permissionId])
+  @@index([platformRoleId])
   @@index([permissionId])
-  @@index([effect])
-  @@map("user_permissions")
+  @@map("platform_role_permissions")
 }

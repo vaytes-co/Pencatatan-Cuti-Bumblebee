@@ -28,14 +28,17 @@ export type AggregateSetting = {
 
 export type SettingAvgAggregateOutputType = {
   id: number | null
+  companyId: number | null
 }
 
 export type SettingSumAggregateOutputType = {
   id: number | null
+  companyId: number | null
 }
 
 export type SettingMinAggregateOutputType = {
   id: number | null
+  companyId: number | null
   key: string | null
   value: string | null
   description: string | null
@@ -45,6 +48,7 @@ export type SettingMinAggregateOutputType = {
 
 export type SettingMaxAggregateOutputType = {
   id: number | null
+  companyId: number | null
   key: string | null
   value: string | null
   description: string | null
@@ -54,6 +58,7 @@ export type SettingMaxAggregateOutputType = {
 
 export type SettingCountAggregateOutputType = {
   id: number
+  companyId: number
   key: number
   value: number
   description: number
@@ -65,14 +70,17 @@ export type SettingCountAggregateOutputType = {
 
 export type SettingAvgAggregateInputType = {
   id?: true
+  companyId?: true
 }
 
 export type SettingSumAggregateInputType = {
   id?: true
+  companyId?: true
 }
 
 export type SettingMinAggregateInputType = {
   id?: true
+  companyId?: true
   key?: true
   value?: true
   description?: true
@@ -82,6 +90,7 @@ export type SettingMinAggregateInputType = {
 
 export type SettingMaxAggregateInputType = {
   id?: true
+  companyId?: true
   key?: true
   value?: true
   description?: true
@@ -91,6 +100,7 @@ export type SettingMaxAggregateInputType = {
 
 export type SettingCountAggregateInputType = {
   id?: true
+  companyId?: true
   key?: true
   value?: true
   description?: true
@@ -187,6 +197,7 @@ export type SettingGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type SettingGroupByOutputType = {
   id: number
+  companyId: number
   key: string
   value: string
   description: string | null
@@ -219,37 +230,45 @@ export type SettingWhereInput = {
   OR?: Prisma.SettingWhereInput[]
   NOT?: Prisma.SettingWhereInput | Prisma.SettingWhereInput[]
   id?: Prisma.IntFilter<"Setting"> | number
+  companyId?: Prisma.IntFilter<"Setting"> | number
   key?: Prisma.StringFilter<"Setting"> | string
   value?: Prisma.StringFilter<"Setting"> | string
   description?: Prisma.StringNullableFilter<"Setting"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
+  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
 }
 
 export type SettingOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  company?: Prisma.CompanyOrderByWithRelationInput
   _relevance?: Prisma.SettingOrderByRelevanceInput
 }
 
 export type SettingWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  key?: string
+  companyId_key?: Prisma.SettingCompanyIdKeyCompoundUniqueInput
   AND?: Prisma.SettingWhereInput | Prisma.SettingWhereInput[]
   OR?: Prisma.SettingWhereInput[]
   NOT?: Prisma.SettingWhereInput | Prisma.SettingWhereInput[]
+  companyId?: Prisma.IntFilter<"Setting"> | number
+  key?: Prisma.StringFilter<"Setting"> | string
   value?: Prisma.StringFilter<"Setting"> | string
   description?: Prisma.StringNullableFilter<"Setting"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
-}, "id" | "key">
+  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
+}, "id" | "companyId_key">
 
 export type SettingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -267,6 +286,7 @@ export type SettingScalarWhereWithAggregatesInput = {
   OR?: Prisma.SettingScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SettingScalarWhereWithAggregatesInput | Prisma.SettingScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"Setting"> | number
+  companyId?: Prisma.IntWithAggregatesFilter<"Setting"> | number
   key?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   value?: Prisma.StringWithAggregatesFilter<"Setting"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Setting"> | string | null
@@ -280,10 +300,12 @@ export type SettingCreateInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutSettingsInput
 }
 
 export type SettingUncheckedCreateInput = {
   id?: number
+  companyId: number
   key: string
   value: string
   description?: string | null
@@ -297,10 +319,12 @@ export type SettingUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutSettingsNestedInput
 }
 
 export type SettingUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -310,6 +334,7 @@ export type SettingUncheckedUpdateInput = {
 
 export type SettingCreateManyInput = {
   id?: number
+  companyId: number
   key: string
   value: string
   description?: string | null
@@ -327,11 +352,22 @@ export type SettingUpdateManyMutationInput = {
 
 export type SettingUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   key?: Prisma.StringFieldUpdateOperationsInput | string
   value?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SettingListRelationFilter = {
+  every?: Prisma.SettingWhereInput
+  some?: Prisma.SettingWhereInput
+  none?: Prisma.SettingWhereInput
+}
+
+export type SettingOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type SettingOrderByRelevanceInput = {
@@ -340,8 +376,14 @@ export type SettingOrderByRelevanceInput = {
   search: string
 }
 
+export type SettingCompanyIdKeyCompoundUniqueInput = {
+  companyId: number
+  key: string
+}
+
 export type SettingCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -351,10 +393,12 @@ export type SettingCountOrderByAggregateInput = {
 
 export type SettingAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
 }
 
 export type SettingMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -364,6 +408,7 @@ export type SettingMaxOrderByAggregateInput = {
 
 export type SettingMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   key?: Prisma.SortOrder
   value?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -373,23 +418,160 @@ export type SettingMinOrderByAggregateInput = {
 
 export type SettingSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
+}
+
+export type SettingCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutCompanyInput, Prisma.SettingUncheckedCreateWithoutCompanyInput> | Prisma.SettingCreateWithoutCompanyInput[] | Prisma.SettingUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutCompanyInput | Prisma.SettingCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.SettingCreateManyCompanyInputEnvelope
+  connect?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+}
+
+export type SettingUncheckedCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutCompanyInput, Prisma.SettingUncheckedCreateWithoutCompanyInput> | Prisma.SettingCreateWithoutCompanyInput[] | Prisma.SettingUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutCompanyInput | Prisma.SettingCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.SettingCreateManyCompanyInputEnvelope
+  connect?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+}
+
+export type SettingUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutCompanyInput, Prisma.SettingUncheckedCreateWithoutCompanyInput> | Prisma.SettingCreateWithoutCompanyInput[] | Prisma.SettingUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutCompanyInput | Prisma.SettingCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.SettingUpsertWithWhereUniqueWithoutCompanyInput | Prisma.SettingUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.SettingCreateManyCompanyInputEnvelope
+  set?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  disconnect?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  delete?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  connect?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  update?: Prisma.SettingUpdateWithWhereUniqueWithoutCompanyInput | Prisma.SettingUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.SettingUpdateManyWithWhereWithoutCompanyInput | Prisma.SettingUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.SettingScalarWhereInput | Prisma.SettingScalarWhereInput[]
+}
+
+export type SettingUncheckedUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.SettingCreateWithoutCompanyInput, Prisma.SettingUncheckedCreateWithoutCompanyInput> | Prisma.SettingCreateWithoutCompanyInput[] | Prisma.SettingUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.SettingCreateOrConnectWithoutCompanyInput | Prisma.SettingCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.SettingUpsertWithWhereUniqueWithoutCompanyInput | Prisma.SettingUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.SettingCreateManyCompanyInputEnvelope
+  set?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  disconnect?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  delete?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  connect?: Prisma.SettingWhereUniqueInput | Prisma.SettingWhereUniqueInput[]
+  update?: Prisma.SettingUpdateWithWhereUniqueWithoutCompanyInput | Prisma.SettingUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.SettingUpdateManyWithWhereWithoutCompanyInput | Prisma.SettingUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.SettingScalarWhereInput | Prisma.SettingScalarWhereInput[]
+}
+
+export type SettingCreateWithoutCompanyInput = {
+  key: string
+  value: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SettingUncheckedCreateWithoutCompanyInput = {
+  id?: number
+  key: string
+  value: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SettingCreateOrConnectWithoutCompanyInput = {
+  where: Prisma.SettingWhereUniqueInput
+  create: Prisma.XOR<Prisma.SettingCreateWithoutCompanyInput, Prisma.SettingUncheckedCreateWithoutCompanyInput>
+}
+
+export type SettingCreateManyCompanyInputEnvelope = {
+  data: Prisma.SettingCreateManyCompanyInput | Prisma.SettingCreateManyCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type SettingUpsertWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.SettingWhereUniqueInput
+  update: Prisma.XOR<Prisma.SettingUpdateWithoutCompanyInput, Prisma.SettingUncheckedUpdateWithoutCompanyInput>
+  create: Prisma.XOR<Prisma.SettingCreateWithoutCompanyInput, Prisma.SettingUncheckedCreateWithoutCompanyInput>
+}
+
+export type SettingUpdateWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.SettingWhereUniqueInput
+  data: Prisma.XOR<Prisma.SettingUpdateWithoutCompanyInput, Prisma.SettingUncheckedUpdateWithoutCompanyInput>
+}
+
+export type SettingUpdateManyWithWhereWithoutCompanyInput = {
+  where: Prisma.SettingScalarWhereInput
+  data: Prisma.XOR<Prisma.SettingUpdateManyMutationInput, Prisma.SettingUncheckedUpdateManyWithoutCompanyInput>
+}
+
+export type SettingScalarWhereInput = {
+  AND?: Prisma.SettingScalarWhereInput | Prisma.SettingScalarWhereInput[]
+  OR?: Prisma.SettingScalarWhereInput[]
+  NOT?: Prisma.SettingScalarWhereInput | Prisma.SettingScalarWhereInput[]
+  id?: Prisma.IntFilter<"Setting"> | number
+  companyId?: Prisma.IntFilter<"Setting"> | number
+  key?: Prisma.StringFilter<"Setting"> | string
+  value?: Prisma.StringFilter<"Setting"> | string
+  description?: Prisma.StringNullableFilter<"Setting"> | string | null
+  createdAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Setting"> | Date | string
+}
+
+export type SettingCreateManyCompanyInput = {
+  id?: number
+  key: string
+  value: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SettingUpdateWithoutCompanyInput = {
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SettingUncheckedUpdateWithoutCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type SettingUncheckedUpdateManyWithoutCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
 
 export type SettingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  companyId?: boolean
   key?: boolean
   value?: boolean
   description?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["setting"]>
 
 
 
 export type SettingSelectScalar = {
   id?: boolean
+  companyId?: boolean
   key?: boolean
   value?: boolean
   description?: boolean
@@ -397,13 +579,19 @@ export type SettingSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "value" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
+export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "key" | "value" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
+export type SettingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
 
 export type $SettingPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Setting"
-  objects: {}
+  objects: {
+    company: Prisma.$CompanyPayload<ExtArgs>
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    companyId: number
     key: string
     value: string
     description: string | null
@@ -749,6 +937,7 @@ readonly fields: SettingFieldRefs;
  */
 export interface Prisma__SettingClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -779,6 +968,7 @@ export interface Prisma__SettingClient<T, Null = never, ExtArgs extends runtime.
  */
 export interface SettingFieldRefs {
   readonly id: Prisma.FieldRef<"Setting", 'Int'>
+  readonly companyId: Prisma.FieldRef<"Setting", 'Int'>
   readonly key: Prisma.FieldRef<"Setting", 'String'>
   readonly value: Prisma.FieldRef<"Setting", 'String'>
   readonly description: Prisma.FieldRef<"Setting", 'String'>
@@ -801,6 +991,10 @@ export type SettingFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * Filter, which Setting to fetch.
    */
   where: Prisma.SettingWhereUniqueInput
@@ -819,6 +1013,10 @@ export type SettingFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * Filter, which Setting to fetch.
    */
   where: Prisma.SettingWhereUniqueInput
@@ -836,6 +1034,10 @@ export type SettingFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * Filter, which Setting to fetch.
    */
@@ -885,6 +1087,10 @@ export type SettingFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * Filter, which Setting to fetch.
    */
   where?: Prisma.SettingWhereInput
@@ -932,6 +1138,10 @@ export type SettingFindManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * Filter, which Settings to fetch.
    */
@@ -981,6 +1191,10 @@ export type SettingCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * The data needed to create a Setting.
    */
   data: Prisma.XOR<Prisma.SettingCreateInput, Prisma.SettingUncheckedCreateInput>
@@ -1009,6 +1223,10 @@ export type SettingUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * The data needed to update a Setting.
    */
@@ -1050,6 +1268,10 @@ export type SettingUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
+  /**
    * The filter to search for the Setting to update in case it exists.
    */
   where: Prisma.SettingWhereUniqueInput
@@ -1075,6 +1297,10 @@ export type SettingDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
   /**
    * Filter which Setting to delete.
    */
@@ -1107,4 +1333,8 @@ export type SettingDefaultArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Setting
    */
   omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingInclude<ExtArgs> | null
 }

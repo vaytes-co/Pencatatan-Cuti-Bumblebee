@@ -18,6 +18,11 @@ export { Prisma }
 export * as $Enums from './enums.js'
 export * from './enums.js';
 /**
+ * Model Company
+ * 
+ */
+export type Company = Prisma.CompanyModel
+/**
  * Model User
  * 
  */
@@ -27,6 +32,56 @@ export type User = Prisma.UserModel
  * 
  */
 export type Employee = Prisma.EmployeeModel
+/**
+ * Model Department
+ * 
+ */
+export type Department = Prisma.DepartmentModel
+/**
+ * Model Position
+ * 
+ */
+export type Position = Prisma.PositionModel
+/**
+ * Model Role
+ * 
+ */
+export type Role = Prisma.RoleModel
+/**
+ * Model UserRole
+ * 
+ */
+export type UserRole = Prisma.UserRoleModel
+/**
+ * Model Permission
+ * 
+ */
+export type Permission = Prisma.PermissionModel
+/**
+ * Model RolePermission
+ * 
+ */
+export type RolePermission = Prisma.RolePermissionModel
+/**
+ * Model UserPermission
+ * 
+ */
+export type UserPermission = Prisma.UserPermissionModel
+/**
+ * Model PermissionDelegation
+ * 
+ */
+export type PermissionDelegation = Prisma.PermissionDelegationModel
+/**
+ * Model Module
+ * 
+ */
+export type Module = Prisma.ModuleModel
+/**
+ * Model CompanyModule
+ * 
+ */
+export type CompanyModule = Prisma.CompanyModuleModel
 /**
  * Model LeaveRequest
  * 
@@ -48,17 +103,42 @@ export type Holiday = Prisma.HolidayModel
  */
 export type Setting = Prisma.SettingModel
 /**
- * Model Permission
+ * Model AuditLog
  * 
  */
-export type Permission = Prisma.PermissionModel
+export type AuditLog = Prisma.AuditLogModel
 /**
- * Model RolePermission
+ * Model MigrationJob
  * 
  */
-export type RolePermission = Prisma.RolePermissionModel
+export type MigrationJob = Prisma.MigrationJobModel
 /**
- * Model UserPermission
+ * Model MigrationItem
  * 
  */
-export type UserPermission = Prisma.UserPermissionModel
+export type MigrationItem = Prisma.MigrationItemModel
+/**
+ * Model MigrationError
+ * 
+ */
+export type MigrationError = Prisma.MigrationErrorModel
+/**
+ * Model PlatformUser
+ * 
+ */
+export type PlatformUser = Prisma.PlatformUserModel
+/**
+ * Model PlatformRole
+ * 
+ */
+export type PlatformRole = Prisma.PlatformRoleModel
+/**
+ * Model PlatformUserRole
+ * 
+ */
+export type PlatformUserRole = Prisma.PlatformUserRoleModel
+/**
+ * Model PlatformRolePermission
+ * 
+ */
+export type PlatformRolePermission = Prisma.PlatformRolePermissionModel

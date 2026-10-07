@@ -28,6 +28,7 @@ export type AggregateLeaveRequest = {
 
 export type LeaveRequestAvgAggregateOutputType = {
   id: number | null
+  companyId: number | null
   employeeId: number | null
   totalDays: number | null
   createdById: number | null
@@ -35,6 +36,7 @@ export type LeaveRequestAvgAggregateOutputType = {
 
 export type LeaveRequestSumAggregateOutputType = {
   id: number | null
+  companyId: number | null
   employeeId: number | null
   totalDays: number | null
   createdById: number | null
@@ -42,6 +44,7 @@ export type LeaveRequestSumAggregateOutputType = {
 
 export type LeaveRequestMinAggregateOutputType = {
   id: number | null
+  companyId: number | null
   employeeId: number | null
   startDate: Date | null
   endDate: Date | null
@@ -59,6 +62,7 @@ export type LeaveRequestMinAggregateOutputType = {
 
 export type LeaveRequestMaxAggregateOutputType = {
   id: number | null
+  companyId: number | null
   employeeId: number | null
   startDate: Date | null
   endDate: Date | null
@@ -76,6 +80,7 @@ export type LeaveRequestMaxAggregateOutputType = {
 
 export type LeaveRequestCountAggregateOutputType = {
   id: number
+  companyId: number
   employeeId: number
   startDate: number
   endDate: number
@@ -95,6 +100,7 @@ export type LeaveRequestCountAggregateOutputType = {
 
 export type LeaveRequestAvgAggregateInputType = {
   id?: true
+  companyId?: true
   employeeId?: true
   totalDays?: true
   createdById?: true
@@ -102,6 +108,7 @@ export type LeaveRequestAvgAggregateInputType = {
 
 export type LeaveRequestSumAggregateInputType = {
   id?: true
+  companyId?: true
   employeeId?: true
   totalDays?: true
   createdById?: true
@@ -109,6 +116,7 @@ export type LeaveRequestSumAggregateInputType = {
 
 export type LeaveRequestMinAggregateInputType = {
   id?: true
+  companyId?: true
   employeeId?: true
   startDate?: true
   endDate?: true
@@ -126,6 +134,7 @@ export type LeaveRequestMinAggregateInputType = {
 
 export type LeaveRequestMaxAggregateInputType = {
   id?: true
+  companyId?: true
   employeeId?: true
   startDate?: true
   endDate?: true
@@ -143,6 +152,7 @@ export type LeaveRequestMaxAggregateInputType = {
 
 export type LeaveRequestCountAggregateInputType = {
   id?: true
+  companyId?: true
   employeeId?: true
   startDate?: true
   endDate?: true
@@ -247,6 +257,7 @@ export type LeaveRequestGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 
 export type LeaveRequestGroupByOutputType = {
   id: number
+  companyId: number
   employeeId: number
   startDate: Date
   endDate: Date
@@ -287,6 +298,7 @@ export type LeaveRequestWhereInput = {
   OR?: Prisma.LeaveRequestWhereInput[]
   NOT?: Prisma.LeaveRequestWhereInput | Prisma.LeaveRequestWhereInput[]
   id?: Prisma.IntFilter<"LeaveRequest"> | number
+  companyId?: Prisma.IntFilter<"LeaveRequest"> | number
   employeeId?: Prisma.IntFilter<"LeaveRequest"> | number
   startDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
   endDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
@@ -300,6 +312,7 @@ export type LeaveRequestWhereInput = {
   createdById?: Prisma.IntFilter<"LeaveRequest"> | number
   createdAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   employee?: Prisma.XOR<Prisma.EmployeeScalarRelationFilter, Prisma.EmployeeWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   approval?: Prisma.XOR<Prisma.LeaveApprovalNullableScalarRelationFilter, Prisma.LeaveApprovalWhereInput> | null
@@ -307,6 +320,7 @@ export type LeaveRequestWhereInput = {
 
 export type LeaveRequestOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
@@ -320,6 +334,7 @@ export type LeaveRequestOrderByWithRelationInput = {
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  company?: Prisma.CompanyOrderByWithRelationInput
   employee?: Prisma.EmployeeOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   approval?: Prisma.LeaveApprovalOrderByWithRelationInput
@@ -331,6 +346,7 @@ export type LeaveRequestWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.LeaveRequestWhereInput | Prisma.LeaveRequestWhereInput[]
   OR?: Prisma.LeaveRequestWhereInput[]
   NOT?: Prisma.LeaveRequestWhereInput | Prisma.LeaveRequestWhereInput[]
+  companyId?: Prisma.IntFilter<"LeaveRequest"> | number
   employeeId?: Prisma.IntFilter<"LeaveRequest"> | number
   startDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
   endDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
@@ -344,6 +360,7 @@ export type LeaveRequestWhereUniqueInput = Prisma.AtLeast<{
   createdById?: Prisma.IntFilter<"LeaveRequest"> | number
   createdAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   employee?: Prisma.XOR<Prisma.EmployeeScalarRelationFilter, Prisma.EmployeeWhereInput>
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   approval?: Prisma.XOR<Prisma.LeaveApprovalNullableScalarRelationFilter, Prisma.LeaveApprovalWhereInput> | null
@@ -351,6 +368,7 @@ export type LeaveRequestWhereUniqueInput = Prisma.AtLeast<{
 
 export type LeaveRequestOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
@@ -376,6 +394,7 @@ export type LeaveRequestScalarWhereWithAggregatesInput = {
   OR?: Prisma.LeaveRequestScalarWhereWithAggregatesInput[]
   NOT?: Prisma.LeaveRequestScalarWhereWithAggregatesInput | Prisma.LeaveRequestScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"LeaveRequest"> | number
+  companyId?: Prisma.IntWithAggregatesFilter<"LeaveRequest"> | number
   employeeId?: Prisma.IntWithAggregatesFilter<"LeaveRequest"> | number
   startDate?: Prisma.DateTimeWithAggregatesFilter<"LeaveRequest"> | Date | string
   endDate?: Prisma.DateTimeWithAggregatesFilter<"LeaveRequest"> | Date | string
@@ -403,6 +422,7 @@ export type LeaveRequestCreateInput = {
   leavePeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutLeaveRequestsInput
   employee: Prisma.EmployeeCreateNestedOneWithoutLeaveRequestsInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedLeaveRequestsInput
   approval?: Prisma.LeaveApprovalCreateNestedOneWithoutLeaveRequestInput
@@ -410,6 +430,7 @@ export type LeaveRequestCreateInput = {
 
 export type LeaveRequestUncheckedCreateInput = {
   id?: number
+  companyId: number
   employeeId: number
   startDate: Date | string
   endDate: Date | string
@@ -438,6 +459,7 @@ export type LeaveRequestUpdateInput = {
   leavePeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutLeaveRequestsNestedInput
   employee?: Prisma.EmployeeUpdateOneRequiredWithoutLeaveRequestsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedLeaveRequestsNestedInput
   approval?: Prisma.LeaveApprovalUpdateOneWithoutLeaveRequestNestedInput
@@ -445,6 +467,7 @@ export type LeaveRequestUpdateInput = {
 
 export type LeaveRequestUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   employeeId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -463,6 +486,7 @@ export type LeaveRequestUncheckedUpdateInput = {
 
 export type LeaveRequestCreateManyInput = {
   id?: number
+  companyId: number
   employeeId: number
   startDate: Date | string
   endDate: Date | string
@@ -494,6 +518,7 @@ export type LeaveRequestUpdateManyMutationInput = {
 
 export type LeaveRequestUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   employeeId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -527,6 +552,7 @@ export type LeaveRequestOrderByRelevanceInput = {
 
 export type LeaveRequestCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
@@ -544,6 +570,7 @@ export type LeaveRequestCountOrderByAggregateInput = {
 
 export type LeaveRequestAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   totalDays?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -551,6 +578,7 @@ export type LeaveRequestAvgOrderByAggregateInput = {
 
 export type LeaveRequestMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
@@ -568,6 +596,7 @@ export type LeaveRequestMaxOrderByAggregateInput = {
 
 export type LeaveRequestMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
@@ -585,6 +614,7 @@ export type LeaveRequestMinOrderByAggregateInput = {
 
 export type LeaveRequestSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   totalDays?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -593,6 +623,48 @@ export type LeaveRequestSumOrderByAggregateInput = {
 export type LeaveRequestScalarRelationFilter = {
   is?: Prisma.LeaveRequestWhereInput
   isNot?: Prisma.LeaveRequestWhereInput
+}
+
+export type LeaveRequestCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.LeaveRequestCreateWithoutCompanyInput, Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput> | Prisma.LeaveRequestCreateWithoutCompanyInput[] | Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput | Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.LeaveRequestCreateManyCompanyInputEnvelope
+  connect?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+}
+
+export type LeaveRequestUncheckedCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.LeaveRequestCreateWithoutCompanyInput, Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput> | Prisma.LeaveRequestCreateWithoutCompanyInput[] | Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput | Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.LeaveRequestCreateManyCompanyInputEnvelope
+  connect?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+}
+
+export type LeaveRequestUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.LeaveRequestCreateWithoutCompanyInput, Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput> | Prisma.LeaveRequestCreateWithoutCompanyInput[] | Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput | Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.LeaveRequestUpsertWithWhereUniqueWithoutCompanyInput | Prisma.LeaveRequestUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.LeaveRequestCreateManyCompanyInputEnvelope
+  set?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  disconnect?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  delete?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  connect?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  update?: Prisma.LeaveRequestUpdateWithWhereUniqueWithoutCompanyInput | Prisma.LeaveRequestUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.LeaveRequestUpdateManyWithWhereWithoutCompanyInput | Prisma.LeaveRequestUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.LeaveRequestScalarWhereInput | Prisma.LeaveRequestScalarWhereInput[]
+}
+
+export type LeaveRequestUncheckedUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.LeaveRequestCreateWithoutCompanyInput, Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput> | Prisma.LeaveRequestCreateWithoutCompanyInput[] | Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput | Prisma.LeaveRequestCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.LeaveRequestUpsertWithWhereUniqueWithoutCompanyInput | Prisma.LeaveRequestUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.LeaveRequestCreateManyCompanyInputEnvelope
+  set?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  disconnect?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  delete?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  connect?: Prisma.LeaveRequestWhereUniqueInput | Prisma.LeaveRequestWhereUniqueInput[]
+  update?: Prisma.LeaveRequestUpdateWithWhereUniqueWithoutCompanyInput | Prisma.LeaveRequestUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.LeaveRequestUpdateManyWithWhereWithoutCompanyInput | Prisma.LeaveRequestUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.LeaveRequestScalarWhereInput | Prisma.LeaveRequestScalarWhereInput[]
 }
 
 export type LeaveRequestCreateNestedManyWithoutCreatedByInput = {
@@ -701,7 +773,7 @@ export type LeaveRequestUpdateOneRequiredWithoutApprovalNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.LeaveRequestUpdateToOneWithWhereWithoutApprovalInput, Prisma.LeaveRequestUpdateWithoutApprovalInput>, Prisma.LeaveRequestUncheckedUpdateWithoutApprovalInput>
 }
 
-export type LeaveRequestCreateWithoutCreatedByInput = {
+export type LeaveRequestCreateWithoutCompanyInput = {
   startDate: Date | string
   endDate: Date | string
   totalDays: number
@@ -714,11 +786,95 @@ export type LeaveRequestCreateWithoutCreatedByInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   employee: Prisma.EmployeeCreateNestedOneWithoutLeaveRequestsInput
+  createdBy: Prisma.UserCreateNestedOneWithoutCreatedLeaveRequestsInput
+  approval?: Prisma.LeaveApprovalCreateNestedOneWithoutLeaveRequestInput
+}
+
+export type LeaveRequestUncheckedCreateWithoutCompanyInput = {
+  id?: number
+  employeeId: number
+  startDate: Date | string
+  endDate: Date | string
+  totalDays: number
+  type: $Enums.LeaveType
+  reason?: string | null
+  notes?: string | null
+  status?: $Enums.LeaveStatus
+  leavePeriodStart: Date | string
+  leavePeriodEnd: Date | string
+  createdById: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  approval?: Prisma.LeaveApprovalUncheckedCreateNestedOneWithoutLeaveRequestInput
+}
+
+export type LeaveRequestCreateOrConnectWithoutCompanyInput = {
+  where: Prisma.LeaveRequestWhereUniqueInput
+  create: Prisma.XOR<Prisma.LeaveRequestCreateWithoutCompanyInput, Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput>
+}
+
+export type LeaveRequestCreateManyCompanyInputEnvelope = {
+  data: Prisma.LeaveRequestCreateManyCompanyInput | Prisma.LeaveRequestCreateManyCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type LeaveRequestUpsertWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.LeaveRequestWhereUniqueInput
+  update: Prisma.XOR<Prisma.LeaveRequestUpdateWithoutCompanyInput, Prisma.LeaveRequestUncheckedUpdateWithoutCompanyInput>
+  create: Prisma.XOR<Prisma.LeaveRequestCreateWithoutCompanyInput, Prisma.LeaveRequestUncheckedCreateWithoutCompanyInput>
+}
+
+export type LeaveRequestUpdateWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.LeaveRequestWhereUniqueInput
+  data: Prisma.XOR<Prisma.LeaveRequestUpdateWithoutCompanyInput, Prisma.LeaveRequestUncheckedUpdateWithoutCompanyInput>
+}
+
+export type LeaveRequestUpdateManyWithWhereWithoutCompanyInput = {
+  where: Prisma.LeaveRequestScalarWhereInput
+  data: Prisma.XOR<Prisma.LeaveRequestUpdateManyMutationInput, Prisma.LeaveRequestUncheckedUpdateManyWithoutCompanyInput>
+}
+
+export type LeaveRequestScalarWhereInput = {
+  AND?: Prisma.LeaveRequestScalarWhereInput | Prisma.LeaveRequestScalarWhereInput[]
+  OR?: Prisma.LeaveRequestScalarWhereInput[]
+  NOT?: Prisma.LeaveRequestScalarWhereInput | Prisma.LeaveRequestScalarWhereInput[]
+  id?: Prisma.IntFilter<"LeaveRequest"> | number
+  companyId?: Prisma.IntFilter<"LeaveRequest"> | number
+  employeeId?: Prisma.IntFilter<"LeaveRequest"> | number
+  startDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+  endDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+  totalDays?: Prisma.IntFilter<"LeaveRequest"> | number
+  type?: Prisma.EnumLeaveTypeFilter<"LeaveRequest"> | $Enums.LeaveType
+  reason?: Prisma.StringNullableFilter<"LeaveRequest"> | string | null
+  notes?: Prisma.StringNullableFilter<"LeaveRequest"> | string | null
+  status?: Prisma.EnumLeaveStatusFilter<"LeaveRequest"> | $Enums.LeaveStatus
+  leavePeriodStart?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+  leavePeriodEnd?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+  createdById?: Prisma.IntFilter<"LeaveRequest"> | number
+  createdAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
+}
+
+export type LeaveRequestCreateWithoutCreatedByInput = {
+  startDate: Date | string
+  endDate: Date | string
+  totalDays: number
+  type: $Enums.LeaveType
+  reason?: string | null
+  notes?: string | null
+  status?: $Enums.LeaveStatus
+  leavePeriodStart: Date | string
+  leavePeriodEnd: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutLeaveRequestsInput
+  employee: Prisma.EmployeeCreateNestedOneWithoutLeaveRequestsInput
   approval?: Prisma.LeaveApprovalCreateNestedOneWithoutLeaveRequestInput
 }
 
 export type LeaveRequestUncheckedCreateWithoutCreatedByInput = {
   id?: number
+  companyId: number
   employeeId: number
   startDate: Date | string
   endDate: Date | string
@@ -760,26 +916,6 @@ export type LeaveRequestUpdateManyWithWhereWithoutCreatedByInput = {
   data: Prisma.XOR<Prisma.LeaveRequestUpdateManyMutationInput, Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByInput>
 }
 
-export type LeaveRequestScalarWhereInput = {
-  AND?: Prisma.LeaveRequestScalarWhereInput | Prisma.LeaveRequestScalarWhereInput[]
-  OR?: Prisma.LeaveRequestScalarWhereInput[]
-  NOT?: Prisma.LeaveRequestScalarWhereInput | Prisma.LeaveRequestScalarWhereInput[]
-  id?: Prisma.IntFilter<"LeaveRequest"> | number
-  employeeId?: Prisma.IntFilter<"LeaveRequest"> | number
-  startDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
-  endDate?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
-  totalDays?: Prisma.IntFilter<"LeaveRequest"> | number
-  type?: Prisma.EnumLeaveTypeFilter<"LeaveRequest"> | $Enums.LeaveType
-  reason?: Prisma.StringNullableFilter<"LeaveRequest"> | string | null
-  notes?: Prisma.StringNullableFilter<"LeaveRequest"> | string | null
-  status?: Prisma.EnumLeaveStatusFilter<"LeaveRequest"> | $Enums.LeaveStatus
-  leavePeriodStart?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
-  leavePeriodEnd?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
-  createdById?: Prisma.IntFilter<"LeaveRequest"> | number
-  createdAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"LeaveRequest"> | Date | string
-}
-
 export type LeaveRequestCreateWithoutEmployeeInput = {
   startDate: Date | string
   endDate: Date | string
@@ -792,12 +928,14 @@ export type LeaveRequestCreateWithoutEmployeeInput = {
   leavePeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutLeaveRequestsInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedLeaveRequestsInput
   approval?: Prisma.LeaveApprovalCreateNestedOneWithoutLeaveRequestInput
 }
 
 export type LeaveRequestUncheckedCreateWithoutEmployeeInput = {
   id?: number
+  companyId: number
   startDate: Date | string
   endDate: Date | string
   totalDays: number
@@ -851,12 +989,14 @@ export type LeaveRequestCreateWithoutApprovalInput = {
   leavePeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutLeaveRequestsInput
   employee: Prisma.EmployeeCreateNestedOneWithoutLeaveRequestsInput
   createdBy: Prisma.UserCreateNestedOneWithoutCreatedLeaveRequestsInput
 }
 
 export type LeaveRequestUncheckedCreateWithoutApprovalInput = {
   id?: number
+  companyId: number
   employeeId: number
   startDate: Date | string
   endDate: Date | string
@@ -900,11 +1040,82 @@ export type LeaveRequestUpdateWithoutApprovalInput = {
   leavePeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutLeaveRequestsNestedInput
   employee?: Prisma.EmployeeUpdateOneRequiredWithoutLeaveRequestsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedLeaveRequestsNestedInput
 }
 
 export type LeaveRequestUncheckedUpdateWithoutApprovalInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  employeeId?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalDays?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.EnumLeaveTypeFieldUpdateOperationsInput | $Enums.LeaveType
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumLeaveStatusFieldUpdateOperationsInput | $Enums.LeaveStatus
+  leavePeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  leavePeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdById?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type LeaveRequestCreateManyCompanyInput = {
+  id?: number
+  employeeId: number
+  startDate: Date | string
+  endDate: Date | string
+  totalDays: number
+  type: $Enums.LeaveType
+  reason?: string | null
+  notes?: string | null
+  status?: $Enums.LeaveStatus
+  leavePeriodStart: Date | string
+  leavePeriodEnd: Date | string
+  createdById: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type LeaveRequestUpdateWithoutCompanyInput = {
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalDays?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.EnumLeaveTypeFieldUpdateOperationsInput | $Enums.LeaveType
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumLeaveStatusFieldUpdateOperationsInput | $Enums.LeaveStatus
+  leavePeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  leavePeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employee?: Prisma.EmployeeUpdateOneRequiredWithoutLeaveRequestsNestedInput
+  createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedLeaveRequestsNestedInput
+  approval?: Prisma.LeaveApprovalUpdateOneWithoutLeaveRequestNestedInput
+}
+
+export type LeaveRequestUncheckedUpdateWithoutCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  employeeId?: Prisma.IntFieldUpdateOperationsInput | number
+  startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  totalDays?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.EnumLeaveTypeFieldUpdateOperationsInput | $Enums.LeaveType
+  reason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumLeaveStatusFieldUpdateOperationsInput | $Enums.LeaveStatus
+  leavePeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  leavePeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdById?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  approval?: Prisma.LeaveApprovalUncheckedUpdateOneWithoutLeaveRequestNestedInput
+}
+
+export type LeaveRequestUncheckedUpdateManyWithoutCompanyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   employeeId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -923,6 +1134,7 @@ export type LeaveRequestUncheckedUpdateWithoutApprovalInput = {
 
 export type LeaveRequestCreateManyCreatedByInput = {
   id?: number
+  companyId: number
   employeeId: number
   startDate: Date | string
   endDate: Date | string
@@ -949,12 +1161,14 @@ export type LeaveRequestUpdateWithoutCreatedByInput = {
   leavePeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutLeaveRequestsNestedInput
   employee?: Prisma.EmployeeUpdateOneRequiredWithoutLeaveRequestsNestedInput
   approval?: Prisma.LeaveApprovalUpdateOneWithoutLeaveRequestNestedInput
 }
 
 export type LeaveRequestUncheckedUpdateWithoutCreatedByInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   employeeId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -972,6 +1186,7 @@ export type LeaveRequestUncheckedUpdateWithoutCreatedByInput = {
 
 export type LeaveRequestUncheckedUpdateManyWithoutCreatedByInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   employeeId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -988,6 +1203,7 @@ export type LeaveRequestUncheckedUpdateManyWithoutCreatedByInput = {
 
 export type LeaveRequestCreateManyEmployeeInput = {
   id?: number
+  companyId: number
   startDate: Date | string
   endDate: Date | string
   totalDays: number
@@ -1014,12 +1230,14 @@ export type LeaveRequestUpdateWithoutEmployeeInput = {
   leavePeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutLeaveRequestsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutCreatedLeaveRequestsNestedInput
   approval?: Prisma.LeaveApprovalUpdateOneWithoutLeaveRequestNestedInput
 }
 
 export type LeaveRequestUncheckedUpdateWithoutEmployeeInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalDays?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1037,6 +1255,7 @@ export type LeaveRequestUncheckedUpdateWithoutEmployeeInput = {
 
 export type LeaveRequestUncheckedUpdateManyWithoutEmployeeInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalDays?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1055,6 +1274,7 @@ export type LeaveRequestUncheckedUpdateManyWithoutEmployeeInput = {
 
 export type LeaveRequestSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  companyId?: boolean
   employeeId?: boolean
   startDate?: boolean
   endDate?: boolean
@@ -1068,6 +1288,7 @@ export type LeaveRequestSelect<ExtArgs extends runtime.Types.Extensions.Internal
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   approval?: boolean | Prisma.LeaveRequest$approvalArgs<ExtArgs>
@@ -1077,6 +1298,7 @@ export type LeaveRequestSelect<ExtArgs extends runtime.Types.Extensions.Internal
 
 export type LeaveRequestSelectScalar = {
   id?: boolean
+  companyId?: boolean
   employeeId?: boolean
   startDate?: boolean
   endDate?: boolean
@@ -1092,8 +1314,9 @@ export type LeaveRequestSelectScalar = {
   updatedAt?: boolean
 }
 
-export type LeaveRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "employeeId" | "startDate" | "endDate" | "totalDays" | "type" | "reason" | "notes" | "status" | "leavePeriodStart" | "leavePeriodEnd" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["leaveRequest"]>
+export type LeaveRequestOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "employeeId" | "startDate" | "endDate" | "totalDays" | "type" | "reason" | "notes" | "status" | "leavePeriodStart" | "leavePeriodEnd" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["leaveRequest"]>
 export type LeaveRequestInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   approval?: boolean | Prisma.LeaveRequest$approvalArgs<ExtArgs>
@@ -1102,12 +1325,14 @@ export type LeaveRequestInclude<ExtArgs extends runtime.Types.Extensions.Interna
 export type $LeaveRequestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "LeaveRequest"
   objects: {
+    company: Prisma.$CompanyPayload<ExtArgs>
     employee: Prisma.$EmployeePayload<ExtArgs>
     createdBy: Prisma.$UserPayload<ExtArgs>
     approval: Prisma.$LeaveApprovalPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    companyId: number
     employeeId: number
     startDate: Date
     endDate: Date
@@ -1461,6 +1686,7 @@ readonly fields: LeaveRequestFieldRefs;
  */
 export interface Prisma__LeaveRequestClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   employee<T extends Prisma.EmployeeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmployeeDefaultArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   approval<T extends Prisma.LeaveRequest$approvalArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.LeaveRequest$approvalArgs<ExtArgs>>): Prisma.Prisma__LeaveApprovalClient<runtime.Types.Result.GetResult<Prisma.$LeaveApprovalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -1494,6 +1720,7 @@ export interface Prisma__LeaveRequestClient<T, Null = never, ExtArgs extends run
  */
 export interface LeaveRequestFieldRefs {
   readonly id: Prisma.FieldRef<"LeaveRequest", 'Int'>
+  readonly companyId: Prisma.FieldRef<"LeaveRequest", 'Int'>
   readonly employeeId: Prisma.FieldRef<"LeaveRequest", 'Int'>
   readonly startDate: Prisma.FieldRef<"LeaveRequest", 'DateTime'>
   readonly endDate: Prisma.FieldRef<"LeaveRequest", 'DateTime'>

@@ -28,20 +28,22 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   id: number | null
+  companyId: number | null
   employeeId: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
+  companyId: number | null
   employeeId: number | null
 }
 
 export type UserMinAggregateOutputType = {
   id: number | null
+  companyId: number | null
   name: string | null
   username: string | null
   passwordHash: string | null
-  role: $Enums.UserRole | null
   status: $Enums.UserStatus | null
   employeeId: number | null
   createdAt: Date | null
@@ -50,10 +52,10 @@ export type UserMinAggregateOutputType = {
 
 export type UserMaxAggregateOutputType = {
   id: number | null
+  companyId: number | null
   name: string | null
   username: string | null
   passwordHash: string | null
-  role: $Enums.UserRole | null
   status: $Enums.UserStatus | null
   employeeId: number | null
   createdAt: Date | null
@@ -62,10 +64,10 @@ export type UserMaxAggregateOutputType = {
 
 export type UserCountAggregateOutputType = {
   id: number
+  companyId: number
   name: number
   username: number
   passwordHash: number
-  role: number
   status: number
   employeeId: number
   createdAt: number
@@ -76,20 +78,22 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   id?: true
+  companyId?: true
   employeeId?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
+  companyId?: true
   employeeId?: true
 }
 
 export type UserMinAggregateInputType = {
   id?: true
+  companyId?: true
   name?: true
   username?: true
   passwordHash?: true
-  role?: true
   status?: true
   employeeId?: true
   createdAt?: true
@@ -98,10 +102,10 @@ export type UserMinAggregateInputType = {
 
 export type UserMaxAggregateInputType = {
   id?: true
+  companyId?: true
   name?: true
   username?: true
   passwordHash?: true
-  role?: true
   status?: true
   employeeId?: true
   createdAt?: true
@@ -110,10 +114,10 @@ export type UserMaxAggregateInputType = {
 
 export type UserCountAggregateInputType = {
   id?: true
+  companyId?: true
   name?: true
   username?: true
   passwordHash?: true
-  role?: true
   status?: true
   employeeId?: true
   createdAt?: true
@@ -209,10 +213,10 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: number
+  companyId: number
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status: $Enums.UserStatus
   employeeId: number | null
   createdAt: Date
@@ -244,38 +248,52 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.IntFilter<"User"> | number
+  companyId?: Prisma.IntFilter<"User"> | number
   name?: Prisma.StringFilter<"User"> | string
   username?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
-  role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
   employeeId?: Prisma.IntNullableFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
+  ownedCompanies?: Prisma.CompanyListRelationFilter
+  userRoles?: Prisma.UserRoleListRelationFilter
+  userPermissions?: Prisma.UserPermissionListRelationFilter
+  delegatedFrom?: Prisma.PermissionDelegationListRelationFilter
+  delegatedTo?: Prisma.PermissionDelegationListRelationFilter
   createdLeaveRequests?: Prisma.LeaveRequestListRelationFilter
   managementApprovals?: Prisma.LeaveApprovalListRelationFilter
   ownerApprovals?: Prisma.LeaveApprovalListRelationFilter
   exceptionApprovals?: Prisma.LeaveApprovalListRelationFilter
-  userPermissions?: Prisma.UserPermissionListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
+  migrationJobs?: Prisma.MigrationJobListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
-  role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  company?: Prisma.CompanyOrderByWithRelationInput
   employee?: Prisma.EmployeeOrderByWithRelationInput
+  ownedCompanies?: Prisma.CompanyOrderByRelationAggregateInput
+  userRoles?: Prisma.UserRoleOrderByRelationAggregateInput
+  userPermissions?: Prisma.UserPermissionOrderByRelationAggregateInput
+  delegatedFrom?: Prisma.PermissionDelegationOrderByRelationAggregateInput
+  delegatedTo?: Prisma.PermissionDelegationOrderByRelationAggregateInput
   createdLeaveRequests?: Prisma.LeaveRequestOrderByRelationAggregateInput
   managementApprovals?: Prisma.LeaveApprovalOrderByRelationAggregateInput
   ownerApprovals?: Prisma.LeaveApprovalOrderByRelationAggregateInput
   exceptionApprovals?: Prisma.LeaveApprovalOrderByRelationAggregateInput
-  userPermissions?: Prisma.UserPermissionOrderByRelationAggregateInput
+  auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
+  migrationJobs?: Prisma.MigrationJobOrderByRelationAggregateInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
 
@@ -286,26 +304,33 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
+  companyId?: Prisma.IntFilter<"User"> | number
   name?: Prisma.StringFilter<"User"> | string
   passwordHash?: Prisma.StringFilter<"User"> | string
-  role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  company?: Prisma.XOR<Prisma.CompanyScalarRelationFilter, Prisma.CompanyWhereInput>
   employee?: Prisma.XOR<Prisma.EmployeeNullableScalarRelationFilter, Prisma.EmployeeWhereInput> | null
+  ownedCompanies?: Prisma.CompanyListRelationFilter
+  userRoles?: Prisma.UserRoleListRelationFilter
+  userPermissions?: Prisma.UserPermissionListRelationFilter
+  delegatedFrom?: Prisma.PermissionDelegationListRelationFilter
+  delegatedTo?: Prisma.PermissionDelegationListRelationFilter
   createdLeaveRequests?: Prisma.LeaveRequestListRelationFilter
   managementApprovals?: Prisma.LeaveApprovalListRelationFilter
   ownerApprovals?: Prisma.LeaveApprovalListRelationFilter
   exceptionApprovals?: Prisma.LeaveApprovalListRelationFilter
-  userPermissions?: Prisma.UserPermissionListRelationFilter
+  auditLogs?: Prisma.AuditLogListRelationFilter
+  migrationJobs?: Prisma.MigrationJobListRelationFilter
 }, "id" | "username" | "employeeId">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
-  role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   employeeId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -322,10 +347,10 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
+  companyId?: Prisma.IntWithAggregatesFilter<"User"> | number
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   username?: Prisma.StringWithAggregatesFilter<"User"> | string
   passwordHash?: Prisma.StringWithAggregatesFilter<"User"> | string
-  role?: Prisma.EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
   status?: Prisma.EnumUserStatusWithAggregatesFilter<"User"> | $Enums.UserStatus
   employeeId?: Prisma.IntNullableWithAggregatesFilter<"User"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -336,74 +361,98 @@ export type UserCreateInput = {
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
   exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
   id?: number
+  companyId: number
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   employeeId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
   exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
   exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
   exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
   id?: number
+  companyId: number
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   employeeId?: number | null
   createdAt?: Date | string
@@ -414,7 +463,6 @@ export type UserUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -422,14 +470,29 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
+}
+
+export type UserListRelationFilter = {
+  every?: Prisma.UserWhereInput
+  some?: Prisma.UserWhereInput
+  none?: Prisma.UserWhereInput
+}
+
+export type UserOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type UserOrderByRelevanceInput = {
@@ -440,10 +503,10 @@ export type UserOrderByRelevanceInput = {
 
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
-  role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -452,15 +515,16 @@ export type UserCountOrderByAggregateInput = {
 
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
-  role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -469,10 +533,10 @@ export type UserMaxOrderByAggregateInput = {
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   username?: Prisma.SortOrder
   passwordHash?: Prisma.SortOrder
-  role?: Prisma.SortOrder
   status?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -481,12 +545,8 @@ export type UserMinOrderByAggregateInput = {
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  companyId?: Prisma.SortOrder
   employeeId?: Prisma.SortOrder
-}
-
-export type UserNullableScalarRelationFilter = {
-  is?: Prisma.UserWhereInput | null
-  isNot?: Prisma.UserWhereInput | null
 }
 
 export type UserScalarRelationFilter = {
@@ -494,36 +554,66 @@ export type UserScalarRelationFilter = {
   isNot?: Prisma.UserWhereInput
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type UserCreateNestedOneWithoutOwnedCompaniesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOwnedCompaniesInput, Prisma.UserUncheckedCreateWithoutOwnedCompaniesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedCompaniesInput
+  connect?: Prisma.UserWhereUniqueInput
 }
 
-export type EnumUserRoleFieldUpdateOperationsInput = {
-  set?: $Enums.UserRole
+export type UserCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCompanyInput, Prisma.UserUncheckedCreateWithoutCompanyInput> | Prisma.UserCreateWithoutCompanyInput[] | Prisma.UserUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCompanyInput | Prisma.UserCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.UserCreateManyCompanyInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUncheckedCreateNestedManyWithoutCompanyInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCompanyInput, Prisma.UserUncheckedCreateWithoutCompanyInput> | Prisma.UserCreateWithoutCompanyInput[] | Prisma.UserUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCompanyInput | Prisma.UserCreateOrConnectWithoutCompanyInput[]
+  createMany?: Prisma.UserCreateManyCompanyInputEnvelope
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateOneWithoutOwnedCompaniesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutOwnedCompaniesInput, Prisma.UserUncheckedCreateWithoutOwnedCompaniesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutOwnedCompaniesInput
+  upsert?: Prisma.UserUpsertWithoutOwnedCompaniesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutOwnedCompaniesInput, Prisma.UserUpdateWithoutOwnedCompaniesInput>, Prisma.UserUncheckedUpdateWithoutOwnedCompaniesInput>
+}
+
+export type UserUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCompanyInput, Prisma.UserUncheckedCreateWithoutCompanyInput> | Prisma.UserCreateWithoutCompanyInput[] | Prisma.UserUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCompanyInput | Prisma.UserCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutCompanyInput | Prisma.UserUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.UserCreateManyCompanyInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutCompanyInput | Prisma.UserUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutCompanyInput | Prisma.UserUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutCompanyNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCompanyInput, Prisma.UserUncheckedCreateWithoutCompanyInput> | Prisma.UserCreateWithoutCompanyInput[] | Prisma.UserUncheckedCreateWithoutCompanyInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCompanyInput | Prisma.UserCreateOrConnectWithoutCompanyInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutCompanyInput | Prisma.UserUpsertWithWhereUniqueWithoutCompanyInput[]
+  createMany?: Prisma.UserCreateManyCompanyInputEnvelope
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutCompanyInput | Prisma.UserUpdateWithWhereUniqueWithoutCompanyInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutCompanyInput | Prisma.UserUpdateManyWithWhereWithoutCompanyInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
 export type EnumUserStatusFieldUpdateOperationsInput = {
   set?: $Enums.UserStatus
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type UserCreateNestedOneWithoutEmployeeInput = {
@@ -556,6 +646,62 @@ export type UserUncheckedUpdateOneWithoutEmployeeNestedInput = {
   delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmployeeInput, Prisma.UserUpdateWithoutEmployeeInput>, Prisma.UserUncheckedUpdateWithoutEmployeeInput>
+}
+
+export type UserCreateNestedOneWithoutUserRolesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserRolesInput, Prisma.UserUncheckedCreateWithoutUserRolesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserRolesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUserRolesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserRolesInput, Prisma.UserUncheckedCreateWithoutUserRolesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserRolesInput
+  upsert?: Prisma.UserUpsertWithoutUserRolesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserRolesInput, Prisma.UserUpdateWithoutUserRolesInput>, Prisma.UserUncheckedUpdateWithoutUserRolesInput>
+}
+
+export type UserCreateNestedOneWithoutUserPermissionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserPermissionsInput, Prisma.UserUncheckedCreateWithoutUserPermissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserPermissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUserPermissionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUserPermissionsInput, Prisma.UserUncheckedCreateWithoutUserPermissionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserPermissionsInput
+  upsert?: Prisma.UserUpsertWithoutUserPermissionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserPermissionsInput, Prisma.UserUpdateWithoutUserPermissionsInput>, Prisma.UserUncheckedUpdateWithoutUserPermissionsInput>
+}
+
+export type UserCreateNestedOneWithoutDelegatedFromInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDelegatedFromInput, Prisma.UserUncheckedCreateWithoutDelegatedFromInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDelegatedFromInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutDelegatedToInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDelegatedToInput, Prisma.UserUncheckedCreateWithoutDelegatedToInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDelegatedToInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDelegatedFromNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDelegatedFromInput, Prisma.UserUncheckedCreateWithoutDelegatedFromInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDelegatedFromInput
+  upsert?: Prisma.UserUpsertWithoutDelegatedFromInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDelegatedFromInput, Prisma.UserUpdateWithoutDelegatedFromInput>, Prisma.UserUncheckedUpdateWithoutDelegatedFromInput>
+}
+
+export type UserUpdateOneRequiredWithoutDelegatedToNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDelegatedToInput, Prisma.UserUncheckedCreateWithoutDelegatedToInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDelegatedToInput
+  upsert?: Prisma.UserUpsertWithoutDelegatedToInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDelegatedToInput, Prisma.UserUpdateWithoutDelegatedToInput>, Prisma.UserUncheckedUpdateWithoutDelegatedToInput>
 }
 
 export type UserCreateNestedOneWithoutCreatedLeaveRequestsInput = {
@@ -620,49 +766,263 @@ export type UserUpdateOneWithoutExceptionApprovalsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExceptionApprovalsInput, Prisma.UserUpdateWithoutExceptionApprovalsInput>, Prisma.UserUncheckedUpdateWithoutExceptionApprovalsInput>
 }
 
-export type UserCreateNestedOneWithoutUserPermissionsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutUserPermissionsInput, Prisma.UserUncheckedCreateWithoutUserPermissionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserPermissionsInput
+export type UserCreateNestedOneWithoutAuditLogsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditLogsInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutUserPermissionsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutUserPermissionsInput, Prisma.UserUncheckedCreateWithoutUserPermissionsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserPermissionsInput
-  upsert?: Prisma.UserUpsertWithoutUserPermissionsInput
+export type UserUpdateOneWithoutAuditLogsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAuditLogsInput
+  upsert?: Prisma.UserUpsertWithoutAuditLogsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserPermissionsInput, Prisma.UserUpdateWithoutUserPermissionsInput>, Prisma.UserUncheckedUpdateWithoutUserPermissionsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAuditLogsInput, Prisma.UserUpdateWithoutAuditLogsInput>, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type UserCreateNestedOneWithoutMigrationJobsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMigrationJobsInput, Prisma.UserUncheckedCreateWithoutMigrationJobsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMigrationJobsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMigrationJobsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMigrationJobsInput, Prisma.UserUncheckedCreateWithoutMigrationJobsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMigrationJobsInput
+  upsert?: Prisma.UserUpsertWithoutMigrationJobsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMigrationJobsInput, Prisma.UserUpdateWithoutMigrationJobsInput>, Prisma.UserUncheckedUpdateWithoutMigrationJobsInput>
+}
+
+export type UserCreateWithoutOwnedCompaniesInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutOwnedCompaniesInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutOwnedCompaniesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnedCompaniesInput, Prisma.UserUncheckedCreateWithoutOwnedCompaniesInput>
+}
+
+export type UserCreateWithoutCompanyInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutCompanyInput = {
+  id?: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutCompanyInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCompanyInput, Prisma.UserUncheckedCreateWithoutCompanyInput>
+}
+
+export type UserCreateManyCompanyInputEnvelope = {
+  data: Prisma.UserCreateManyCompanyInput | Prisma.UserCreateManyCompanyInput[]
+  skipDuplicates?: boolean
+}
+
+export type UserUpsertWithoutOwnedCompaniesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOwnedCompaniesInput, Prisma.UserUncheckedUpdateWithoutOwnedCompaniesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnedCompaniesInput, Prisma.UserUncheckedCreateWithoutOwnedCompaniesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutOwnedCompaniesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOwnedCompaniesInput, Prisma.UserUncheckedUpdateWithoutOwnedCompaniesInput>
+}
+
+export type UserUpdateWithoutOwnedCompaniesInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOwnedCompaniesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUpsertWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCompanyInput, Prisma.UserUncheckedUpdateWithoutCompanyInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCompanyInput, Prisma.UserUncheckedCreateWithoutCompanyInput>
+}
+
+export type UserUpdateWithWhereUniqueWithoutCompanyInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCompanyInput, Prisma.UserUncheckedUpdateWithoutCompanyInput>
+}
+
+export type UserUpdateManyWithWhereWithoutCompanyInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutCompanyInput>
+}
+
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.IntFilter<"User"> | number
+  companyId?: Prisma.IntFilter<"User"> | number
+  name?: Prisma.StringFilter<"User"> | string
+  username?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringFilter<"User"> | string
+  status?: Prisma.EnumUserStatusFilter<"User"> | $Enums.UserStatus
+  employeeId?: Prisma.IntNullableFilter<"User"> | number | null
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
 
 export type UserCreateWithoutEmployeeInput = {
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
   exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutEmployeeInput = {
   id?: number
+  companyId: number
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
   exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutEmployeeInput = {
@@ -685,374 +1045,188 @@ export type UserUpdateWithoutEmployeeInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
   exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmployeeInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
   exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
-export type UserCreateWithoutCreatedLeaveRequestsInput = {
+export type UserCreateWithoutUserRolesInput = {
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
-  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
-  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
-  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
   userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutCreatedLeaveRequestsInput = {
-  id?: number
-  name: string
-  username: string
-  passwordHash: string
-  role: $Enums.UserRole
-  status?: $Enums.UserStatus
-  employeeId?: number | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
-  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
-  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutCreatedLeaveRequestsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedLeaveRequestsInput>
-}
-
-export type UserUpsertWithoutCreatedLeaveRequestsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedLeaveRequestsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedLeaveRequestsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutCreatedLeaveRequestsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedLeaveRequestsInput>
-}
-
-export type UserUpdateWithoutCreatedLeaveRequestsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
-  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
-  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
-  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutCreatedLeaveRequestsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
-  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
-  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserCreateWithoutManagementApprovalsInput = {
-  name: string
-  username: string
-  passwordHash: string
-  role: $Enums.UserRole
-  status?: $Enums.UserStatus
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
-  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
-  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
-  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutManagementApprovalsInput = {
-  id?: number
-  name: string
-  username: string
-  passwordHash: string
-  role: $Enums.UserRole
-  status?: $Enums.UserStatus
-  employeeId?: number | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
-  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
-  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutManagementApprovalsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutManagementApprovalsInput, Prisma.UserUncheckedCreateWithoutManagementApprovalsInput>
-}
-
-export type UserCreateWithoutOwnerApprovalsInput = {
-  name: string
-  username: string
-  passwordHash: string
-  role: $Enums.UserRole
-  status?: $Enums.UserStatus
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
-  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
-  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
-  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
-}
-
-export type UserUncheckedCreateWithoutOwnerApprovalsInput = {
-  id?: number
-  name: string
-  username: string
-  passwordHash: string
-  role: $Enums.UserRole
-  status?: $Enums.UserStatus
-  employeeId?: number | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
-  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
-  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
-  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
-}
-
-export type UserCreateOrConnectWithoutOwnerApprovalsInput = {
-  where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutOwnerApprovalsInput, Prisma.UserUncheckedCreateWithoutOwnerApprovalsInput>
-}
-
-export type UserCreateWithoutExceptionApprovalsInput = {
-  name: string
-  username: string
-  passwordHash: string
-  role: $Enums.UserRole
-  status?: $Enums.UserStatus
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
-  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
 }
 
-export type UserUncheckedCreateWithoutExceptionApprovalsInput = {
+export type UserUncheckedCreateWithoutUserRolesInput = {
   id?: number
+  companyId: number
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   employeeId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
-  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
-export type UserCreateOrConnectWithoutExceptionApprovalsInput = {
+export type UserCreateOrConnectWithoutUserRolesInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutExceptionApprovalsInput, Prisma.UserUncheckedCreateWithoutExceptionApprovalsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserRolesInput, Prisma.UserUncheckedCreateWithoutUserRolesInput>
 }
 
-export type UserUpsertWithoutManagementApprovalsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutManagementApprovalsInput, Prisma.UserUncheckedUpdateWithoutManagementApprovalsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutManagementApprovalsInput, Prisma.UserUncheckedCreateWithoutManagementApprovalsInput>
+export type UserUpsertWithoutUserRolesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUserRolesInput, Prisma.UserUncheckedUpdateWithoutUserRolesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUserRolesInput, Prisma.UserUncheckedCreateWithoutUserRolesInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutManagementApprovalsInput = {
+export type UserUpdateToOneWithWhereWithoutUserRolesInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutManagementApprovalsInput, Prisma.UserUncheckedUpdateWithoutManagementApprovalsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUserRolesInput, Prisma.UserUncheckedUpdateWithoutUserRolesInput>
 }
 
-export type UserUpdateWithoutManagementApprovalsInput = {
+export type UserUpdateWithoutUserRolesInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
-  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
-  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
-  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
   userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutManagementApprovalsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
-  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
-  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserUpsertWithoutOwnerApprovalsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutOwnerApprovalsInput, Prisma.UserUncheckedUpdateWithoutOwnerApprovalsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutOwnerApprovalsInput, Prisma.UserUncheckedCreateWithoutOwnerApprovalsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutOwnerApprovalsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutOwnerApprovalsInput, Prisma.UserUncheckedUpdateWithoutOwnerApprovalsInput>
-}
-
-export type UserUpdateWithoutOwnerApprovalsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
-  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
-  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
-  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
-}
-
-export type UserUncheckedUpdateWithoutOwnerApprovalsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
-  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
-  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
-}
-
-export type UserUpsertWithoutExceptionApprovalsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutExceptionApprovalsInput, Prisma.UserUncheckedUpdateWithoutExceptionApprovalsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutExceptionApprovalsInput, Prisma.UserUncheckedCreateWithoutExceptionApprovalsInput>
-  where?: Prisma.UserWhereInput
-}
-
-export type UserUpdateToOneWithWhereWithoutExceptionApprovalsInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutExceptionApprovalsInput, Prisma.UserUncheckedUpdateWithoutExceptionApprovalsInput>
-}
-
-export type UserUpdateWithoutExceptionApprovalsInput = {
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
-  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
 }
 
-export type UserUncheckedUpdateWithoutExceptionApprovalsInput = {
+export type UserUncheckedUpdateWithoutUserRolesInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
-  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutUserPermissionsInput = {
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
   employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
   exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutUserPermissionsInput = {
   id?: number
+  companyId: number
   name: string
   username: string
   passwordHash: string
-  role: $Enums.UserRole
   status?: $Enums.UserStatus
   employeeId?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
   exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutUserPermissionsInput = {
@@ -1075,31 +1249,924 @@ export type UserUpdateWithoutUserPermissionsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
   employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
   exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserPermissionsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.StringFieldUpdateOperationsInput | string
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
   employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
   createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
   managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
   ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
   exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutDelegatedFromInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutDelegatedFromInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutDelegatedFromInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDelegatedFromInput, Prisma.UserUncheckedCreateWithoutDelegatedFromInput>
+}
+
+export type UserCreateWithoutDelegatedToInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutDelegatedToInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutDelegatedToInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDelegatedToInput, Prisma.UserUncheckedCreateWithoutDelegatedToInput>
+}
+
+export type UserUpsertWithoutDelegatedFromInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDelegatedFromInput, Prisma.UserUncheckedUpdateWithoutDelegatedFromInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDelegatedFromInput, Prisma.UserUncheckedCreateWithoutDelegatedFromInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDelegatedFromInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDelegatedFromInput, Prisma.UserUncheckedUpdateWithoutDelegatedFromInput>
+}
+
+export type UserUpdateWithoutDelegatedFromInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDelegatedFromInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUpsertWithoutDelegatedToInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDelegatedToInput, Prisma.UserUncheckedUpdateWithoutDelegatedToInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDelegatedToInput, Prisma.UserUncheckedCreateWithoutDelegatedToInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDelegatedToInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDelegatedToInput, Prisma.UserUncheckedUpdateWithoutDelegatedToInput>
+}
+
+export type UserUpdateWithoutDelegatedToInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDelegatedToInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutCreatedLeaveRequestsInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutCreatedLeaveRequestsInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutCreatedLeaveRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedLeaveRequestsInput>
+}
+
+export type UserUpsertWithoutCreatedLeaveRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedLeaveRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedCreateWithoutCreatedLeaveRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCreatedLeaveRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedLeaveRequestsInput, Prisma.UserUncheckedUpdateWithoutCreatedLeaveRequestsInput>
+}
+
+export type UserUpdateWithoutCreatedLeaveRequestsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCreatedLeaveRequestsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutManagementApprovalsInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutManagementApprovalsInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutManagementApprovalsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutManagementApprovalsInput, Prisma.UserUncheckedCreateWithoutManagementApprovalsInput>
+}
+
+export type UserCreateWithoutOwnerApprovalsInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutOwnerApprovalsInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutOwnerApprovalsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnerApprovalsInput, Prisma.UserUncheckedCreateWithoutOwnerApprovalsInput>
+}
+
+export type UserCreateWithoutExceptionApprovalsInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutExceptionApprovalsInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutExceptionApprovalsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutExceptionApprovalsInput, Prisma.UserUncheckedCreateWithoutExceptionApprovalsInput>
+}
+
+export type UserUpsertWithoutManagementApprovalsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutManagementApprovalsInput, Prisma.UserUncheckedUpdateWithoutManagementApprovalsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutManagementApprovalsInput, Prisma.UserUncheckedCreateWithoutManagementApprovalsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutManagementApprovalsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutManagementApprovalsInput, Prisma.UserUncheckedUpdateWithoutManagementApprovalsInput>
+}
+
+export type UserUpdateWithoutManagementApprovalsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutManagementApprovalsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUpsertWithoutOwnerApprovalsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutOwnerApprovalsInput, Prisma.UserUncheckedUpdateWithoutOwnerApprovalsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutOwnerApprovalsInput, Prisma.UserUncheckedCreateWithoutOwnerApprovalsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutOwnerApprovalsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutOwnerApprovalsInput, Prisma.UserUncheckedUpdateWithoutOwnerApprovalsInput>
+}
+
+export type UserUpdateWithoutOwnerApprovalsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutOwnerApprovalsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUpsertWithoutExceptionApprovalsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutExceptionApprovalsInput, Prisma.UserUncheckedUpdateWithoutExceptionApprovalsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutExceptionApprovalsInput, Prisma.UserUncheckedCreateWithoutExceptionApprovalsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutExceptionApprovalsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutExceptionApprovalsInput, Prisma.UserUncheckedUpdateWithoutExceptionApprovalsInput>
+}
+
+export type UserUpdateWithoutExceptionApprovalsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutExceptionApprovalsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutAuditLogsInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  migrationJobs?: Prisma.MigrationJobCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserUncheckedCreateWithoutAuditLogsInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  migrationJobs?: Prisma.MigrationJobUncheckedCreateNestedManyWithoutCreatedByInput
+}
+
+export type UserCreateOrConnectWithoutAuditLogsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+}
+
+export type UserUpsertWithoutAuditLogsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAuditLogsInput, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAuditLogsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAuditLogsInput, Prisma.UserUncheckedUpdateWithoutAuditLogsInput>
+}
+
+export type UserUpdateWithoutAuditLogsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAuditLogsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutMigrationJobsInput = {
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  company: Prisma.CompanyCreateNestedOneWithoutUsersInput
+  employee?: Prisma.EmployeeCreateNestedOneWithoutUserInput
+  ownedCompanies?: Prisma.CompanyCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMigrationJobsInput = {
+  id?: number
+  companyId: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedCreateNestedManyWithoutOwnerUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  userPermissions?: Prisma.UserPermissionUncheckedCreateNestedManyWithoutUserInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegatorUserInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedCreateNestedManyWithoutDelegateUserInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedCreateNestedManyWithoutCreatedByInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutManagementApprovedByInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutOwnerApprovedByInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedCreateNestedManyWithoutExceptionApprovedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMigrationJobsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMigrationJobsInput, Prisma.UserUncheckedCreateWithoutMigrationJobsInput>
+}
+
+export type UserUpsertWithoutMigrationJobsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMigrationJobsInput, Prisma.UserUncheckedUpdateWithoutMigrationJobsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMigrationJobsInput, Prisma.UserUncheckedCreateWithoutMigrationJobsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMigrationJobsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMigrationJobsInput, Prisma.UserUncheckedUpdateWithoutMigrationJobsInput>
+}
+
+export type UserUpdateWithoutMigrationJobsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMigrationJobsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  companyId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateManyCompanyInput = {
+  id?: number
+  name: string
+  username: string
+  passwordHash: string
+  status?: $Enums.UserStatus
+  employeeId?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserUpdateWithoutCompanyInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  employee?: Prisma.EmployeeUpdateOneWithoutUserNestedInput
+  ownedCompanies?: Prisma.CompanyUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ownedCompanies?: Prisma.CompanyUncheckedUpdateManyWithoutOwnerUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  userPermissions?: Prisma.UserPermissionUncheckedUpdateManyWithoutUserNestedInput
+  delegatedFrom?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegatorUserNestedInput
+  delegatedTo?: Prisma.PermissionDelegationUncheckedUpdateManyWithoutDelegateUserNestedInput
+  createdLeaveRequests?: Prisma.LeaveRequestUncheckedUpdateManyWithoutCreatedByNestedInput
+  managementApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutManagementApprovedByNestedInput
+  ownerApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutOwnerApprovedByNestedInput
+  exceptionApprovals?: Prisma.LeaveApprovalUncheckedUpdateManyWithoutExceptionApprovedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  migrationJobs?: Prisma.MigrationJobUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutCompanyInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+  employeeId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -1108,19 +2175,31 @@ export type UserUncheckedUpdateWithoutUserPermissionsInput = {
  */
 
 export type UserCountOutputType = {
+  ownedCompanies: number
+  userRoles: number
+  userPermissions: number
+  delegatedFrom: number
+  delegatedTo: number
   createdLeaveRequests: number
   managementApprovals: number
   ownerApprovals: number
   exceptionApprovals: number
-  userPermissions: number
+  auditLogs: number
+  migrationJobs: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ownedCompanies?: boolean | UserCountOutputTypeCountOwnedCompaniesArgs
+  userRoles?: boolean | UserCountOutputTypeCountUserRolesArgs
+  userPermissions?: boolean | UserCountOutputTypeCountUserPermissionsArgs
+  delegatedFrom?: boolean | UserCountOutputTypeCountDelegatedFromArgs
+  delegatedTo?: boolean | UserCountOutputTypeCountDelegatedToArgs
   createdLeaveRequests?: boolean | UserCountOutputTypeCountCreatedLeaveRequestsArgs
   managementApprovals?: boolean | UserCountOutputTypeCountManagementApprovalsArgs
   ownerApprovals?: boolean | UserCountOutputTypeCountOwnerApprovalsArgs
   exceptionApprovals?: boolean | UserCountOutputTypeCountExceptionApprovalsArgs
-  userPermissions?: boolean | UserCountOutputTypeCountUserPermissionsArgs
+  auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+  migrationJobs?: boolean | UserCountOutputTypeCountMigrationJobsArgs
 }
 
 /**
@@ -1131,6 +2210,41 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
    * Select specific fields to fetch from the UserCountOutputType
    */
   select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountOwnedCompaniesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CompanyWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUserRolesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserRoleWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUserPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserPermissionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDelegatedFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PermissionDelegationWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDelegatedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PermissionDelegationWhereInput
 }
 
 /**
@@ -1164,27 +2278,41 @@ export type UserCountOutputTypeCountExceptionApprovalsArgs<ExtArgs extends runti
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountUserPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserPermissionWhereInput
+export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AuditLogWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMigrationJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MigrationJobWhereInput
 }
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  companyId?: boolean
   name?: boolean
   username?: boolean
   passwordHash?: boolean
-  role?: boolean
   status?: boolean
   employeeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   employee?: boolean | Prisma.User$employeeArgs<ExtArgs>
+  ownedCompanies?: boolean | Prisma.User$ownedCompaniesArgs<ExtArgs>
+  userRoles?: boolean | Prisma.User$userRolesArgs<ExtArgs>
+  userPermissions?: boolean | Prisma.User$userPermissionsArgs<ExtArgs>
+  delegatedFrom?: boolean | Prisma.User$delegatedFromArgs<ExtArgs>
+  delegatedTo?: boolean | Prisma.User$delegatedToArgs<ExtArgs>
   createdLeaveRequests?: boolean | Prisma.User$createdLeaveRequestsArgs<ExtArgs>
   managementApprovals?: boolean | Prisma.User$managementApprovalsArgs<ExtArgs>
   ownerApprovals?: boolean | Prisma.User$ownerApprovalsArgs<ExtArgs>
   exceptionApprovals?: boolean | Prisma.User$exceptionApprovalsArgs<ExtArgs>
-  userPermissions?: boolean | Prisma.User$userPermissionsArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  migrationJobs?: boolean | Prisma.User$migrationJobsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1192,43 +2320,57 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type UserSelectScalar = {
   id?: boolean
+  companyId?: boolean
   name?: boolean
   username?: boolean
   passwordHash?: boolean
-  role?: boolean
   status?: boolean
   employeeId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "username" | "passwordHash" | "role" | "status" | "employeeId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "name" | "username" | "passwordHash" | "status" | "employeeId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   employee?: boolean | Prisma.User$employeeArgs<ExtArgs>
+  ownedCompanies?: boolean | Prisma.User$ownedCompaniesArgs<ExtArgs>
+  userRoles?: boolean | Prisma.User$userRolesArgs<ExtArgs>
+  userPermissions?: boolean | Prisma.User$userPermissionsArgs<ExtArgs>
+  delegatedFrom?: boolean | Prisma.User$delegatedFromArgs<ExtArgs>
+  delegatedTo?: boolean | Prisma.User$delegatedToArgs<ExtArgs>
   createdLeaveRequests?: boolean | Prisma.User$createdLeaveRequestsArgs<ExtArgs>
   managementApprovals?: boolean | Prisma.User$managementApprovalsArgs<ExtArgs>
   ownerApprovals?: boolean | Prisma.User$ownerApprovalsArgs<ExtArgs>
   exceptionApprovals?: boolean | Prisma.User$exceptionApprovalsArgs<ExtArgs>
-  userPermissions?: boolean | Prisma.User$userPermissionsArgs<ExtArgs>
+  auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
+  migrationJobs?: boolean | Prisma.User$migrationJobsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
+    company: Prisma.$CompanyPayload<ExtArgs>
     employee: Prisma.$EmployeePayload<ExtArgs> | null
+    ownedCompanies: Prisma.$CompanyPayload<ExtArgs>[]
+    userRoles: Prisma.$UserRolePayload<ExtArgs>[]
+    userPermissions: Prisma.$UserPermissionPayload<ExtArgs>[]
+    delegatedFrom: Prisma.$PermissionDelegationPayload<ExtArgs>[]
+    delegatedTo: Prisma.$PermissionDelegationPayload<ExtArgs>[]
     createdLeaveRequests: Prisma.$LeaveRequestPayload<ExtArgs>[]
     managementApprovals: Prisma.$LeaveApprovalPayload<ExtArgs>[]
     ownerApprovals: Prisma.$LeaveApprovalPayload<ExtArgs>[]
     exceptionApprovals: Prisma.$LeaveApprovalPayload<ExtArgs>[]
-    userPermissions: Prisma.$UserPermissionPayload<ExtArgs>[]
+    auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+    migrationJobs: Prisma.$MigrationJobPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
+    companyId: number
     name: string
     username: string
     passwordHash: string
-    role: $Enums.UserRole
     status: $Enums.UserStatus
     employeeId: number | null
     createdAt: Date
@@ -1573,12 +2715,19 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  company<T extends Prisma.CompanyDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CompanyDefaultArgs<ExtArgs>>): Prisma.Prisma__CompanyClient<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   employee<T extends Prisma.User$employeeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$employeeArgs<ExtArgs>>): Prisma.Prisma__EmployeeClient<runtime.Types.Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  ownedCompanies<T extends Prisma.User$ownedCompaniesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownedCompaniesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userRoles<T extends Prisma.User$userRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  userPermissions<T extends Prisma.User$userPermissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  delegatedFrom<T extends Prisma.User$delegatedFromArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$delegatedFromArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PermissionDelegationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  delegatedTo<T extends Prisma.User$delegatedToArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$delegatedToArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PermissionDelegationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdLeaveRequests<T extends Prisma.User$createdLeaveRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdLeaveRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   managementApprovals<T extends Prisma.User$managementApprovalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$managementApprovalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   ownerApprovals<T extends Prisma.User$ownerApprovalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ownerApprovalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   exceptionApprovals<T extends Prisma.User$exceptionApprovalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$exceptionApprovalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userPermissions<T extends Prisma.User$userPermissionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userPermissionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  migrationJobs<T extends Prisma.User$migrationJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$migrationJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MigrationJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1609,10 +2758,10 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
+  readonly companyId: Prisma.FieldRef<"User", 'Int'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly username: Prisma.FieldRef<"User", 'String'>
   readonly passwordHash: Prisma.FieldRef<"User", 'String'>
-  readonly role: Prisma.FieldRef<"User", 'UserRole'>
   readonly status: Prisma.FieldRef<"User", 'UserStatus'>
   readonly employeeId: Prisma.FieldRef<"User", 'Int'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
@@ -1984,6 +3133,126 @@ export type User$employeeArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
+ * User.ownedCompanies
+ */
+export type User$ownedCompaniesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyInclude<ExtArgs> | null
+  where?: Prisma.CompanyWhereInput
+  orderBy?: Prisma.CompanyOrderByWithRelationInput | Prisma.CompanyOrderByWithRelationInput[]
+  cursor?: Prisma.CompanyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CompanyScalarFieldEnum | Prisma.CompanyScalarFieldEnum[]
+}
+
+/**
+ * User.userRoles
+ */
+export type User$userRolesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserRole
+   */
+  select?: Prisma.UserRoleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserRole
+   */
+  omit?: Prisma.UserRoleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserRoleInclude<ExtArgs> | null
+  where?: Prisma.UserRoleWhereInput
+  orderBy?: Prisma.UserRoleOrderByWithRelationInput | Prisma.UserRoleOrderByWithRelationInput[]
+  cursor?: Prisma.UserRoleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserRoleScalarFieldEnum | Prisma.UserRoleScalarFieldEnum[]
+}
+
+/**
+ * User.userPermissions
+ */
+export type User$userPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserPermission
+   */
+  select?: Prisma.UserPermissionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserPermission
+   */
+  omit?: Prisma.UserPermissionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserPermissionInclude<ExtArgs> | null
+  where?: Prisma.UserPermissionWhereInput
+  orderBy?: Prisma.UserPermissionOrderByWithRelationInput | Prisma.UserPermissionOrderByWithRelationInput[]
+  cursor?: Prisma.UserPermissionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserPermissionScalarFieldEnum | Prisma.UserPermissionScalarFieldEnum[]
+}
+
+/**
+ * User.delegatedFrom
+ */
+export type User$delegatedFromArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PermissionDelegation
+   */
+  select?: Prisma.PermissionDelegationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PermissionDelegation
+   */
+  omit?: Prisma.PermissionDelegationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PermissionDelegationInclude<ExtArgs> | null
+  where?: Prisma.PermissionDelegationWhereInput
+  orderBy?: Prisma.PermissionDelegationOrderByWithRelationInput | Prisma.PermissionDelegationOrderByWithRelationInput[]
+  cursor?: Prisma.PermissionDelegationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PermissionDelegationScalarFieldEnum | Prisma.PermissionDelegationScalarFieldEnum[]
+}
+
+/**
+ * User.delegatedTo
+ */
+export type User$delegatedToArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PermissionDelegation
+   */
+  select?: Prisma.PermissionDelegationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PermissionDelegation
+   */
+  omit?: Prisma.PermissionDelegationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PermissionDelegationInclude<ExtArgs> | null
+  where?: Prisma.PermissionDelegationWhereInput
+  orderBy?: Prisma.PermissionDelegationOrderByWithRelationInput | Prisma.PermissionDelegationOrderByWithRelationInput[]
+  cursor?: Prisma.PermissionDelegationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PermissionDelegationScalarFieldEnum | Prisma.PermissionDelegationScalarFieldEnum[]
+}
+
+/**
  * User.createdLeaveRequests
  */
 export type User$createdLeaveRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2080,27 +3349,51 @@ export type User$exceptionApprovalsArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
- * User.userPermissions
+ * User.auditLogs
  */
-export type User$userPermissionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$auditLogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the UserPermission
+   * Select specific fields to fetch from the AuditLog
    */
-  select?: Prisma.UserPermissionSelect<ExtArgs> | null
+  select?: Prisma.AuditLogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the UserPermission
+   * Omit specific fields from the AuditLog
    */
-  omit?: Prisma.UserPermissionOmit<ExtArgs> | null
+  omit?: Prisma.AuditLogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserPermissionInclude<ExtArgs> | null
-  where?: Prisma.UserPermissionWhereInput
-  orderBy?: Prisma.UserPermissionOrderByWithRelationInput | Prisma.UserPermissionOrderByWithRelationInput[]
-  cursor?: Prisma.UserPermissionWhereUniqueInput
+  include?: Prisma.AuditLogInclude<ExtArgs> | null
+  where?: Prisma.AuditLogWhereInput
+  orderBy?: Prisma.AuditLogOrderByWithRelationInput | Prisma.AuditLogOrderByWithRelationInput[]
+  cursor?: Prisma.AuditLogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UserPermissionScalarFieldEnum | Prisma.UserPermissionScalarFieldEnum[]
+  distinct?: Prisma.AuditLogScalarFieldEnum | Prisma.AuditLogScalarFieldEnum[]
+}
+
+/**
+ * User.migrationJobs
+ */
+export type User$migrationJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MigrationJob
+   */
+  select?: Prisma.MigrationJobSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MigrationJob
+   */
+  omit?: Prisma.MigrationJobOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MigrationJobInclude<ExtArgs> | null
+  where?: Prisma.MigrationJobWhereInput
+  orderBy?: Prisma.MigrationJobOrderByWithRelationInput | Prisma.MigrationJobOrderByWithRelationInput[]
+  cursor?: Prisma.MigrationJobWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MigrationJobScalarFieldEnum | Prisma.MigrationJobScalarFieldEnum[]
 }
 
 /**

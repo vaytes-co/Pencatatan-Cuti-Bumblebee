@@ -51,15 +51,31 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Company: 'Company',
   User: 'User',
   Employee: 'Employee',
+  Department: 'Department',
+  Position: 'Position',
+  Role: 'Role',
+  UserRole: 'UserRole',
+  Permission: 'Permission',
+  RolePermission: 'RolePermission',
+  UserPermission: 'UserPermission',
+  PermissionDelegation: 'PermissionDelegation',
+  Module: 'Module',
+  CompanyModule: 'CompanyModule',
   LeaveRequest: 'LeaveRequest',
   LeaveApproval: 'LeaveApproval',
   Holiday: 'Holiday',
   Setting: 'Setting',
-  Permission: 'Permission',
-  RolePermission: 'RolePermission',
-  UserPermission: 'UserPermission'
+  AuditLog: 'AuditLog',
+  MigrationJob: 'MigrationJob',
+  MigrationItem: 'MigrationItem',
+  MigrationError: 'MigrationError',
+  PlatformUser: 'PlatformUser',
+  PlatformRole: 'PlatformRole',
+  PlatformUserRole: 'PlatformUserRole',
+  PlatformRolePermission: 'PlatformRolePermission'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -78,12 +94,30 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const CompanyScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  legalName: 'legalName',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  timezone: 'timezone',
+  status: 'status',
+  ownerUserId: 'ownerUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyScalarFieldEnum = (typeof CompanyScalarFieldEnum)[keyof typeof CompanyScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
+  companyId: 'companyId',
   name: 'name',
   username: 'username',
   passwordHash: 'passwordHash',
-  role: 'role',
   status: 'status',
   employeeId: 'employeeId',
   createdAt: 'createdAt',
@@ -95,10 +129,11 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 export const EmployeeScalarFieldEnum = {
   id: 'id',
+  companyId: 'companyId',
   employeeCode: 'employeeCode',
   name: 'name',
-  position: 'position',
-  department: 'department',
+  departmentId: 'departmentId',
+  positionId: 'positionId',
   employmentDate: 'employmentDate',
   status: 'status',
   createdAt: 'createdAt',
@@ -108,8 +143,140 @@ export const EmployeeScalarFieldEnum = {
 export type EmployeeScalarFieldEnum = (typeof EmployeeScalarFieldEnum)[keyof typeof EmployeeScalarFieldEnum]
 
 
+export const DepartmentScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DepartmentScalarFieldEnum = (typeof DepartmentScalarFieldEnum)[keyof typeof DepartmentScalarFieldEnum]
+
+
+export const PositionScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  code: 'code',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PositionScalarFieldEnum = (typeof PositionScalarFieldEnum)[keyof typeof PositionScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  name: 'name',
+  description: 'description',
+  level: 'level',
+  isSystemRole: 'isSystemRole',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const UserRoleScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  roleId: 'roleId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserRoleScalarFieldEnum = (typeof UserRoleScalarFieldEnum)[keyof typeof UserRoleScalarFieldEnum]
+
+
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  module: 'module',
+  action: 'action',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const RolePermissionScalarFieldEnum = {
+  id: 'id',
+  roleId: 'roleId',
+  permissionId: 'permissionId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
+
+
+export const UserPermissionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  permissionId: 'permissionId',
+  effect: 'effect',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserPermissionScalarFieldEnum = (typeof UserPermissionScalarFieldEnum)[keyof typeof UserPermissionScalarFieldEnum]
+
+
+export const PermissionDelegationScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  delegatorUserId: 'delegatorUserId',
+  delegateUserId: 'delegateUserId',
+  permissionId: 'permissionId',
+  targetUserId: 'targetUserId',
+  targetRoleId: 'targetRoleId',
+  canDelegate: 'canDelegate',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PermissionDelegationScalarFieldEnum = (typeof PermissionDelegationScalarFieldEnum)[keyof typeof PermissionDelegationScalarFieldEnum]
+
+
+export const ModuleScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  isSystemModule: 'isSystemModule',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ModuleScalarFieldEnum = (typeof ModuleScalarFieldEnum)[keyof typeof ModuleScalarFieldEnum]
+
+
+export const CompanyModuleScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  moduleId: 'moduleId',
+  status: 'status',
+  settings: 'settings',
+  activatedAt: 'activatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyModuleScalarFieldEnum = (typeof CompanyModuleScalarFieldEnum)[keyof typeof CompanyModuleScalarFieldEnum]
+
+
 export const LeaveRequestScalarFieldEnum = {
   id: 'id',
+  companyId: 'companyId',
   employeeId: 'employeeId',
   startDate: 'startDate',
   endDate: 'endDate',
@@ -154,6 +321,7 @@ export type LeaveApprovalScalarFieldEnum = (typeof LeaveApprovalScalarFieldEnum)
 
 export const HolidayScalarFieldEnum = {
   id: 'id',
+  companyId: 'companyId',
   date: 'date',
   name: 'name',
   description: 'description',
@@ -167,6 +335,7 @@ export type HolidayScalarFieldEnum = (typeof HolidayScalarFieldEnum)[keyof typeo
 
 export const SettingScalarFieldEnum = {
   id: 'id',
+  companyId: 'companyId',
   key: 'key',
   value: 'value',
   description: 'description',
@@ -177,41 +346,117 @@ export const SettingScalarFieldEnum = {
 export type SettingScalarFieldEnum = (typeof SettingScalarFieldEnum)[keyof typeof SettingScalarFieldEnum]
 
 
-export const PermissionScalarFieldEnum = {
+export const AuditLogScalarFieldEnum = {
   id: 'id',
-  key: 'key',
+  companyId: 'companyId',
+  userId: 'userId',
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  beforeData: 'beforeData',
+  afterData: 'afterData',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const MigrationJobScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  createdById: 'createdById',
+  type: 'type',
+  fileName: 'fileName',
+  status: 'status',
+  mode: 'mode',
+  totalRows: 'totalRows',
+  createdRows: 'createdRows',
+  updatedRows: 'updatedRows',
+  skippedRows: 'skippedRows',
+  failedRows: 'failedRows',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MigrationJobScalarFieldEnum = (typeof MigrationJobScalarFieldEnum)[keyof typeof MigrationJobScalarFieldEnum]
+
+
+export const MigrationItemScalarFieldEnum = {
+  id: 'id',
+  migrationJobId: 'migrationJobId',
+  rowNumber: 'rowNumber',
+  action: 'action',
+  sourceIdentifier: 'sourceIdentifier',
+  targetIdentifier: 'targetIdentifier',
+  message: 'message',
+  createdAt: 'createdAt'
+} as const
+
+export type MigrationItemScalarFieldEnum = (typeof MigrationItemScalarFieldEnum)[keyof typeof MigrationItemScalarFieldEnum]
+
+
+export const MigrationErrorScalarFieldEnum = {
+  id: 'id',
+  migrationJobId: 'migrationJobId',
+  rowNumber: 'rowNumber',
+  field: 'field',
+  value: 'value',
+  message: 'message',
+  createdAt: 'createdAt'
+} as const
+
+export type MigrationErrorScalarFieldEnum = (typeof MigrationErrorScalarFieldEnum)[keyof typeof MigrationErrorScalarFieldEnum]
+
+
+export const PlatformUserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  username: 'username',
+  passwordHash: 'passwordHash',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PlatformUserScalarFieldEnum = (typeof PlatformUserScalarFieldEnum)[keyof typeof PlatformUserScalarFieldEnum]
+
+
+export const PlatformRoleScalarFieldEnum = {
+  id: 'id',
   name: 'name',
   description: 'description',
-  module: 'module',
-  action: 'action',
+  level: 'level',
+  isSystemRole: 'isSystemRole',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+export type PlatformRoleScalarFieldEnum = (typeof PlatformRoleScalarFieldEnum)[keyof typeof PlatformRoleScalarFieldEnum]
 
 
-export const RolePermissionScalarFieldEnum = {
+export const PlatformUserRoleScalarFieldEnum = {
   id: 'id',
-  role: 'role',
+  platformUserId: 'platformUserId',
+  platformRoleId: 'platformRoleId',
+  createdAt: 'createdAt'
+} as const
+
+export type PlatformUserRoleScalarFieldEnum = (typeof PlatformUserRoleScalarFieldEnum)[keyof typeof PlatformUserRoleScalarFieldEnum]
+
+
+export const PlatformRolePermissionScalarFieldEnum = {
+  id: 'id',
+  platformRoleId: 'platformRoleId',
   permissionId: 'permissionId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
-export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
-
-
-export const UserPermissionScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  permissionId: 'permissionId',
-  effect: 'effect',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type UserPermissionScalarFieldEnum = (typeof UserPermissionScalarFieldEnum)[keyof typeof UserPermissionScalarFieldEnum]
+export type PlatformRolePermissionScalarFieldEnum = (typeof PlatformRolePermissionScalarFieldEnum)[keyof typeof PlatformRolePermissionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -222,12 +467,33 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const CompanyOrderByRelevanceFieldEnum = {
+  code: 'code',
+  name: 'name',
+  legalName: 'legalName',
+  email: 'email',
+  phone: 'phone',
+  address: 'address',
+  timezone: 'timezone'
+} as const
+
+export type CompanyOrderByRelevanceFieldEnum = (typeof CompanyOrderByRelevanceFieldEnum)[keyof typeof CompanyOrderByRelevanceFieldEnum]
 
 
 export const UserOrderByRelevanceFieldEnum = {
@@ -241,12 +507,73 @@ export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnu
 
 export const EmployeeOrderByRelevanceFieldEnum = {
   employeeCode: 'employeeCode',
-  name: 'name',
-  position: 'position',
-  department: 'department'
+  name: 'name'
 } as const
 
 export type EmployeeOrderByRelevanceFieldEnum = (typeof EmployeeOrderByRelevanceFieldEnum)[keyof typeof EmployeeOrderByRelevanceFieldEnum]
+
+
+export const DepartmentOrderByRelevanceFieldEnum = {
+  code: 'code',
+  name: 'name',
+  description: 'description'
+} as const
+
+export type DepartmentOrderByRelevanceFieldEnum = (typeof DepartmentOrderByRelevanceFieldEnum)[keyof typeof DepartmentOrderByRelevanceFieldEnum]
+
+
+export const PositionOrderByRelevanceFieldEnum = {
+  code: 'code',
+  name: 'name',
+  description: 'description'
+} as const
+
+export type PositionOrderByRelevanceFieldEnum = (typeof PositionOrderByRelevanceFieldEnum)[keyof typeof PositionOrderByRelevanceFieldEnum]
+
+
+export const RoleOrderByRelevanceFieldEnum = {
+  name: 'name',
+  description: 'description'
+} as const
+
+export type RoleOrderByRelevanceFieldEnum = (typeof RoleOrderByRelevanceFieldEnum)[keyof typeof RoleOrderByRelevanceFieldEnum]
+
+
+export const PermissionOrderByRelevanceFieldEnum = {
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  module: 'module',
+  action: 'action'
+} as const
+
+export type PermissionOrderByRelevanceFieldEnum = (typeof PermissionOrderByRelevanceFieldEnum)[keyof typeof PermissionOrderByRelevanceFieldEnum]
+
+
+export const ModuleOrderByRelevanceFieldEnum = {
+  key: 'key',
+  name: 'name',
+  description: 'description'
+} as const
+
+export type ModuleOrderByRelevanceFieldEnum = (typeof ModuleOrderByRelevanceFieldEnum)[keyof typeof ModuleOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const LeaveRequestOrderByRelevanceFieldEnum = {
@@ -283,13 +610,56 @@ export const SettingOrderByRelevanceFieldEnum = {
 export type SettingOrderByRelevanceFieldEnum = (typeof SettingOrderByRelevanceFieldEnum)[keyof typeof SettingOrderByRelevanceFieldEnum]
 
 
-export const PermissionOrderByRelevanceFieldEnum = {
-  key: 'key',
-  name: 'name',
-  description: 'description',
-  module: 'module',
-  action: 'action'
+export const AuditLogOrderByRelevanceFieldEnum = {
+  action: 'action',
+  entity: 'entity',
+  entityId: 'entityId',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
 } as const
 
-export type PermissionOrderByRelevanceFieldEnum = (typeof PermissionOrderByRelevanceFieldEnum)[keyof typeof PermissionOrderByRelevanceFieldEnum]
+export type AuditLogOrderByRelevanceFieldEnum = (typeof AuditLogOrderByRelevanceFieldEnum)[keyof typeof AuditLogOrderByRelevanceFieldEnum]
+
+
+export const MigrationJobOrderByRelevanceFieldEnum = {
+  type: 'type',
+  fileName: 'fileName'
+} as const
+
+export type MigrationJobOrderByRelevanceFieldEnum = (typeof MigrationJobOrderByRelevanceFieldEnum)[keyof typeof MigrationJobOrderByRelevanceFieldEnum]
+
+
+export const MigrationItemOrderByRelevanceFieldEnum = {
+  sourceIdentifier: 'sourceIdentifier',
+  targetIdentifier: 'targetIdentifier',
+  message: 'message'
+} as const
+
+export type MigrationItemOrderByRelevanceFieldEnum = (typeof MigrationItemOrderByRelevanceFieldEnum)[keyof typeof MigrationItemOrderByRelevanceFieldEnum]
+
+
+export const MigrationErrorOrderByRelevanceFieldEnum = {
+  field: 'field',
+  value: 'value',
+  message: 'message'
+} as const
+
+export type MigrationErrorOrderByRelevanceFieldEnum = (typeof MigrationErrorOrderByRelevanceFieldEnum)[keyof typeof MigrationErrorOrderByRelevanceFieldEnum]
+
+
+export const PlatformUserOrderByRelevanceFieldEnum = {
+  name: 'name',
+  username: 'username',
+  passwordHash: 'passwordHash'
+} as const
+
+export type PlatformUserOrderByRelevanceFieldEnum = (typeof PlatformUserOrderByRelevanceFieldEnum)[keyof typeof PlatformUserOrderByRelevanceFieldEnum]
+
+
+export const PlatformRoleOrderByRelevanceFieldEnum = {
+  name: 'name',
+  description: 'description'
+} as const
+
+export type PlatformRoleOrderByRelevanceFieldEnum = (typeof PlatformRoleOrderByRelevanceFieldEnum)[keyof typeof PlatformRoleOrderByRelevanceFieldEnum]
 

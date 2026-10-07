@@ -28,17 +28,19 @@ export type AggregateRolePermission = {
 
 export type RolePermissionAvgAggregateOutputType = {
   id: number | null
+  roleId: number | null
   permissionId: number | null
 }
 
 export type RolePermissionSumAggregateOutputType = {
   id: number | null
+  roleId: number | null
   permissionId: number | null
 }
 
 export type RolePermissionMinAggregateOutputType = {
   id: number | null
-  role: $Enums.UserRole | null
+  roleId: number | null
   permissionId: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -46,7 +48,7 @@ export type RolePermissionMinAggregateOutputType = {
 
 export type RolePermissionMaxAggregateOutputType = {
   id: number | null
-  role: $Enums.UserRole | null
+  roleId: number | null
   permissionId: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -54,7 +56,7 @@ export type RolePermissionMaxAggregateOutputType = {
 
 export type RolePermissionCountAggregateOutputType = {
   id: number
-  role: number
+  roleId: number
   permissionId: number
   createdAt: number
   updatedAt: number
@@ -64,17 +66,19 @@ export type RolePermissionCountAggregateOutputType = {
 
 export type RolePermissionAvgAggregateInputType = {
   id?: true
+  roleId?: true
   permissionId?: true
 }
 
 export type RolePermissionSumAggregateInputType = {
   id?: true
+  roleId?: true
   permissionId?: true
 }
 
 export type RolePermissionMinAggregateInputType = {
   id?: true
-  role?: true
+  roleId?: true
   permissionId?: true
   createdAt?: true
   updatedAt?: true
@@ -82,7 +86,7 @@ export type RolePermissionMinAggregateInputType = {
 
 export type RolePermissionMaxAggregateInputType = {
   id?: true
-  role?: true
+  roleId?: true
   permissionId?: true
   createdAt?: true
   updatedAt?: true
@@ -90,7 +94,7 @@ export type RolePermissionMaxAggregateInputType = {
 
 export type RolePermissionCountAggregateInputType = {
   id?: true
-  role?: true
+  roleId?: true
   permissionId?: true
   createdAt?: true
   updatedAt?: true
@@ -185,7 +189,7 @@ export type RolePermissionGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 
 export type RolePermissionGroupByOutputType = {
   id: number
-  role: $Enums.UserRole
+  roleId: number
   permissionId: number
   createdAt: Date
   updatedAt: Date
@@ -216,38 +220,41 @@ export type RolePermissionWhereInput = {
   OR?: Prisma.RolePermissionWhereInput[]
   NOT?: Prisma.RolePermissionWhereInput | Prisma.RolePermissionWhereInput[]
   id?: Prisma.IntFilter<"RolePermission"> | number
-  role?: Prisma.EnumUserRoleFilter<"RolePermission"> | $Enums.UserRole
+  roleId?: Prisma.IntFilter<"RolePermission"> | number
   permissionId?: Prisma.IntFilter<"RolePermission"> | number
   createdAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
   permission?: Prisma.XOR<Prisma.PermissionScalarRelationFilter, Prisma.PermissionWhereInput>
 }
 
 export type RolePermissionOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   permissionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  role?: Prisma.RoleOrderByWithRelationInput
   permission?: Prisma.PermissionOrderByWithRelationInput
 }
 
 export type RolePermissionWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  role_permissionId?: Prisma.RolePermissionRolePermissionIdCompoundUniqueInput
+  roleId_permissionId?: Prisma.RolePermissionRoleIdPermissionIdCompoundUniqueInput
   AND?: Prisma.RolePermissionWhereInput | Prisma.RolePermissionWhereInput[]
   OR?: Prisma.RolePermissionWhereInput[]
   NOT?: Prisma.RolePermissionWhereInput | Prisma.RolePermissionWhereInput[]
-  role?: Prisma.EnumUserRoleFilter<"RolePermission"> | $Enums.UserRole
+  roleId?: Prisma.IntFilter<"RolePermission"> | number
   permissionId?: Prisma.IntFilter<"RolePermission"> | number
   createdAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
+  role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
   permission?: Prisma.XOR<Prisma.PermissionScalarRelationFilter, Prisma.PermissionWhereInput>
-}, "id" | "role_permissionId">
+}, "id" | "roleId_permissionId">
 
 export type RolePermissionOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   permissionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -263,37 +270,37 @@ export type RolePermissionScalarWhereWithAggregatesInput = {
   OR?: Prisma.RolePermissionScalarWhereWithAggregatesInput[]
   NOT?: Prisma.RolePermissionScalarWhereWithAggregatesInput | Prisma.RolePermissionScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"RolePermission"> | number
-  role?: Prisma.EnumUserRoleWithAggregatesFilter<"RolePermission"> | $Enums.UserRole
+  roleId?: Prisma.IntWithAggregatesFilter<"RolePermission"> | number
   permissionId?: Prisma.IntWithAggregatesFilter<"RolePermission"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"RolePermission"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"RolePermission"> | Date | string
 }
 
 export type RolePermissionCreateInput = {
-  role: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  role: Prisma.RoleCreateNestedOneWithoutRolePermissionsInput
   permission: Prisma.PermissionCreateNestedOneWithoutRolePermissionsInput
 }
 
 export type RolePermissionUncheckedCreateInput = {
   id?: number
-  role: $Enums.UserRole
+  roleId: number
   permissionId: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type RolePermissionUpdateInput = {
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.RoleUpdateOneRequiredWithoutRolePermissionsNestedInput
   permission?: Prisma.PermissionUpdateOneRequiredWithoutRolePermissionsNestedInput
 }
 
 export type RolePermissionUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  roleId?: Prisma.IntFieldUpdateOperationsInput | number
   permissionId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -301,21 +308,20 @@ export type RolePermissionUncheckedUpdateInput = {
 
 export type RolePermissionCreateManyInput = {
   id?: number
-  role: $Enums.UserRole
+  roleId: number
   permissionId: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type RolePermissionUpdateManyMutationInput = {
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RolePermissionUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  roleId?: Prisma.IntFieldUpdateOperationsInput | number
   permissionId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -331,14 +337,14 @@ export type RolePermissionOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
-export type RolePermissionRolePermissionIdCompoundUniqueInput = {
-  role: $Enums.UserRole
+export type RolePermissionRoleIdPermissionIdCompoundUniqueInput = {
+  roleId: number
   permissionId: number
 }
 
 export type RolePermissionCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   permissionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -346,12 +352,13 @@ export type RolePermissionCountOrderByAggregateInput = {
 
 export type RolePermissionAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   permissionId?: Prisma.SortOrder
 }
 
 export type RolePermissionMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   permissionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -359,7 +366,7 @@ export type RolePermissionMaxOrderByAggregateInput = {
 
 export type RolePermissionMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  role?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   permissionId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -367,7 +374,50 @@ export type RolePermissionMinOrderByAggregateInput = {
 
 export type RolePermissionSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  roleId?: Prisma.SortOrder
   permissionId?: Prisma.SortOrder
+}
+
+export type RolePermissionCreateNestedManyWithoutRoleInput = {
+  create?: Prisma.XOR<Prisma.RolePermissionCreateWithoutRoleInput, Prisma.RolePermissionUncheckedCreateWithoutRoleInput> | Prisma.RolePermissionCreateWithoutRoleInput[] | Prisma.RolePermissionUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.RolePermissionCreateOrConnectWithoutRoleInput | Prisma.RolePermissionCreateOrConnectWithoutRoleInput[]
+  createMany?: Prisma.RolePermissionCreateManyRoleInputEnvelope
+  connect?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+}
+
+export type RolePermissionUncheckedCreateNestedManyWithoutRoleInput = {
+  create?: Prisma.XOR<Prisma.RolePermissionCreateWithoutRoleInput, Prisma.RolePermissionUncheckedCreateWithoutRoleInput> | Prisma.RolePermissionCreateWithoutRoleInput[] | Prisma.RolePermissionUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.RolePermissionCreateOrConnectWithoutRoleInput | Prisma.RolePermissionCreateOrConnectWithoutRoleInput[]
+  createMany?: Prisma.RolePermissionCreateManyRoleInputEnvelope
+  connect?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+}
+
+export type RolePermissionUpdateManyWithoutRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.RolePermissionCreateWithoutRoleInput, Prisma.RolePermissionUncheckedCreateWithoutRoleInput> | Prisma.RolePermissionCreateWithoutRoleInput[] | Prisma.RolePermissionUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.RolePermissionCreateOrConnectWithoutRoleInput | Prisma.RolePermissionCreateOrConnectWithoutRoleInput[]
+  upsert?: Prisma.RolePermissionUpsertWithWhereUniqueWithoutRoleInput | Prisma.RolePermissionUpsertWithWhereUniqueWithoutRoleInput[]
+  createMany?: Prisma.RolePermissionCreateManyRoleInputEnvelope
+  set?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  disconnect?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  delete?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  connect?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  update?: Prisma.RolePermissionUpdateWithWhereUniqueWithoutRoleInput | Prisma.RolePermissionUpdateWithWhereUniqueWithoutRoleInput[]
+  updateMany?: Prisma.RolePermissionUpdateManyWithWhereWithoutRoleInput | Prisma.RolePermissionUpdateManyWithWhereWithoutRoleInput[]
+  deleteMany?: Prisma.RolePermissionScalarWhereInput | Prisma.RolePermissionScalarWhereInput[]
+}
+
+export type RolePermissionUncheckedUpdateManyWithoutRoleNestedInput = {
+  create?: Prisma.XOR<Prisma.RolePermissionCreateWithoutRoleInput, Prisma.RolePermissionUncheckedCreateWithoutRoleInput> | Prisma.RolePermissionCreateWithoutRoleInput[] | Prisma.RolePermissionUncheckedCreateWithoutRoleInput[]
+  connectOrCreate?: Prisma.RolePermissionCreateOrConnectWithoutRoleInput | Prisma.RolePermissionCreateOrConnectWithoutRoleInput[]
+  upsert?: Prisma.RolePermissionUpsertWithWhereUniqueWithoutRoleInput | Prisma.RolePermissionUpsertWithWhereUniqueWithoutRoleInput[]
+  createMany?: Prisma.RolePermissionCreateManyRoleInputEnvelope
+  set?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  disconnect?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  delete?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  connect?: Prisma.RolePermissionWhereUniqueInput | Prisma.RolePermissionWhereUniqueInput[]
+  update?: Prisma.RolePermissionUpdateWithWhereUniqueWithoutRoleInput | Prisma.RolePermissionUpdateWithWhereUniqueWithoutRoleInput[]
+  updateMany?: Prisma.RolePermissionUpdateManyWithWhereWithoutRoleInput | Prisma.RolePermissionUpdateManyWithWhereWithoutRoleInput[]
+  deleteMany?: Prisma.RolePermissionScalarWhereInput | Prisma.RolePermissionScalarWhereInput[]
 }
 
 export type RolePermissionCreateNestedManyWithoutPermissionInput = {
@@ -412,15 +462,65 @@ export type RolePermissionUncheckedUpdateManyWithoutPermissionNestedInput = {
   deleteMany?: Prisma.RolePermissionScalarWhereInput | Prisma.RolePermissionScalarWhereInput[]
 }
 
-export type RolePermissionCreateWithoutPermissionInput = {
-  role: $Enums.UserRole
+export type RolePermissionCreateWithoutRoleInput = {
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  permission: Prisma.PermissionCreateNestedOneWithoutRolePermissionsInput
+}
+
+export type RolePermissionUncheckedCreateWithoutRoleInput = {
+  id?: number
+  permissionId: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
+export type RolePermissionCreateOrConnectWithoutRoleInput = {
+  where: Prisma.RolePermissionWhereUniqueInput
+  create: Prisma.XOR<Prisma.RolePermissionCreateWithoutRoleInput, Prisma.RolePermissionUncheckedCreateWithoutRoleInput>
+}
+
+export type RolePermissionCreateManyRoleInputEnvelope = {
+  data: Prisma.RolePermissionCreateManyRoleInput | Prisma.RolePermissionCreateManyRoleInput[]
+  skipDuplicates?: boolean
+}
+
+export type RolePermissionUpsertWithWhereUniqueWithoutRoleInput = {
+  where: Prisma.RolePermissionWhereUniqueInput
+  update: Prisma.XOR<Prisma.RolePermissionUpdateWithoutRoleInput, Prisma.RolePermissionUncheckedUpdateWithoutRoleInput>
+  create: Prisma.XOR<Prisma.RolePermissionCreateWithoutRoleInput, Prisma.RolePermissionUncheckedCreateWithoutRoleInput>
+}
+
+export type RolePermissionUpdateWithWhereUniqueWithoutRoleInput = {
+  where: Prisma.RolePermissionWhereUniqueInput
+  data: Prisma.XOR<Prisma.RolePermissionUpdateWithoutRoleInput, Prisma.RolePermissionUncheckedUpdateWithoutRoleInput>
+}
+
+export type RolePermissionUpdateManyWithWhereWithoutRoleInput = {
+  where: Prisma.RolePermissionScalarWhereInput
+  data: Prisma.XOR<Prisma.RolePermissionUpdateManyMutationInput, Prisma.RolePermissionUncheckedUpdateManyWithoutRoleInput>
+}
+
+export type RolePermissionScalarWhereInput = {
+  AND?: Prisma.RolePermissionScalarWhereInput | Prisma.RolePermissionScalarWhereInput[]
+  OR?: Prisma.RolePermissionScalarWhereInput[]
+  NOT?: Prisma.RolePermissionScalarWhereInput | Prisma.RolePermissionScalarWhereInput[]
+  id?: Prisma.IntFilter<"RolePermission"> | number
+  roleId?: Prisma.IntFilter<"RolePermission"> | number
+  permissionId?: Prisma.IntFilter<"RolePermission"> | number
+  createdAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
+}
+
+export type RolePermissionCreateWithoutPermissionInput = {
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role: Prisma.RoleCreateNestedOneWithoutRolePermissionsInput
+}
+
 export type RolePermissionUncheckedCreateWithoutPermissionInput = {
   id?: number
-  role: $Enums.UserRole
+  roleId: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -451,40 +551,56 @@ export type RolePermissionUpdateManyWithWhereWithoutPermissionInput = {
   data: Prisma.XOR<Prisma.RolePermissionUpdateManyMutationInput, Prisma.RolePermissionUncheckedUpdateManyWithoutPermissionInput>
 }
 
-export type RolePermissionScalarWhereInput = {
-  AND?: Prisma.RolePermissionScalarWhereInput | Prisma.RolePermissionScalarWhereInput[]
-  OR?: Prisma.RolePermissionScalarWhereInput[]
-  NOT?: Prisma.RolePermissionScalarWhereInput | Prisma.RolePermissionScalarWhereInput[]
-  id?: Prisma.IntFilter<"RolePermission"> | number
-  role?: Prisma.EnumUserRoleFilter<"RolePermission"> | $Enums.UserRole
-  permissionId?: Prisma.IntFilter<"RolePermission"> | number
-  createdAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"RolePermission"> | Date | string
+export type RolePermissionCreateManyRoleInput = {
+  id?: number
+  permissionId: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type RolePermissionUpdateWithoutRoleInput = {
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  permission?: Prisma.PermissionUpdateOneRequiredWithoutRolePermissionsNestedInput
+}
+
+export type RolePermissionUncheckedUpdateWithoutRoleInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  permissionId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RolePermissionUncheckedUpdateManyWithoutRoleInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  permissionId?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RolePermissionCreateManyPermissionInput = {
   id?: number
-  role: $Enums.UserRole
+  roleId: number
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type RolePermissionUpdateWithoutPermissionInput = {
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.RoleUpdateOneRequiredWithoutRolePermissionsNestedInput
 }
 
 export type RolePermissionUncheckedUpdateWithoutPermissionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  roleId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type RolePermissionUncheckedUpdateManyWithoutPermissionInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  roleId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -493,10 +609,11 @@ export type RolePermissionUncheckedUpdateManyWithoutPermissionInput = {
 
 export type RolePermissionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  role?: boolean
+  roleId?: boolean
   permissionId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rolePermission"]>
 
@@ -504,25 +621,27 @@ export type RolePermissionSelect<ExtArgs extends runtime.Types.Extensions.Intern
 
 export type RolePermissionSelectScalar = {
   id?: boolean
-  role?: boolean
+  roleId?: boolean
   permissionId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type RolePermissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "role" | "permissionId" | "createdAt" | "updatedAt", ExtArgs["result"]["rolePermission"]>
+export type RolePermissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "roleId" | "permissionId" | "createdAt" | "updatedAt", ExtArgs["result"]["rolePermission"]>
 export type RolePermissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  role?: boolean | Prisma.RoleDefaultArgs<ExtArgs>
   permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
 }
 
 export type $RolePermissionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "RolePermission"
   objects: {
+    role: Prisma.$RolePayload<ExtArgs>
     permission: Prisma.$PermissionPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    role: $Enums.UserRole
+    roleId: number
     permissionId: number
     createdAt: Date
     updatedAt: Date
@@ -866,6 +985,7 @@ readonly fields: RolePermissionFieldRefs;
  */
 export interface Prisma__RolePermissionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  role<T extends Prisma.RoleDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RoleDefaultArgs<ExtArgs>>): Prisma.Prisma__RoleClient<runtime.Types.Result.GetResult<Prisma.$RolePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   permission<T extends Prisma.PermissionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PermissionDefaultArgs<ExtArgs>>): Prisma.Prisma__PermissionClient<runtime.Types.Result.GetResult<Prisma.$PermissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -897,7 +1017,7 @@ export interface Prisma__RolePermissionClient<T, Null = never, ExtArgs extends r
  */
 export interface RolePermissionFieldRefs {
   readonly id: Prisma.FieldRef<"RolePermission", 'Int'>
-  readonly role: Prisma.FieldRef<"RolePermission", 'UserRole'>
+  readonly roleId: Prisma.FieldRef<"RolePermission", 'Int'>
   readonly permissionId: Prisma.FieldRef<"RolePermission", 'Int'>
   readonly createdAt: Prisma.FieldRef<"RolePermission", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"RolePermission", 'DateTime'>

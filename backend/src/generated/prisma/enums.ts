@@ -9,15 +9,13 @@
 * 🟢 You can import this file directly.
 */
 
-export const UserRole = {
-  OWNER: 'OWNER',
-  HRD: 'HRD',
-  BM: 'BM',
-  ADMIN: 'ADMIN',
-  KARYAWAN: 'KARYAWAN'
+export const CompanyStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED'
 } as const
 
-export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+export type CompanyStatus = (typeof CompanyStatus)[keyof typeof CompanyStatus]
 
 
 export const UserStatus = {
@@ -30,10 +28,20 @@ export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
 
 export const EmployeeStatus = {
   ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE'
+  INACTIVE: 'INACTIVE',
+  RESIGNED: 'RESIGNED',
+  TERMINATED: 'TERMINATED'
 } as const
 
 export type EmployeeStatus = (typeof EmployeeStatus)[keyof typeof EmployeeStatus]
+
+
+export const PermissionEffect = {
+  ALLOW: 'ALLOW',
+  DENY: 'DENY'
+} as const
+
+export type PermissionEffect = (typeof PermissionEffect)[keyof typeof PermissionEffect]
 
 
 export const LeaveType = {
@@ -86,9 +94,48 @@ export const ExceptionStatus = {
 export type ExceptionStatus = (typeof ExceptionStatus)[keyof typeof ExceptionStatus]
 
 
-export const PermissionEffect = {
-  ALLOW: 'ALLOW',
-  DENY: 'DENY'
+export const ModuleStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE'
 } as const
 
-export type PermissionEffect = (typeof PermissionEffect)[keyof typeof PermissionEffect]
+export type ModuleStatus = (typeof ModuleStatus)[keyof typeof ModuleStatus]
+
+
+export const MigrationStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  COMPLETED_WITH_ERRORS: 'COMPLETED_WITH_ERRORS',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type MigrationStatus = (typeof MigrationStatus)[keyof typeof MigrationStatus]
+
+
+export const MigrationMode = {
+  CREATE_ONLY: 'CREATE_ONLY',
+  UPDATE_ONLY: 'UPDATE_ONLY',
+  UPSERT: 'UPSERT'
+} as const
+
+export type MigrationMode = (typeof MigrationMode)[keyof typeof MigrationMode]
+
+
+export const MigrationAction = {
+  CREATED: 'CREATED',
+  UPDATED: 'UPDATED',
+  SKIPPED: 'SKIPPED',
+  FAILED: 'FAILED'
+} as const
+
+export type MigrationAction = (typeof MigrationAction)[keyof typeof MigrationAction]
+
+
+export const PlatformUserStatus = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE'
+} as const
+
+export type PlatformUserStatus = (typeof PlatformUserStatus)[keyof typeof PlatformUserStatus]
