@@ -7,6 +7,13 @@ import bcrypt from 'bcrypt'
 
 import prisma from '../lib/db.js'
 import { PERMISSIONS } from '../config/permissions.js'
+import auditService from '../services/audit.service.js'
+
+type PlatformRequest = Request & {
+  user?: {
+    id: number
+  }
+}
 
 function normalizeString(
   value: unknown,
@@ -16,6 +23,39 @@ function normalizeString(
   }
 
   return value.trim()
+}
+
+function getPlatformActorId(
+  req: Request,
+): number {
+  const platformRequest =
+    req as PlatformRequest
+
+  if (
+    !platformRequest.user ||
+    !Number.isSafeInteger(
+      platformRequest.user.id,
+    ) ||
+    platformRequest.user.id <= 0
+  ) {
+    throw new Error(
+      'Platform actor tidak valid.',
+    )
+  }
+
+  return platformRequest.user.id
+}
+
+function getRequestIp(
+  req: Request,
+): string | null {
+  return req.ip || null
+}
+
+function getRequestUserAgent(
+  req: Request,
+): string | null {
+  return req.get('user-agent') || null
 }
 
 export async function createCompany(
@@ -238,20 +278,23 @@ export async function createCompany(
           await tx.userRole.create({
             data: {
               userId: owner.id,
-              roleId: ownerRole.id,
+              roleId:
+                ownerRole.id,
             },
           })
 
-          await tx.rolePermission.createMany({
-            data: permissions.map(
-              (permission) => ({
-                roleId:
-                  ownerRole.id,
-                permissionId:
-                  permission.id,
-              }),
-            ),
-          })
+          await tx.rolePermission.createMany(
+            {
+              data: permissions.map(
+                (permission) => ({
+                  roleId:
+                    ownerRole.id,
+                  permissionId:
+                    permission.id,
+                }),
+              ),
+            },
+          )
 
           const updatedCompany =
             await tx.company.update({
@@ -281,26 +324,58 @@ export async function createCompany(
           return {
             company:
               updatedCompany,
+
             owner: {
               id: owner.id,
               name: owner.name,
               username:
                 owner.username,
-              status: owner.status,
+              status:
+                owner.status,
             },
+
             role: {
               id: ownerRole.id,
-              name: ownerRole.name,
+              name:
+                ownerRole.name,
               level:
                 ownerRole.level,
               isSystemRole:
                 ownerRole.isSystemRole,
             },
+
             permissionCount:
               permissions.length,
           }
         },
       )
+
+    // ==========================================
+    // AUDIT LOG
+    // ==========================================
+
+    await auditService.log({
+      actorType: 'PLATFORM',
+      actorId:
+        getPlatformActorId(req),
+
+      companyId:
+        result.company.id,
+
+      action: 'CREATE',
+      entity: 'Company',
+      entityId:
+        result.company.id,
+
+      afterData:
+        result.company,
+
+      ipAddress:
+        getRequestIp(req),
+
+      userAgent:
+        getRequestUserAgent(req),
+    })
 
     return res.status(201).json({
       success: true,

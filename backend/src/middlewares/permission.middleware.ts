@@ -19,28 +19,35 @@ export function requirePermission(
     const authenticatedRequest =
       req as AuthenticatedRequest
 
-    const user =
-      authenticatedRequest.user
-
-    if (!user) {
-      return res.status(401).json({
+    if (
+      !authenticatedRequest.user
+    ) {
+      res.status(401).json({
         success: false,
         message:
-          'Silakan login terlebih dahulu.',
+          'Autentikasi diperlukan.',
       })
+
+      return
     }
 
-    const hasPermission =
-      user.permissions.includes(permission)
-
-    if (!hasPermission) {
-      return res.status(403).json({
+    if (
+      !authenticatedRequest.user.permissions.includes(
+        permission,
+      )
+    ) {
+      res.status(403).json({
         success: false,
         message:
           'Kamu tidak memiliki izin untuk melakukan tindakan ini.',
+        permission,
       })
+
+      return
     }
 
     next()
   }
 }
+
+export default requirePermission

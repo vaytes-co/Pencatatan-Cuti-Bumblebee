@@ -155,6 +155,46 @@ export const PERMISSIONS = [
     action: 'manage_permissions',
   },
 
+  {
+  key: 'roles.read',
+  name: 'Lihat Role',
+  description: 'Melihat daftar dan detail role perusahaan.',
+  module: 'roles',
+  action: 'read',
+},
+
+{
+  key: 'roles.create',
+  name: 'Tambah Role',
+  description: 'Membuat role perusahaan baru.',
+  module: 'roles',
+  action: 'create',
+},
+
+{
+  key: 'roles.update',
+  name: 'Edit Role',
+  description: 'Mengubah role perusahaan.',
+  module: 'roles',
+  action: 'update',
+},
+
+{
+  key: 'roles.delete',
+  name: 'Hapus Role',
+  description: 'Menghapus role perusahaan.',
+  module: 'roles',
+  action: 'delete',
+},
+
+{
+  key: 'roles.manage_permissions',
+  name: 'Kelola Permission Role',
+  description: 'Mengatur permission yang dimiliki sebuah role.',
+  module: 'roles',
+  action: 'manage_permissions',
+},
+
   // =====================================================
   // HOLIDAYS
   // =====================================================

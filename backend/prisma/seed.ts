@@ -567,6 +567,117 @@ async function main() {
   console.log('')
 
   // =======================================================
+// SYNC SYSTEM ROLE PERMISSIONS FOR ALL COMPANIES
+// =======================================================
+//
+// Permission baru harus ikut masuk ke system role pada
+// company yang sudah ada sebelumnya.
+//
+// Contoh:
+// - Company DEFAULT
+// - Company TEST-BLC
+// - Company TEST-AUDIT-01
+// - company lain yang dibuat nanti
+//
+// Kita hanya MENAMBAHKAN permission yang belum ada.
+// Permission lama tidak dihapus agar seed aman dijalankan
+// berulang kali.
+// =======================================================
+
+console.log(
+  '🔄 Sinkronisasi permission system role seluruh company...',
+)
+
+const allCompanies =
+  await prisma.company.findMany({
+    select: {
+      id: true,
+      name: true,
+    },
+  })
+
+for (const existingCompany of allCompanies) {
+  for (const defaultRole of DEFAULT_ROLES) {
+    const systemRole =
+      await prisma.role.findFirst({
+        where: {
+          companyId:
+            existingCompany.id,
+
+          name:
+            defaultRole.name,
+
+          isSystemRole: true,
+        },
+
+        select: {
+          id: true,
+          name: true,
+        },
+      })
+
+    // Kalau company tersebut belum mempunyai
+    // system role tertentu, jangan membuat role
+    // secara diam-diam di sini.
+    //
+    // Role system seharusnya dibuat melalui
+    // company creation flow.
+    if (!systemRole) {
+      continue
+    }
+
+    let addedPermissionCount = 0
+
+    for (
+      const permissionKey of
+        defaultRole.permissions
+    ) {
+      const permissionId =
+        permissionMap.get(
+          permissionKey,
+        )
+
+      if (!permissionId) {
+        throw new Error(
+          `Permission "${permissionKey}" belum terdaftar.`,
+        )
+      }
+
+      const existingRolePermission =
+        await prisma.rolePermission.findUnique({
+          where: {
+            roleId_permissionId: {
+              roleId:
+                systemRole.id,
+
+              permissionId,
+            },
+          },
+        })
+
+      if (!existingRolePermission) {
+        await prisma.rolePermission.create({
+          data: {
+            roleId:
+              systemRole.id,
+
+            permissionId,
+          },
+        })
+
+        addedPermissionCount++
+      }
+    }
+
+    console.log(
+      `   ✓ ${existingCompany.name} → ${systemRole.name}: +${addedPermissionCount} permission`,
+    )
+  }
+}
+
+console.log('')
+
+  // =======================================================
   // PLATFORM ROLES
   // =======================================================
 

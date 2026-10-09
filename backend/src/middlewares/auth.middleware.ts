@@ -7,6 +7,10 @@ import jwt from 'jsonwebtoken'
 
 import prisma from '../lib/db.js'
 
+import {
+  getAuthorizationContext,
+} from '../services/authorization.service.js'
+
 const COOKIE_NAME = 'hr_management_token'
 
 export interface AuthenticatedUser {
@@ -14,13 +18,18 @@ export interface AuthenticatedUser {
   companyId: number
   name: string
   username: string
+
   roles: {
     id: number
     name: string
     level: number
     isSystemRole: boolean
   }[]
+
   permissions: string[]
+
+  highestRoleLevel: number
+  isOwner: boolean
 }
 
 export interface AuthenticatedRequest
@@ -40,45 +49,14 @@ function getJwtSecret() {
   return jwtSecret
 }
 
-function buildPermissions(
-  user: NonNullable<
-    Awaited<ReturnType<typeof getUserAccess>>
-  >,
+async function getUserAccess(
+  userId: number,
 ) {
-  const permissionMap = new Map<
-    string,
-    'ALLOW' | 'DENY'
-  >()
-
-  for (const userRole of user.userRoles) {
-    for (const rolePermission of userRole.role.rolePermissions) {
-      permissionMap.set(
-        rolePermission.permission.key,
-        'ALLOW',
-      )
-    }
-  }
-
-  for (const userPermission of user.userPermissions) {
-    permissionMap.set(
-      userPermission.permission.key,
-      userPermission.effect,
-    )
-  }
-
-  return Array.from(permissionMap.entries())
-    .filter(
-      ([, effect]) => effect === 'ALLOW',
-    )
-    .map(([key]) => key)
-    .sort()
-}
-
-async function getUserAccess(userId: number) {
   return prisma.user.findUnique({
     where: {
       id: userId,
     },
+
     select: {
       id: true,
       companyId: true,
@@ -101,28 +79,6 @@ async function getUserAccess(userId: number) {
               name: true,
               level: true,
               isSystemRole: true,
-
-              rolePermissions: {
-                select: {
-                  permission: {
-                    select: {
-                      key: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-
-      userPermissions: {
-        select: {
-          effect: true,
-
-          permission: {
-            select: {
-              key: true,
             },
           },
         },
@@ -137,12 +93,14 @@ export async function authMiddleware(
   next: NextFunction,
 ) {
   try {
-    const token = req.cookies?.[COOKIE_NAME]
+    const token =
+      req.cookies?.[COOKIE_NAME]
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Silakan login terlebih dahulu.',
+        message:
+          'Silakan login terlebih dahulu.',
       })
     }
 
@@ -161,7 +119,9 @@ export async function authMiddleware(
         typeof payload === 'string' ||
         typeof payload.sub !== 'string'
       ) {
-        throw new Error('Token tidak valid.')
+        throw new Error(
+          'Token tidak valid.',
+        )
       }
 
       decoded = payload
@@ -173,7 +133,8 @@ export async function authMiddleware(
       })
     }
 
-    const userId = Number(decoded.sub)
+    const userId =
+      Number(decoded.sub)
 
     if (
       !Number.isSafeInteger(userId) ||
@@ -181,11 +142,13 @@ export async function authMiddleware(
     ) {
       return res.status(401).json({
         success: false,
-        message: 'Sesi tidak valid.',
+        message:
+          'Sesi tidak valid.',
       })
     }
 
-    const user = await getUserAccess(userId)
+    const user =
+      await getUserAccess(userId)
 
     if (
       !user ||
@@ -199,19 +162,56 @@ export async function authMiddleware(
       })
     }
 
+    // =======================================================
+    // AUTHORIZATION CONTEXT
+    // =======================================================
+    //
+    // Permission sekarang tidak lagi dihitung langsung
+    // di middleware.
+    //
+    // Semua perhitungan authority dipusatkan di:
+    //
+    // authorization.service.ts
+    //
+    // Dengan begitu seluruh aplikasi menggunakan aturan
+    // authorization yang sama.
+    // =======================================================
+
+    const authorization =
+      await getAuthorizationContext(
+        user.id,
+        user.companyId,
+      )
+
     const roles = user.userRoles
-      .map((userRole) => userRole.role)
-      .sort((a, b) => b.level - a.level)
+      .map(
+        (userRole) =>
+          userRole.role,
+      )
+      .sort(
+        (a, b) =>
+          b.level - a.level,
+      )
 
-    const permissions = buildPermissions(user)
-
-    ;(req as AuthenticatedRequest).user = {
+    ;(
+      req as AuthenticatedRequest
+    ).user = {
       id: user.id,
       companyId: user.companyId,
       name: user.name,
       username: user.username,
+
       roles,
-      permissions,
+
+      permissions: [
+        ...authorization.permissions,
+      ],
+
+      highestRoleLevel:
+        authorization.highestRoleLevel,
+
+      isOwner:
+        authorization.isOwner,
     }
 
     next()
@@ -223,7 +223,10 @@ export async function authMiddleware(
 
     return res.status(500).json({
       success: false,
-      message: 'Terjadi kesalahan pada server.',
+      message:
+        'Terjadi kesalahan pada server.',
     })
   }
 }
+
+export default authMiddleware

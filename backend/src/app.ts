@@ -11,6 +11,15 @@ import employeeRoutes from './routes/employee.routes.js'
 import platformAuthRoutes from './routes/platform-auth.routes.js'
 import platformCompanyRoutes from './routes/platform-company.routes.js'
 
+import userRoutes from './routes/user.routes.js'
+import roleRoutes from './routes/role.routes.js'
+
+import accessManagementRoutes from './routes/access-management.routes.js'
+
+import permissionDelegationRoutes from './routes/permission-delegation.routes.js'
+
+import leaveRoutes from './routes/leave.routes.js'
+
 const app = express()
 
 app.use(
@@ -63,5 +72,27 @@ app.use(
 app.use('/api/platform/companies', platformCompanyRoutes)
 
 app.use('/api/employees', employeeRoutes)
+
+app.use(
+  '/api/users',
+  userRoutes,
+)
+
+app.use(
+  '/api/roles',
+  roleRoutes,
+)
+
+app.use(
+  '/api/access',
+  accessManagementRoutes,
+)
+
+app.use(
+  '/api/access/delegations',
+  permissionDelegationRoutes,
+)
+
+app.use('/api/leaves', leaveRoutes)
 
 export default app
