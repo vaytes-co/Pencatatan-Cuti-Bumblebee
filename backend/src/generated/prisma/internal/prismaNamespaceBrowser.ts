@@ -477,88 +477,20 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-export const CompanyOrderByRelevanceFieldEnum = {
-  code: 'code',
-  name: 'name',
-  legalName: 'legalName',
-  email: 'email',
-  phone: 'phone',
-  address: 'address',
-  timezone: 'timezone'
-} as const
-
-export type CompanyOrderByRelevanceFieldEnum = (typeof CompanyOrderByRelevanceFieldEnum)[keyof typeof CompanyOrderByRelevanceFieldEnum]
-
-
-export const UserOrderByRelevanceFieldEnum = {
-  name: 'name',
-  username: 'username',
-  passwordHash: 'passwordHash'
-} as const
-
-export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
-
-
-export const EmployeeOrderByRelevanceFieldEnum = {
-  employeeCode: 'employeeCode',
-  name: 'name'
-} as const
-
-export type EmployeeOrderByRelevanceFieldEnum = (typeof EmployeeOrderByRelevanceFieldEnum)[keyof typeof EmployeeOrderByRelevanceFieldEnum]
-
-
-export const DepartmentOrderByRelevanceFieldEnum = {
-  code: 'code',
-  name: 'name',
-  description: 'description'
-} as const
-
-export type DepartmentOrderByRelevanceFieldEnum = (typeof DepartmentOrderByRelevanceFieldEnum)[keyof typeof DepartmentOrderByRelevanceFieldEnum]
-
-
-export const PositionOrderByRelevanceFieldEnum = {
-  code: 'code',
-  name: 'name',
-  description: 'description'
-} as const
-
-export type PositionOrderByRelevanceFieldEnum = (typeof PositionOrderByRelevanceFieldEnum)[keyof typeof PositionOrderByRelevanceFieldEnum]
-
-
-export const RoleOrderByRelevanceFieldEnum = {
-  name: 'name',
-  description: 'description'
-} as const
-
-export type RoleOrderByRelevanceFieldEnum = (typeof RoleOrderByRelevanceFieldEnum)[keyof typeof RoleOrderByRelevanceFieldEnum]
-
-
-export const PermissionOrderByRelevanceFieldEnum = {
-  key: 'key',
-  name: 'name',
-  description: 'description',
-  module: 'module',
-  action: 'action'
-} as const
-
-export type PermissionOrderByRelevanceFieldEnum = (typeof PermissionOrderByRelevanceFieldEnum)[keyof typeof PermissionOrderByRelevanceFieldEnum]
-
-
-export const ModuleOrderByRelevanceFieldEnum = {
-  key: 'key',
-  name: 'name',
-  description: 'description'
-} as const
-
-export type ModuleOrderByRelevanceFieldEnum = (typeof ModuleOrderByRelevanceFieldEnum)[keyof typeof ModuleOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {
@@ -568,100 +500,4 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
-export const LeaveRequestOrderByRelevanceFieldEnum = {
-  reason: 'reason',
-  notes: 'notes'
-} as const
-
-export type LeaveRequestOrderByRelevanceFieldEnum = (typeof LeaveRequestOrderByRelevanceFieldEnum)[keyof typeof LeaveRequestOrderByRelevanceFieldEnum]
-
-
-export const LeaveApprovalOrderByRelevanceFieldEnum = {
-  managementNotes: 'managementNotes',
-  ownerNotes: 'ownerNotes',
-  exceptionNotes: 'exceptionNotes'
-} as const
-
-export type LeaveApprovalOrderByRelevanceFieldEnum = (typeof LeaveApprovalOrderByRelevanceFieldEnum)[keyof typeof LeaveApprovalOrderByRelevanceFieldEnum]
-
-
-export const HolidayOrderByRelevanceFieldEnum = {
-  name: 'name',
-  description: 'description'
-} as const
-
-export type HolidayOrderByRelevanceFieldEnum = (typeof HolidayOrderByRelevanceFieldEnum)[keyof typeof HolidayOrderByRelevanceFieldEnum]
-
-
-export const SettingOrderByRelevanceFieldEnum = {
-  key: 'key',
-  value: 'value',
-  description: 'description'
-} as const
-
-export type SettingOrderByRelevanceFieldEnum = (typeof SettingOrderByRelevanceFieldEnum)[keyof typeof SettingOrderByRelevanceFieldEnum]
-
-
-export const AuditLogOrderByRelevanceFieldEnum = {
-  action: 'action',
-  entity: 'entity',
-  entityId: 'entityId',
-  ipAddress: 'ipAddress',
-  userAgent: 'userAgent'
-} as const
-
-export type AuditLogOrderByRelevanceFieldEnum = (typeof AuditLogOrderByRelevanceFieldEnum)[keyof typeof AuditLogOrderByRelevanceFieldEnum]
-
-
-export const MigrationJobOrderByRelevanceFieldEnum = {
-  type: 'type',
-  fileName: 'fileName'
-} as const
-
-export type MigrationJobOrderByRelevanceFieldEnum = (typeof MigrationJobOrderByRelevanceFieldEnum)[keyof typeof MigrationJobOrderByRelevanceFieldEnum]
-
-
-export const MigrationItemOrderByRelevanceFieldEnum = {
-  sourceIdentifier: 'sourceIdentifier',
-  targetIdentifier: 'targetIdentifier',
-  message: 'message'
-} as const
-
-export type MigrationItemOrderByRelevanceFieldEnum = (typeof MigrationItemOrderByRelevanceFieldEnum)[keyof typeof MigrationItemOrderByRelevanceFieldEnum]
-
-
-export const MigrationErrorOrderByRelevanceFieldEnum = {
-  field: 'field',
-  value: 'value',
-  message: 'message'
-} as const
-
-export type MigrationErrorOrderByRelevanceFieldEnum = (typeof MigrationErrorOrderByRelevanceFieldEnum)[keyof typeof MigrationErrorOrderByRelevanceFieldEnum]
-
-
-export const PlatformUserOrderByRelevanceFieldEnum = {
-  name: 'name',
-  username: 'username',
-  passwordHash: 'passwordHash'
-} as const
-
-export type PlatformUserOrderByRelevanceFieldEnum = (typeof PlatformUserOrderByRelevanceFieldEnum)[keyof typeof PlatformUserOrderByRelevanceFieldEnum]
-
-
-export const PlatformRoleOrderByRelevanceFieldEnum = {
-  name: 'name',
-  description: 'description'
-} as const
-
-export type PlatformRoleOrderByRelevanceFieldEnum = (typeof PlatformRoleOrderByRelevanceFieldEnum)[keyof typeof PlatformRoleOrderByRelevanceFieldEnum]
 

@@ -359,7 +359,6 @@ export type MigrationJobOrderByWithRelationInput = {
   createdBy?: Prisma.UserOrderByWithRelationInput
   items?: Prisma.MigrationItemOrderByRelationAggregateInput
   errors?: Prisma.MigrationErrorOrderByRelationAggregateInput
-  _relevance?: Prisma.MigrationJobOrderByRelevanceInput
 }
 
 export type MigrationJobWhereUniqueInput = Prisma.AtLeast<{
@@ -578,12 +577,6 @@ export type MigrationJobListRelationFilter = {
 
 export type MigrationJobOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type MigrationJobOrderByRelevanceInput = {
-  fields: Prisma.MigrationJobOrderByRelevanceFieldEnum | Prisma.MigrationJobOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type MigrationJobCountOrderByAggregateInput = {
@@ -1344,7 +1337,47 @@ export type MigrationJobSelect<ExtArgs extends runtime.Types.Extensions.Internal
   _count?: boolean | Prisma.MigrationJobCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["migrationJob"]>
 
+export type MigrationJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  createdById?: boolean
+  type?: boolean
+  fileName?: boolean
+  status?: boolean
+  mode?: boolean
+  totalRows?: boolean
+  createdRows?: boolean
+  updatedRows?: boolean
+  skippedRows?: boolean
+  failedRows?: boolean
+  startedAt?: boolean
+  completedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["migrationJob"]>
 
+export type MigrationJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  createdById?: boolean
+  type?: boolean
+  fileName?: boolean
+  status?: boolean
+  mode?: boolean
+  totalRows?: boolean
+  createdRows?: boolean
+  updatedRows?: boolean
+  skippedRows?: boolean
+  failedRows?: boolean
+  startedAt?: boolean
+  completedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["migrationJob"]>
 
 export type MigrationJobSelectScalar = {
   id?: boolean
@@ -1372,6 +1405,14 @@ export type MigrationJobInclude<ExtArgs extends runtime.Types.Extensions.Interna
   items?: boolean | Prisma.MigrationJob$itemsArgs<ExtArgs>
   errors?: boolean | Prisma.MigrationJob$errorsArgs<ExtArgs>
   _count?: boolean | Prisma.MigrationJobCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type MigrationJobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type MigrationJobIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $MigrationJobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1517,6 +1558,30 @@ export interface MigrationJobDelegate<ExtArgs extends runtime.Types.Extensions.I
   createMany<T extends MigrationJobCreateManyArgs>(args?: Prisma.SelectSubset<T, MigrationJobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many MigrationJobs and returns the data saved in the database.
+   * @param {MigrationJobCreateManyAndReturnArgs} args - Arguments to create many MigrationJobs.
+   * @example
+   * // Create many MigrationJobs
+   * const migrationJob = await prisma.migrationJob.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many MigrationJobs and only return the `id`
+   * const migrationJobWithIdOnly = await prisma.migrationJob.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends MigrationJobCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, MigrationJobCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MigrationJobPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a MigrationJob.
    * @param {MigrationJobDeleteArgs} args - Arguments to delete one MigrationJob.
    * @example
@@ -1579,6 +1644,36 @@ export interface MigrationJobDelegate<ExtArgs extends runtime.Types.Extensions.I
    * 
    */
   updateMany<T extends MigrationJobUpdateManyArgs>(args: Prisma.SelectSubset<T, MigrationJobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more MigrationJobs and returns the data updated in the database.
+   * @param {MigrationJobUpdateManyAndReturnArgs} args - Arguments to update many MigrationJobs.
+   * @example
+   * // Update many MigrationJobs
+   * const migrationJob = await prisma.migrationJob.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more MigrationJobs and only return the `id`
+   * const migrationJobWithIdOnly = await prisma.migrationJob.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends MigrationJobUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, MigrationJobUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MigrationJobPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one MigrationJob.
@@ -2026,6 +2121,29 @@ export type MigrationJobCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * MigrationJob createManyAndReturn
+ */
+export type MigrationJobCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MigrationJob
+   */
+  select?: Prisma.MigrationJobSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the MigrationJob
+   */
+  omit?: Prisma.MigrationJobOmit<ExtArgs> | null
+  /**
+   * The data used to create many MigrationJobs.
+   */
+  data: Prisma.MigrationJobCreateManyInput | Prisma.MigrationJobCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MigrationJobIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * MigrationJob update
  */
 export type MigrationJobUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2067,6 +2185,36 @@ export type MigrationJobUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many MigrationJobs to update.
    */
   limit?: number
+}
+
+/**
+ * MigrationJob updateManyAndReturn
+ */
+export type MigrationJobUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MigrationJob
+   */
+  select?: Prisma.MigrationJobSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the MigrationJob
+   */
+  omit?: Prisma.MigrationJobOmit<ExtArgs> | null
+  /**
+   * The data used to update MigrationJobs.
+   */
+  data: Prisma.XOR<Prisma.MigrationJobUpdateManyMutationInput, Prisma.MigrationJobUncheckedUpdateManyInput>
+  /**
+   * Filter which MigrationJobs to update
+   */
+  where?: Prisma.MigrationJobWhereInput
+  /**
+   * Limit how many MigrationJobs to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MigrationJobIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

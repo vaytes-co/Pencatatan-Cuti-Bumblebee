@@ -250,7 +250,6 @@ export type DepartmentOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   company?: Prisma.CompanyOrderByWithRelationInput
   employees?: Prisma.EmployeeOrderByRelationAggregateInput
-  _relevance?: Prisma.DepartmentOrderByRelevanceInput
 }
 
 export type DepartmentWhereUniqueInput = Prisma.AtLeast<{
@@ -380,12 +379,6 @@ export type DepartmentOrderByRelationAggregateInput = {
 export type DepartmentNullableScalarRelationFilter = {
   is?: Prisma.DepartmentWhereInput | null
   isNot?: Prisma.DepartmentWhereInput | null
-}
-
-export type DepartmentOrderByRelevanceInput = {
-  fields: Prisma.DepartmentOrderByRelevanceFieldEnum | Prisma.DepartmentOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type DepartmentCompanyIdNameCompoundUniqueInput = {
@@ -684,7 +677,27 @@ export type DepartmentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["department"]>
 
+export type DepartmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  code?: boolean
+  name?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["department"]>
 
+export type DepartmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  code?: boolean
+  name?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["department"]>
 
 export type DepartmentSelectScalar = {
   id?: boolean
@@ -701,6 +714,12 @@ export type DepartmentInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   employees?: boolean | Prisma.Department$employeesArgs<ExtArgs>
   _count?: boolean | Prisma.DepartmentCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type DepartmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
+export type DepartmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
 
 export type $DepartmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -835,6 +854,30 @@ export interface DepartmentDelegate<ExtArgs extends runtime.Types.Extensions.Int
   createMany<T extends DepartmentCreateManyArgs>(args?: Prisma.SelectSubset<T, DepartmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Departments and returns the data saved in the database.
+   * @param {DepartmentCreateManyAndReturnArgs} args - Arguments to create many Departments.
+   * @example
+   * // Create many Departments
+   * const department = await prisma.department.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Departments and only return the `id`
+   * const departmentWithIdOnly = await prisma.department.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends DepartmentCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, DepartmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Department.
    * @param {DepartmentDeleteArgs} args - Arguments to delete one Department.
    * @example
@@ -897,6 +940,36 @@ export interface DepartmentDelegate<ExtArgs extends runtime.Types.Extensions.Int
    * 
    */
   updateMany<T extends DepartmentUpdateManyArgs>(args: Prisma.SelectSubset<T, DepartmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Departments and returns the data updated in the database.
+   * @param {DepartmentUpdateManyAndReturnArgs} args - Arguments to update many Departments.
+   * @example
+   * // Update many Departments
+   * const department = await prisma.department.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Departments and only return the `id`
+   * const departmentWithIdOnly = await prisma.department.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends DepartmentUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, DepartmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DepartmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Department.
@@ -1333,6 +1406,29 @@ export type DepartmentCreateManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
+ * Department createManyAndReturn
+ */
+export type DepartmentCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * The data used to create many Departments.
+   */
+  data: Prisma.DepartmentCreateManyInput | Prisma.DepartmentCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * Department update
  */
 export type DepartmentUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1374,6 +1470,36 @@ export type DepartmentUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.In
    * Limit how many Departments to update.
    */
   limit?: number
+}
+
+/**
+ * Department updateManyAndReturn
+ */
+export type DepartmentUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Department
+   */
+  select?: Prisma.DepartmentSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Department
+   */
+  omit?: Prisma.DepartmentOmit<ExtArgs> | null
+  /**
+   * The data used to update Departments.
+   */
+  data: Prisma.XOR<Prisma.DepartmentUpdateManyMutationInput, Prisma.DepartmentUncheckedUpdateManyInput>
+  /**
+   * Filter which Departments to update
+   */
+  where?: Prisma.DepartmentWhereInput
+  /**
+   * Limit how many Departments to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DepartmentIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

@@ -617,7 +617,25 @@ export type PlatformRolePermissionSelect<ExtArgs extends runtime.Types.Extension
   permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["platformRolePermission"]>
 
+export type PlatformRolePermissionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  platformRoleId?: boolean
+  permissionId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  platformRole?: boolean | Prisma.PlatformRoleDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["platformRolePermission"]>
 
+export type PlatformRolePermissionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  platformRoleId?: boolean
+  permissionId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  platformRole?: boolean | Prisma.PlatformRoleDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["platformRolePermission"]>
 
 export type PlatformRolePermissionSelectScalar = {
   id?: boolean
@@ -629,6 +647,14 @@ export type PlatformRolePermissionSelectScalar = {
 
 export type PlatformRolePermissionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "platformRoleId" | "permissionId" | "createdAt" | "updatedAt", ExtArgs["result"]["platformRolePermission"]>
 export type PlatformRolePermissionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  platformRole?: boolean | Prisma.PlatformRoleDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+}
+export type PlatformRolePermissionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  platformRole?: boolean | Prisma.PlatformRoleDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+}
+export type PlatformRolePermissionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   platformRole?: boolean | Prisma.PlatformRoleDefaultArgs<ExtArgs>
   permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
 }
@@ -763,6 +789,30 @@ export interface PlatformRolePermissionDelegate<ExtArgs extends runtime.Types.Ex
   createMany<T extends PlatformRolePermissionCreateManyArgs>(args?: Prisma.SelectSubset<T, PlatformRolePermissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many PlatformRolePermissions and returns the data saved in the database.
+   * @param {PlatformRolePermissionCreateManyAndReturnArgs} args - Arguments to create many PlatformRolePermissions.
+   * @example
+   * // Create many PlatformRolePermissions
+   * const platformRolePermission = await prisma.platformRolePermission.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many PlatformRolePermissions and only return the `id`
+   * const platformRolePermissionWithIdOnly = await prisma.platformRolePermission.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PlatformRolePermissionCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PlatformRolePermissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformRolePermissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a PlatformRolePermission.
    * @param {PlatformRolePermissionDeleteArgs} args - Arguments to delete one PlatformRolePermission.
    * @example
@@ -825,6 +875,36 @@ export interface PlatformRolePermissionDelegate<ExtArgs extends runtime.Types.Ex
    * 
    */
   updateMany<T extends PlatformRolePermissionUpdateManyArgs>(args: Prisma.SelectSubset<T, PlatformRolePermissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more PlatformRolePermissions and returns the data updated in the database.
+   * @param {PlatformRolePermissionUpdateManyAndReturnArgs} args - Arguments to update many PlatformRolePermissions.
+   * @example
+   * // Update many PlatformRolePermissions
+   * const platformRolePermission = await prisma.platformRolePermission.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more PlatformRolePermissions and only return the `id`
+   * const platformRolePermissionWithIdOnly = await prisma.platformRolePermission.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PlatformRolePermissionUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PlatformRolePermissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformRolePermissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one PlatformRolePermission.
@@ -1259,6 +1339,29 @@ export type PlatformRolePermissionCreateManyArgs<ExtArgs extends runtime.Types.E
 }
 
 /**
+ * PlatformRolePermission createManyAndReturn
+ */
+export type PlatformRolePermissionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformRolePermission
+   */
+  select?: Prisma.PlatformRolePermissionSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformRolePermission
+   */
+  omit?: Prisma.PlatformRolePermissionOmit<ExtArgs> | null
+  /**
+   * The data used to create many PlatformRolePermissions.
+   */
+  data: Prisma.PlatformRolePermissionCreateManyInput | Prisma.PlatformRolePermissionCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformRolePermissionIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * PlatformRolePermission update
  */
 export type PlatformRolePermissionUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1300,6 +1403,36 @@ export type PlatformRolePermissionUpdateManyArgs<ExtArgs extends runtime.Types.E
    * Limit how many PlatformRolePermissions to update.
    */
   limit?: number
+}
+
+/**
+ * PlatformRolePermission updateManyAndReturn
+ */
+export type PlatformRolePermissionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformRolePermission
+   */
+  select?: Prisma.PlatformRolePermissionSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformRolePermission
+   */
+  omit?: Prisma.PlatformRolePermissionOmit<ExtArgs> | null
+  /**
+   * The data used to update PlatformRolePermissions.
+   */
+  data: Prisma.XOR<Prisma.PlatformRolePermissionUpdateManyMutationInput, Prisma.PlatformRolePermissionUncheckedUpdateManyInput>
+  /**
+   * Filter which PlatformRolePermissions to update
+   */
+  where?: Prisma.PlatformRolePermissionWhereInput
+  /**
+   * Limit how many PlatformRolePermissions to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlatformRolePermissionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

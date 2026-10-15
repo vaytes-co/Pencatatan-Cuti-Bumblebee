@@ -250,7 +250,6 @@ export type PlatformRoleOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   platformUserRoles?: Prisma.PlatformUserRoleOrderByRelationAggregateInput
   platformRolePermissions?: Prisma.PlatformRolePermissionOrderByRelationAggregateInput
-  _relevance?: Prisma.PlatformRoleOrderByRelevanceInput
 }
 
 export type PlatformRoleWhereUniqueInput = Prisma.AtLeast<{
@@ -369,12 +368,6 @@ export type PlatformRoleUncheckedUpdateManyInput = {
   isSystemRole?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type PlatformRoleOrderByRelevanceInput = {
-  fields: Prisma.PlatformRoleOrderByRelevanceFieldEnum | Prisma.PlatformRoleOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type PlatformRoleCountOrderByAggregateInput = {
@@ -619,7 +612,25 @@ export type PlatformRoleSelect<ExtArgs extends runtime.Types.Extensions.Internal
   _count?: boolean | Prisma.PlatformRoleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["platformRole"]>
 
+export type PlatformRoleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  description?: boolean
+  level?: boolean
+  isSystemRole?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["platformRole"]>
 
+export type PlatformRoleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  description?: boolean
+  level?: boolean
+  isSystemRole?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["platformRole"]>
 
 export type PlatformRoleSelectScalar = {
   id?: boolean
@@ -637,6 +648,8 @@ export type PlatformRoleInclude<ExtArgs extends runtime.Types.Extensions.Interna
   platformRolePermissions?: boolean | Prisma.PlatformRole$platformRolePermissionsArgs<ExtArgs>
   _count?: boolean | Prisma.PlatformRoleCountOutputTypeDefaultArgs<ExtArgs>
 }
+export type PlatformRoleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type PlatformRoleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $PlatformRolePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PlatformRole"
@@ -770,6 +783,30 @@ export interface PlatformRoleDelegate<ExtArgs extends runtime.Types.Extensions.I
   createMany<T extends PlatformRoleCreateManyArgs>(args?: Prisma.SelectSubset<T, PlatformRoleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many PlatformRoles and returns the data saved in the database.
+   * @param {PlatformRoleCreateManyAndReturnArgs} args - Arguments to create many PlatformRoles.
+   * @example
+   * // Create many PlatformRoles
+   * const platformRole = await prisma.platformRole.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many PlatformRoles and only return the `id`
+   * const platformRoleWithIdOnly = await prisma.platformRole.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PlatformRoleCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PlatformRoleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformRolePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a PlatformRole.
    * @param {PlatformRoleDeleteArgs} args - Arguments to delete one PlatformRole.
    * @example
@@ -832,6 +869,36 @@ export interface PlatformRoleDelegate<ExtArgs extends runtime.Types.Extensions.I
    * 
    */
   updateMany<T extends PlatformRoleUpdateManyArgs>(args: Prisma.SelectSubset<T, PlatformRoleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more PlatformRoles and returns the data updated in the database.
+   * @param {PlatformRoleUpdateManyAndReturnArgs} args - Arguments to update many PlatformRoles.
+   * @example
+   * // Update many PlatformRoles
+   * const platformRole = await prisma.platformRole.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more PlatformRoles and only return the `id`
+   * const platformRoleWithIdOnly = await prisma.platformRole.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PlatformRoleUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PlatformRoleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformRolePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one PlatformRole.
@@ -1268,6 +1335,25 @@ export type PlatformRoleCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * PlatformRole createManyAndReturn
+ */
+export type PlatformRoleCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformRole
+   */
+  select?: Prisma.PlatformRoleSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformRole
+   */
+  omit?: Prisma.PlatformRoleOmit<ExtArgs> | null
+  /**
+   * The data used to create many PlatformRoles.
+   */
+  data: Prisma.PlatformRoleCreateManyInput | Prisma.PlatformRoleCreateManyInput[]
+  skipDuplicates?: boolean
+}
+
+/**
  * PlatformRole update
  */
 export type PlatformRoleUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1297,6 +1383,32 @@ export type PlatformRoleUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
  * PlatformRole updateMany
  */
 export type PlatformRoleUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update PlatformRoles.
+   */
+  data: Prisma.XOR<Prisma.PlatformRoleUpdateManyMutationInput, Prisma.PlatformRoleUncheckedUpdateManyInput>
+  /**
+   * Filter which PlatformRoles to update
+   */
+  where?: Prisma.PlatformRoleWhereInput
+  /**
+   * Limit how many PlatformRoles to update.
+   */
+  limit?: number
+}
+
+/**
+ * PlatformRole updateManyAndReturn
+ */
+export type PlatformRoleUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformRole
+   */
+  select?: Prisma.PlatformRoleSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformRole
+   */
+  omit?: Prisma.PlatformRoleOmit<ExtArgs> | null
   /**
    * The data used to update PlatformRoles.
    */
