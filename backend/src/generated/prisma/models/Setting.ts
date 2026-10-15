@@ -248,7 +248,6 @@ export type SettingOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   company?: Prisma.CompanyOrderByWithRelationInput
-  _relevance?: Prisma.SettingOrderByRelevanceInput
 }
 
 export type SettingWhereUniqueInput = Prisma.AtLeast<{
@@ -368,12 +367,6 @@ export type SettingListRelationFilter = {
 
 export type SettingOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type SettingOrderByRelevanceInput = {
-  fields: Prisma.SettingOrderByRelevanceFieldEnum | Prisma.SettingOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type SettingCompanyIdKeyCompoundUniqueInput = {
@@ -567,7 +560,27 @@ export type SettingSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["setting"]>
 
+export type SettingSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  key?: boolean
+  value?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["setting"]>
 
+export type SettingSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  key?: boolean
+  value?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["setting"]>
 
 export type SettingSelectScalar = {
   id?: boolean
@@ -581,6 +594,12 @@ export type SettingSelectScalar = {
 
 export type SettingOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "key" | "value" | "description" | "createdAt" | "updatedAt", ExtArgs["result"]["setting"]>
 export type SettingInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
+export type SettingIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
+export type SettingIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
 
@@ -715,6 +734,30 @@ export interface SettingDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends SettingCreateManyArgs>(args?: Prisma.SelectSubset<T, SettingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Settings and returns the data saved in the database.
+   * @param {SettingCreateManyAndReturnArgs} args - Arguments to create many Settings.
+   * @example
+   * // Create many Settings
+   * const setting = await prisma.setting.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Settings and only return the `id`
+   * const settingWithIdOnly = await prisma.setting.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends SettingCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, SettingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SettingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Setting.
    * @param {SettingDeleteArgs} args - Arguments to delete one Setting.
    * @example
@@ -777,6 +820,36 @@ export interface SettingDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends SettingUpdateManyArgs>(args: Prisma.SelectSubset<T, SettingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Settings and returns the data updated in the database.
+   * @param {SettingUpdateManyAndReturnArgs} args - Arguments to update many Settings.
+   * @example
+   * // Update many Settings
+   * const setting = await prisma.setting.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Settings and only return the `id`
+   * const settingWithIdOnly = await prisma.setting.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends SettingUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, SettingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SettingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Setting.
@@ -1212,6 +1285,29 @@ export type SettingCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Setting createManyAndReturn
+ */
+export type SettingCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Setting
+   */
+  select?: Prisma.SettingSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Setting
+   */
+  omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * The data used to create many Settings.
+   */
+  data: Prisma.SettingCreateManyInput | Prisma.SettingCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * Setting update
  */
 export type SettingUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1253,6 +1349,36 @@ export type SettingUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Settings to update.
    */
   limit?: number
+}
+
+/**
+ * Setting updateManyAndReturn
+ */
+export type SettingUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Setting
+   */
+  select?: Prisma.SettingSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Setting
+   */
+  omit?: Prisma.SettingOmit<ExtArgs> | null
+  /**
+   * The data used to update Settings.
+   */
+  data: Prisma.XOR<Prisma.SettingUpdateManyMutationInput, Prisma.SettingUncheckedUpdateManyInput>
+  /**
+   * Filter which Settings to update
+   */
+  where?: Prisma.SettingWhereInput
+  /**
+   * Limit how many Settings to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SettingIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

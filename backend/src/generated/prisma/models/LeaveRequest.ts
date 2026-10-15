@@ -338,7 +338,6 @@ export type LeaveRequestOrderByWithRelationInput = {
   employee?: Prisma.EmployeeOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
   approval?: Prisma.LeaveApprovalOrderByWithRelationInput
-  _relevance?: Prisma.LeaveRequestOrderByRelevanceInput
 }
 
 export type LeaveRequestWhereUniqueInput = Prisma.AtLeast<{
@@ -542,12 +541,6 @@ export type LeaveRequestListRelationFilter = {
 
 export type LeaveRequestOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type LeaveRequestOrderByRelevanceInput = {
-  fields: Prisma.LeaveRequestOrderByRelevanceFieldEnum | Prisma.LeaveRequestOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type LeaveRequestCountOrderByAggregateInput = {
@@ -1294,7 +1287,47 @@ export type LeaveRequestSelect<ExtArgs extends runtime.Types.Extensions.Internal
   approval?: boolean | Prisma.LeaveRequest$approvalArgs<ExtArgs>
 }, ExtArgs["result"]["leaveRequest"]>
 
+export type LeaveRequestSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  employeeId?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  totalDays?: boolean
+  type?: boolean
+  reason?: boolean
+  notes?: boolean
+  status?: boolean
+  leavePeriodStart?: boolean
+  leavePeriodEnd?: boolean
+  createdById?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["leaveRequest"]>
 
+export type LeaveRequestSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  employeeId?: boolean
+  startDate?: boolean
+  endDate?: boolean
+  totalDays?: boolean
+  type?: boolean
+  reason?: boolean
+  notes?: boolean
+  status?: boolean
+  leavePeriodStart?: boolean
+  leavePeriodEnd?: boolean
+  createdById?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["leaveRequest"]>
 
 export type LeaveRequestSelectScalar = {
   id?: boolean
@@ -1320,6 +1353,16 @@ export type LeaveRequestInclude<ExtArgs extends runtime.Types.Extensions.Interna
   employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   approval?: boolean | Prisma.LeaveRequest$approvalArgs<ExtArgs>
+}
+export type LeaveRequestIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type LeaveRequestIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  employee?: boolean | Prisma.EmployeeDefaultArgs<ExtArgs>
+  createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $LeaveRequestPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1464,6 +1507,30 @@ export interface LeaveRequestDelegate<ExtArgs extends runtime.Types.Extensions.I
   createMany<T extends LeaveRequestCreateManyArgs>(args?: Prisma.SelectSubset<T, LeaveRequestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many LeaveRequests and returns the data saved in the database.
+   * @param {LeaveRequestCreateManyAndReturnArgs} args - Arguments to create many LeaveRequests.
+   * @example
+   * // Create many LeaveRequests
+   * const leaveRequest = await prisma.leaveRequest.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many LeaveRequests and only return the `id`
+   * const leaveRequestWithIdOnly = await prisma.leaveRequest.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends LeaveRequestCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, LeaveRequestCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveRequestPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a LeaveRequest.
    * @param {LeaveRequestDeleteArgs} args - Arguments to delete one LeaveRequest.
    * @example
@@ -1526,6 +1593,36 @@ export interface LeaveRequestDelegate<ExtArgs extends runtime.Types.Extensions.I
    * 
    */
   updateMany<T extends LeaveRequestUpdateManyArgs>(args: Prisma.SelectSubset<T, LeaveRequestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more LeaveRequests and returns the data updated in the database.
+   * @param {LeaveRequestUpdateManyAndReturnArgs} args - Arguments to update many LeaveRequests.
+   * @example
+   * // Update many LeaveRequests
+   * const leaveRequest = await prisma.leaveRequest.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more LeaveRequests and only return the `id`
+   * const leaveRequestWithIdOnly = await prisma.leaveRequest.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends LeaveRequestUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, LeaveRequestUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveRequestPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one LeaveRequest.
@@ -1972,6 +2069,29 @@ export type LeaveRequestCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * LeaveRequest createManyAndReturn
+ */
+export type LeaveRequestCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LeaveRequest
+   */
+  select?: Prisma.LeaveRequestSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the LeaveRequest
+   */
+  omit?: Prisma.LeaveRequestOmit<ExtArgs> | null
+  /**
+   * The data used to create many LeaveRequests.
+   */
+  data: Prisma.LeaveRequestCreateManyInput | Prisma.LeaveRequestCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeaveRequestIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * LeaveRequest update
  */
 export type LeaveRequestUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2013,6 +2133,36 @@ export type LeaveRequestUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many LeaveRequests to update.
    */
   limit?: number
+}
+
+/**
+ * LeaveRequest updateManyAndReturn
+ */
+export type LeaveRequestUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LeaveRequest
+   */
+  select?: Prisma.LeaveRequestSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the LeaveRequest
+   */
+  omit?: Prisma.LeaveRequestOmit<ExtArgs> | null
+  /**
+   * The data used to update LeaveRequests.
+   */
+  data: Prisma.XOR<Prisma.LeaveRequestUpdateManyMutationInput, Prisma.LeaveRequestUncheckedUpdateManyInput>
+  /**
+   * Filter which LeaveRequests to update
+   */
+  where?: Prisma.LeaveRequestWhereInput
+  /**
+   * Limit how many LeaveRequests to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeaveRequestIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

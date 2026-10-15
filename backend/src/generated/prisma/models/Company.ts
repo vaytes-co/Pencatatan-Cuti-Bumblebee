@@ -317,7 +317,6 @@ export type CompanyOrderByWithRelationInput = {
   migrationJobs?: Prisma.MigrationJobOrderByRelationAggregateInput
   settings?: Prisma.SettingOrderByRelationAggregateInput
   permissionDelegations?: Prisma.PermissionDelegationOrderByRelationAggregateInput
-  _relevance?: Prisma.CompanyOrderByRelevanceInput
 }
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<{
@@ -536,12 +535,6 @@ export type CompanyUncheckedUpdateManyInput = {
   ownerUserId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type CompanyOrderByRelevanceInput = {
-  fields: Prisma.CompanyOrderByRelevanceFieldEnum | Prisma.CompanyOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type CompanyCountOrderByAggregateInput = {
@@ -2612,7 +2605,37 @@ export type CompanySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["company"]>
 
+export type CompanySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  code?: boolean
+  name?: boolean
+  legalName?: boolean
+  email?: boolean
+  phone?: boolean
+  address?: boolean
+  timezone?: boolean
+  status?: boolean
+  ownerUserId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  ownerUser?: boolean | Prisma.Company$ownerUserArgs<ExtArgs>
+}, ExtArgs["result"]["company"]>
 
+export type CompanySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  code?: boolean
+  name?: boolean
+  legalName?: boolean
+  email?: boolean
+  phone?: boolean
+  address?: boolean
+  timezone?: boolean
+  status?: boolean
+  ownerUserId?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  ownerUser?: boolean | Prisma.Company$ownerUserArgs<ExtArgs>
+}, ExtArgs["result"]["company"]>
 
 export type CompanySelectScalar = {
   id?: boolean
@@ -2645,6 +2668,12 @@ export type CompanyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   settings?: boolean | Prisma.Company$settingsArgs<ExtArgs>
   permissionDelegations?: boolean | Prisma.Company$permissionDelegationsArgs<ExtArgs>
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type CompanyIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ownerUser?: boolean | Prisma.Company$ownerUserArgs<ExtArgs>
+}
+export type CompanyIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ownerUser?: boolean | Prisma.Company$ownerUserArgs<ExtArgs>
 }
 
 export type $CompanyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2795,6 +2824,30 @@ export interface CompanyDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends CompanyCreateManyArgs>(args?: Prisma.SelectSubset<T, CompanyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Companies and returns the data saved in the database.
+   * @param {CompanyCreateManyAndReturnArgs} args - Arguments to create many Companies.
+   * @example
+   * // Create many Companies
+   * const company = await prisma.company.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Companies and only return the `id`
+   * const companyWithIdOnly = await prisma.company.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends CompanyCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, CompanyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Company.
    * @param {CompanyDeleteArgs} args - Arguments to delete one Company.
    * @example
@@ -2857,6 +2910,36 @@ export interface CompanyDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends CompanyUpdateManyArgs>(args: Prisma.SelectSubset<T, CompanyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Companies and returns the data updated in the database.
+   * @param {CompanyUpdateManyAndReturnArgs} args - Arguments to update many Companies.
+   * @example
+   * // Update many Companies
+   * const company = await prisma.company.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Companies and only return the `id`
+   * const companyWithIdOnly = await prisma.company.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends CompanyUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, CompanyUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Company.
@@ -3309,6 +3392,29 @@ export type CompanyCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Company createManyAndReturn
+ */
+export type CompanyCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * The data used to create many Companies.
+   */
+  data: Prisma.CompanyCreateManyInput | Prisma.CompanyCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * Company update
  */
 export type CompanyUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3350,6 +3456,36 @@ export type CompanyUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Companies to update.
    */
   limit?: number
+}
+
+/**
+ * Company updateManyAndReturn
+ */
+export type CompanyUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Company
+   */
+  select?: Prisma.CompanySelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Company
+   */
+  omit?: Prisma.CompanyOmit<ExtArgs> | null
+  /**
+   * The data used to update Companies.
+   */
+  data: Prisma.XOR<Prisma.CompanyUpdateManyMutationInput, Prisma.CompanyUncheckedUpdateManyInput>
+  /**
+   * Filter which Companies to update
+   */
+  where?: Prisma.CompanyWhereInput
+  /**
+   * Limit how many Companies to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

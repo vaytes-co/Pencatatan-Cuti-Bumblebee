@@ -250,7 +250,6 @@ export type PositionOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   company?: Prisma.CompanyOrderByWithRelationInput
   employees?: Prisma.EmployeeOrderByRelationAggregateInput
-  _relevance?: Prisma.PositionOrderByRelevanceInput
 }
 
 export type PositionWhereUniqueInput = Prisma.AtLeast<{
@@ -380,12 +379,6 @@ export type PositionOrderByRelationAggregateInput = {
 export type PositionNullableScalarRelationFilter = {
   is?: Prisma.PositionWhereInput | null
   isNot?: Prisma.PositionWhereInput | null
-}
-
-export type PositionOrderByRelevanceInput = {
-  fields: Prisma.PositionOrderByRelevanceFieldEnum | Prisma.PositionOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type PositionCompanyIdNameCompoundUniqueInput = {
@@ -684,7 +677,27 @@ export type PositionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   _count?: boolean | Prisma.PositionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["position"]>
 
+export type PositionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  code?: boolean
+  name?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["position"]>
 
+export type PositionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  code?: boolean
+  name?: boolean
+  description?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["position"]>
 
 export type PositionSelectScalar = {
   id?: boolean
@@ -701,6 +714,12 @@ export type PositionInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   employees?: boolean | Prisma.Position$employeesArgs<ExtArgs>
   _count?: boolean | Prisma.PositionCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type PositionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+}
+export type PositionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
 }
 
 export type $PositionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -835,6 +854,30 @@ export interface PositionDelegate<ExtArgs extends runtime.Types.Extensions.Inter
   createMany<T extends PositionCreateManyArgs>(args?: Prisma.SelectSubset<T, PositionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many Positions and returns the data saved in the database.
+   * @param {PositionCreateManyAndReturnArgs} args - Arguments to create many Positions.
+   * @example
+   * // Create many Positions
+   * const position = await prisma.position.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many Positions and only return the `id`
+   * const positionWithIdOnly = await prisma.position.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PositionCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PositionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PositionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a Position.
    * @param {PositionDeleteArgs} args - Arguments to delete one Position.
    * @example
@@ -897,6 +940,36 @@ export interface PositionDelegate<ExtArgs extends runtime.Types.Extensions.Inter
    * 
    */
   updateMany<T extends PositionUpdateManyArgs>(args: Prisma.SelectSubset<T, PositionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more Positions and returns the data updated in the database.
+   * @param {PositionUpdateManyAndReturnArgs} args - Arguments to update many Positions.
+   * @example
+   * // Update many Positions
+   * const position = await prisma.position.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more Positions and only return the `id`
+   * const positionWithIdOnly = await prisma.position.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PositionUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PositionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PositionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Position.
@@ -1333,6 +1406,29 @@ export type PositionCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
+ * Position createManyAndReturn
+ */
+export type PositionCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Position
+   */
+  select?: Prisma.PositionSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Position
+   */
+  omit?: Prisma.PositionOmit<ExtArgs> | null
+  /**
+   * The data used to create many Positions.
+   */
+  data: Prisma.PositionCreateManyInput | Prisma.PositionCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PositionIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * Position update
  */
 export type PositionUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1374,6 +1470,36 @@ export type PositionUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many Positions to update.
    */
   limit?: number
+}
+
+/**
+ * Position updateManyAndReturn
+ */
+export type PositionUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Position
+   */
+  select?: Prisma.PositionSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the Position
+   */
+  omit?: Prisma.PositionOmit<ExtArgs> | null
+  /**
+   * The data used to update Positions.
+   */
+  data: Prisma.XOR<Prisma.PositionUpdateManyMutationInput, Prisma.PositionUncheckedUpdateManyInput>
+  /**
+   * Filter which Positions to update
+   */
+  where?: Prisma.PositionWhereInput
+  /**
+   * Limit how many Positions to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PositionIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

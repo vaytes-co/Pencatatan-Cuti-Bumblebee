@@ -365,7 +365,6 @@ export type LeaveApprovalOrderByWithRelationInput = {
   managementApprovedBy?: Prisma.UserOrderByWithRelationInput
   ownerApprovedBy?: Prisma.UserOrderByWithRelationInput
   exceptionApprovedBy?: Prisma.UserOrderByWithRelationInput
-  _relevance?: Prisma.LeaveApprovalOrderByRelevanceInput
 }
 
 export type LeaveApprovalWhereUniqueInput = Prisma.AtLeast<{
@@ -599,12 +598,6 @@ export type LeaveApprovalOrderByRelationAggregateInput = {
 export type LeaveApprovalNullableScalarRelationFilter = {
   is?: Prisma.LeaveApprovalWhereInput | null
   isNot?: Prisma.LeaveApprovalWhereInput | null
-}
-
-export type LeaveApprovalOrderByRelevanceInput = {
-  fields: Prisma.LeaveApprovalOrderByRelevanceFieldEnum | Prisma.LeaveApprovalOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type LeaveApprovalCountOrderByAggregateInput = {
@@ -1433,7 +1426,55 @@ export type LeaveApprovalSelect<ExtArgs extends runtime.Types.Extensions.Interna
   exceptionApprovedBy?: boolean | Prisma.LeaveApproval$exceptionApprovedByArgs<ExtArgs>
 }, ExtArgs["result"]["leaveApproval"]>
 
+export type LeaveApprovalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  leaveRequestId?: boolean
+  managementStatus?: boolean
+  managementApprovedById?: boolean
+  managementApprovedAt?: boolean
+  managementNotes?: boolean
+  ownerStatus?: boolean
+  ownerApprovedById?: boolean
+  ownerApprovedAt?: boolean
+  ownerNotes?: boolean
+  needsException?: boolean
+  exceptionType?: boolean
+  exceptionStatus?: boolean
+  exceptionApprovedById?: boolean
+  exceptionApprovedAt?: boolean
+  exceptionNotes?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  leaveRequest?: boolean | Prisma.LeaveRequestDefaultArgs<ExtArgs>
+  managementApprovedBy?: boolean | Prisma.LeaveApproval$managementApprovedByArgs<ExtArgs>
+  ownerApprovedBy?: boolean | Prisma.LeaveApproval$ownerApprovedByArgs<ExtArgs>
+  exceptionApprovedBy?: boolean | Prisma.LeaveApproval$exceptionApprovedByArgs<ExtArgs>
+}, ExtArgs["result"]["leaveApproval"]>
 
+export type LeaveApprovalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  leaveRequestId?: boolean
+  managementStatus?: boolean
+  managementApprovedById?: boolean
+  managementApprovedAt?: boolean
+  managementNotes?: boolean
+  ownerStatus?: boolean
+  ownerApprovedById?: boolean
+  ownerApprovedAt?: boolean
+  ownerNotes?: boolean
+  needsException?: boolean
+  exceptionType?: boolean
+  exceptionStatus?: boolean
+  exceptionApprovedById?: boolean
+  exceptionApprovedAt?: boolean
+  exceptionNotes?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  leaveRequest?: boolean | Prisma.LeaveRequestDefaultArgs<ExtArgs>
+  managementApprovedBy?: boolean | Prisma.LeaveApproval$managementApprovedByArgs<ExtArgs>
+  ownerApprovedBy?: boolean | Prisma.LeaveApproval$ownerApprovedByArgs<ExtArgs>
+  exceptionApprovedBy?: boolean | Prisma.LeaveApproval$exceptionApprovedByArgs<ExtArgs>
+}, ExtArgs["result"]["leaveApproval"]>
 
 export type LeaveApprovalSelectScalar = {
   id?: boolean
@@ -1458,6 +1499,18 @@ export type LeaveApprovalSelectScalar = {
 
 export type LeaveApprovalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "leaveRequestId" | "managementStatus" | "managementApprovedById" | "managementApprovedAt" | "managementNotes" | "ownerStatus" | "ownerApprovedById" | "ownerApprovedAt" | "ownerNotes" | "needsException" | "exceptionType" | "exceptionStatus" | "exceptionApprovedById" | "exceptionApprovedAt" | "exceptionNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["leaveApproval"]>
 export type LeaveApprovalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  leaveRequest?: boolean | Prisma.LeaveRequestDefaultArgs<ExtArgs>
+  managementApprovedBy?: boolean | Prisma.LeaveApproval$managementApprovedByArgs<ExtArgs>
+  ownerApprovedBy?: boolean | Prisma.LeaveApproval$ownerApprovedByArgs<ExtArgs>
+  exceptionApprovedBy?: boolean | Prisma.LeaveApproval$exceptionApprovedByArgs<ExtArgs>
+}
+export type LeaveApprovalIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  leaveRequest?: boolean | Prisma.LeaveRequestDefaultArgs<ExtArgs>
+  managementApprovedBy?: boolean | Prisma.LeaveApproval$managementApprovedByArgs<ExtArgs>
+  ownerApprovedBy?: boolean | Prisma.LeaveApproval$ownerApprovedByArgs<ExtArgs>
+  exceptionApprovedBy?: boolean | Prisma.LeaveApproval$exceptionApprovedByArgs<ExtArgs>
+}
+export type LeaveApprovalIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   leaveRequest?: boolean | Prisma.LeaveRequestDefaultArgs<ExtArgs>
   managementApprovedBy?: boolean | Prisma.LeaveApproval$managementApprovedByArgs<ExtArgs>
   ownerApprovedBy?: boolean | Prisma.LeaveApproval$ownerApprovedByArgs<ExtArgs>
@@ -1609,6 +1662,30 @@ export interface LeaveApprovalDelegate<ExtArgs extends runtime.Types.Extensions.
   createMany<T extends LeaveApprovalCreateManyArgs>(args?: Prisma.SelectSubset<T, LeaveApprovalCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many LeaveApprovals and returns the data saved in the database.
+   * @param {LeaveApprovalCreateManyAndReturnArgs} args - Arguments to create many LeaveApprovals.
+   * @example
+   * // Create many LeaveApprovals
+   * const leaveApproval = await prisma.leaveApproval.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many LeaveApprovals and only return the `id`
+   * const leaveApprovalWithIdOnly = await prisma.leaveApproval.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends LeaveApprovalCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, LeaveApprovalCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveApprovalPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a LeaveApproval.
    * @param {LeaveApprovalDeleteArgs} args - Arguments to delete one LeaveApproval.
    * @example
@@ -1671,6 +1748,36 @@ export interface LeaveApprovalDelegate<ExtArgs extends runtime.Types.Extensions.
    * 
    */
   updateMany<T extends LeaveApprovalUpdateManyArgs>(args: Prisma.SelectSubset<T, LeaveApprovalUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more LeaveApprovals and returns the data updated in the database.
+   * @param {LeaveApprovalUpdateManyAndReturnArgs} args - Arguments to update many LeaveApprovals.
+   * @example
+   * // Update many LeaveApprovals
+   * const leaveApproval = await prisma.leaveApproval.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more LeaveApprovals and only return the `id`
+   * const leaveApprovalWithIdOnly = await prisma.leaveApproval.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends LeaveApprovalUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, LeaveApprovalUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LeaveApprovalPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one LeaveApproval.
@@ -2120,6 +2227,29 @@ export type LeaveApprovalCreateManyArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
+ * LeaveApproval createManyAndReturn
+ */
+export type LeaveApprovalCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LeaveApproval
+   */
+  select?: Prisma.LeaveApprovalSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the LeaveApproval
+   */
+  omit?: Prisma.LeaveApprovalOmit<ExtArgs> | null
+  /**
+   * The data used to create many LeaveApprovals.
+   */
+  data: Prisma.LeaveApprovalCreateManyInput | Prisma.LeaveApprovalCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeaveApprovalIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * LeaveApproval update
  */
 export type LeaveApprovalUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2161,6 +2291,36 @@ export type LeaveApprovalUpdateManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many LeaveApprovals to update.
    */
   limit?: number
+}
+
+/**
+ * LeaveApproval updateManyAndReturn
+ */
+export type LeaveApprovalUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the LeaveApproval
+   */
+  select?: Prisma.LeaveApprovalSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the LeaveApproval
+   */
+  omit?: Prisma.LeaveApprovalOmit<ExtArgs> | null
+  /**
+   * The data used to update LeaveApprovals.
+   */
+  data: Prisma.XOR<Prisma.LeaveApprovalUpdateManyMutationInput, Prisma.LeaveApprovalUncheckedUpdateManyInput>
+  /**
+   * Filter which LeaveApprovals to update
+   */
+  where?: Prisma.LeaveApprovalWhereInput
+  /**
+   * Limit how many LeaveApprovals to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.LeaveApprovalIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

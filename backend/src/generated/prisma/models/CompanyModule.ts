@@ -723,7 +723,31 @@ export type CompanyModuleSelect<ExtArgs extends runtime.Types.Extensions.Interna
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["companyModule"]>
 
+export type CompanyModuleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  moduleId?: boolean
+  status?: boolean
+  settings?: boolean
+  activatedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["companyModule"]>
 
+export type CompanyModuleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  moduleId?: boolean
+  status?: boolean
+  settings?: boolean
+  activatedAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["companyModule"]>
 
 export type CompanyModuleSelectScalar = {
   id?: boolean
@@ -738,6 +762,14 @@ export type CompanyModuleSelectScalar = {
 
 export type CompanyModuleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "moduleId" | "status" | "settings" | "activatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["companyModule"]>
 export type CompanyModuleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+}
+export type CompanyModuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
+}
+export type CompanyModuleIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   module?: boolean | Prisma.ModuleDefaultArgs<ExtArgs>
 }
@@ -875,6 +907,30 @@ export interface CompanyModuleDelegate<ExtArgs extends runtime.Types.Extensions.
   createMany<T extends CompanyModuleCreateManyArgs>(args?: Prisma.SelectSubset<T, CompanyModuleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many CompanyModules and returns the data saved in the database.
+   * @param {CompanyModuleCreateManyAndReturnArgs} args - Arguments to create many CompanyModules.
+   * @example
+   * // Create many CompanyModules
+   * const companyModule = await prisma.companyModule.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many CompanyModules and only return the `id`
+   * const companyModuleWithIdOnly = await prisma.companyModule.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends CompanyModuleCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, CompanyModuleCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyModulePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a CompanyModule.
    * @param {CompanyModuleDeleteArgs} args - Arguments to delete one CompanyModule.
    * @example
@@ -937,6 +993,36 @@ export interface CompanyModuleDelegate<ExtArgs extends runtime.Types.Extensions.
    * 
    */
   updateMany<T extends CompanyModuleUpdateManyArgs>(args: Prisma.SelectSubset<T, CompanyModuleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more CompanyModules and returns the data updated in the database.
+   * @param {CompanyModuleUpdateManyAndReturnArgs} args - Arguments to update many CompanyModules.
+   * @example
+   * // Update many CompanyModules
+   * const companyModule = await prisma.companyModule.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more CompanyModules and only return the `id`
+   * const companyModuleWithIdOnly = await prisma.companyModule.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends CompanyModuleUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, CompanyModuleUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CompanyModulePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one CompanyModule.
@@ -1374,6 +1460,29 @@ export type CompanyModuleCreateManyArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
+ * CompanyModule createManyAndReturn
+ */
+export type CompanyModuleCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompanyModule
+   */
+  select?: Prisma.CompanyModuleSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompanyModule
+   */
+  omit?: Prisma.CompanyModuleOmit<ExtArgs> | null
+  /**
+   * The data used to create many CompanyModules.
+   */
+  data: Prisma.CompanyModuleCreateManyInput | Prisma.CompanyModuleCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyModuleIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * CompanyModule update
  */
 export type CompanyModuleUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1415,6 +1524,36 @@ export type CompanyModuleUpdateManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many CompanyModules to update.
    */
   limit?: number
+}
+
+/**
+ * CompanyModule updateManyAndReturn
+ */
+export type CompanyModuleUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CompanyModule
+   */
+  select?: Prisma.CompanyModuleSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the CompanyModule
+   */
+  omit?: Prisma.CompanyModuleOmit<ExtArgs> | null
+  /**
+   * The data used to update CompanyModules.
+   */
+  data: Prisma.XOR<Prisma.CompanyModuleUpdateManyMutationInput, Prisma.CompanyModuleUncheckedUpdateManyInput>
+  /**
+   * Filter which CompanyModules to update
+   */
+  where?: Prisma.CompanyModuleWhereInput
+  /**
+   * Limit how many CompanyModules to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CompanyModuleIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

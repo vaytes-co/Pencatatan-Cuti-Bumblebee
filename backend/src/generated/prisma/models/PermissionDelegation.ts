@@ -1296,7 +1296,43 @@ export type PermissionDelegationSelect<ExtArgs extends runtime.Types.Extensions.
   targetRole?: boolean | Prisma.PermissionDelegation$targetRoleArgs<ExtArgs>
 }, ExtArgs["result"]["permissionDelegation"]>
 
+export type PermissionDelegationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  delegatorUserId?: boolean
+  delegateUserId?: boolean
+  permissionId?: boolean
+  targetUserId?: boolean
+  targetRoleId?: boolean
+  canDelegate?: boolean
+  expiresAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  delegatorUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  delegateUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+  targetRole?: boolean | Prisma.PermissionDelegation$targetRoleArgs<ExtArgs>
+}, ExtArgs["result"]["permissionDelegation"]>
 
+export type PermissionDelegationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  companyId?: boolean
+  delegatorUserId?: boolean
+  delegateUserId?: boolean
+  permissionId?: boolean
+  targetUserId?: boolean
+  targetRoleId?: boolean
+  canDelegate?: boolean
+  expiresAt?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  delegatorUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  delegateUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+  targetRole?: boolean | Prisma.PermissionDelegation$targetRoleArgs<ExtArgs>
+}, ExtArgs["result"]["permissionDelegation"]>
 
 export type PermissionDelegationSelectScalar = {
   id?: boolean
@@ -1314,6 +1350,20 @@ export type PermissionDelegationSelectScalar = {
 
 export type PermissionDelegationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "companyId" | "delegatorUserId" | "delegateUserId" | "permissionId" | "targetUserId" | "targetRoleId" | "canDelegate" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["permissionDelegation"]>
 export type PermissionDelegationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  delegatorUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  delegateUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+  targetRole?: boolean | Prisma.PermissionDelegation$targetRoleArgs<ExtArgs>
+}
+export type PermissionDelegationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
+  delegatorUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  delegateUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  permission?: boolean | Prisma.PermissionDefaultArgs<ExtArgs>
+  targetRole?: boolean | Prisma.PermissionDelegation$targetRoleArgs<ExtArgs>
+}
+export type PermissionDelegationIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   company?: boolean | Prisma.CompanyDefaultArgs<ExtArgs>
   delegatorUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   delegateUser?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1460,6 +1510,30 @@ export interface PermissionDelegationDelegate<ExtArgs extends runtime.Types.Exte
   createMany<T extends PermissionDelegationCreateManyArgs>(args?: Prisma.SelectSubset<T, PermissionDelegationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many PermissionDelegations and returns the data saved in the database.
+   * @param {PermissionDelegationCreateManyAndReturnArgs} args - Arguments to create many PermissionDelegations.
+   * @example
+   * // Create many PermissionDelegations
+   * const permissionDelegation = await prisma.permissionDelegation.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many PermissionDelegations and only return the `id`
+   * const permissionDelegationWithIdOnly = await prisma.permissionDelegation.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PermissionDelegationCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PermissionDelegationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PermissionDelegationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a PermissionDelegation.
    * @param {PermissionDelegationDeleteArgs} args - Arguments to delete one PermissionDelegation.
    * @example
@@ -1522,6 +1596,36 @@ export interface PermissionDelegationDelegate<ExtArgs extends runtime.Types.Exte
    * 
    */
   updateMany<T extends PermissionDelegationUpdateManyArgs>(args: Prisma.SelectSubset<T, PermissionDelegationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more PermissionDelegations and returns the data updated in the database.
+   * @param {PermissionDelegationUpdateManyAndReturnArgs} args - Arguments to update many PermissionDelegations.
+   * @example
+   * // Update many PermissionDelegations
+   * const permissionDelegation = await prisma.permissionDelegation.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more PermissionDelegations and only return the `id`
+   * const permissionDelegationWithIdOnly = await prisma.permissionDelegation.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PermissionDelegationUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PermissionDelegationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PermissionDelegationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one PermissionDelegation.
@@ -1965,6 +2069,29 @@ export type PermissionDelegationCreateManyArgs<ExtArgs extends runtime.Types.Ext
 }
 
 /**
+ * PermissionDelegation createManyAndReturn
+ */
+export type PermissionDelegationCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PermissionDelegation
+   */
+  select?: Prisma.PermissionDelegationSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PermissionDelegation
+   */
+  omit?: Prisma.PermissionDelegationOmit<ExtArgs> | null
+  /**
+   * The data used to create many PermissionDelegations.
+   */
+  data: Prisma.PermissionDelegationCreateManyInput | Prisma.PermissionDelegationCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PermissionDelegationIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * PermissionDelegation update
  */
 export type PermissionDelegationUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2006,6 +2133,36 @@ export type PermissionDelegationUpdateManyArgs<ExtArgs extends runtime.Types.Ext
    * Limit how many PermissionDelegations to update.
    */
   limit?: number
+}
+
+/**
+ * PermissionDelegation updateManyAndReturn
+ */
+export type PermissionDelegationUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PermissionDelegation
+   */
+  select?: Prisma.PermissionDelegationSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PermissionDelegation
+   */
+  omit?: Prisma.PermissionDelegationOmit<ExtArgs> | null
+  /**
+   * The data used to update PermissionDelegations.
+   */
+  data: Prisma.XOR<Prisma.PermissionDelegationUpdateManyMutationInput, Prisma.PermissionDelegationUncheckedUpdateManyInput>
+  /**
+   * Filter which PermissionDelegations to update
+   */
+  where?: Prisma.PermissionDelegationWhereInput
+  /**
+   * Limit how many PermissionDelegations to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PermissionDelegationIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

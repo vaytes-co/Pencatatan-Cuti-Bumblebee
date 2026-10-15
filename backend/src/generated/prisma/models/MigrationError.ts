@@ -252,7 +252,6 @@ export type MigrationErrorOrderByWithRelationInput = {
   message?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   migrationJob?: Prisma.MigrationJobOrderByWithRelationInput
-  _relevance?: Prisma.MigrationErrorOrderByRelevanceInput
 }
 
 export type MigrationErrorWhereUniqueInput = Prisma.AtLeast<{
@@ -371,12 +370,6 @@ export type MigrationErrorListRelationFilter = {
 
 export type MigrationErrorOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
-}
-
-export type MigrationErrorOrderByRelevanceInput = {
-  fields: Prisma.MigrationErrorOrderByRelevanceFieldEnum | Prisma.MigrationErrorOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type MigrationErrorCountOrderByAggregateInput = {
@@ -567,7 +560,27 @@ export type MigrationErrorSelect<ExtArgs extends runtime.Types.Extensions.Intern
   migrationJob?: boolean | Prisma.MigrationJobDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["migrationError"]>
 
+export type MigrationErrorSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  migrationJobId?: boolean
+  rowNumber?: boolean
+  field?: boolean
+  value?: boolean
+  message?: boolean
+  createdAt?: boolean
+  migrationJob?: boolean | Prisma.MigrationJobDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["migrationError"]>
 
+export type MigrationErrorSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  migrationJobId?: boolean
+  rowNumber?: boolean
+  field?: boolean
+  value?: boolean
+  message?: boolean
+  createdAt?: boolean
+  migrationJob?: boolean | Prisma.MigrationJobDefaultArgs<ExtArgs>
+}, ExtArgs["result"]["migrationError"]>
 
 export type MigrationErrorSelectScalar = {
   id?: boolean
@@ -581,6 +594,12 @@ export type MigrationErrorSelectScalar = {
 
 export type MigrationErrorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "migrationJobId" | "rowNumber" | "field" | "value" | "message" | "createdAt", ExtArgs["result"]["migrationError"]>
 export type MigrationErrorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  migrationJob?: boolean | Prisma.MigrationJobDefaultArgs<ExtArgs>
+}
+export type MigrationErrorIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  migrationJob?: boolean | Prisma.MigrationJobDefaultArgs<ExtArgs>
+}
+export type MigrationErrorIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   migrationJob?: boolean | Prisma.MigrationJobDefaultArgs<ExtArgs>
 }
 
@@ -715,6 +734,30 @@ export interface MigrationErrorDelegate<ExtArgs extends runtime.Types.Extensions
   createMany<T extends MigrationErrorCreateManyArgs>(args?: Prisma.SelectSubset<T, MigrationErrorCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many MigrationErrors and returns the data saved in the database.
+   * @param {MigrationErrorCreateManyAndReturnArgs} args - Arguments to create many MigrationErrors.
+   * @example
+   * // Create many MigrationErrors
+   * const migrationError = await prisma.migrationError.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many MigrationErrors and only return the `id`
+   * const migrationErrorWithIdOnly = await prisma.migrationError.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends MigrationErrorCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, MigrationErrorCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MigrationErrorPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a MigrationError.
    * @param {MigrationErrorDeleteArgs} args - Arguments to delete one MigrationError.
    * @example
@@ -777,6 +820,36 @@ export interface MigrationErrorDelegate<ExtArgs extends runtime.Types.Extensions
    * 
    */
   updateMany<T extends MigrationErrorUpdateManyArgs>(args: Prisma.SelectSubset<T, MigrationErrorUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more MigrationErrors and returns the data updated in the database.
+   * @param {MigrationErrorUpdateManyAndReturnArgs} args - Arguments to update many MigrationErrors.
+   * @example
+   * // Update many MigrationErrors
+   * const migrationError = await prisma.migrationError.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more MigrationErrors and only return the `id`
+   * const migrationErrorWithIdOnly = await prisma.migrationError.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends MigrationErrorUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, MigrationErrorUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MigrationErrorPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one MigrationError.
@@ -1212,6 +1285,29 @@ export type MigrationErrorCreateManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
+ * MigrationError createManyAndReturn
+ */
+export type MigrationErrorCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MigrationError
+   */
+  select?: Prisma.MigrationErrorSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the MigrationError
+   */
+  omit?: Prisma.MigrationErrorOmit<ExtArgs> | null
+  /**
+   * The data used to create many MigrationErrors.
+   */
+  data: Prisma.MigrationErrorCreateManyInput | Prisma.MigrationErrorCreateManyInput[]
+  skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MigrationErrorIncludeCreateManyAndReturn<ExtArgs> | null
+}
+
+/**
  * MigrationError update
  */
 export type MigrationErrorUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1253,6 +1349,36 @@ export type MigrationErrorUpdateManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many MigrationErrors to update.
    */
   limit?: number
+}
+
+/**
+ * MigrationError updateManyAndReturn
+ */
+export type MigrationErrorUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MigrationError
+   */
+  select?: Prisma.MigrationErrorSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the MigrationError
+   */
+  omit?: Prisma.MigrationErrorOmit<ExtArgs> | null
+  /**
+   * The data used to update MigrationErrors.
+   */
+  data: Prisma.XOR<Prisma.MigrationErrorUpdateManyMutationInput, Prisma.MigrationErrorUncheckedUpdateManyInput>
+  /**
+   * Filter which MigrationErrors to update
+   */
+  where?: Prisma.MigrationErrorWhereInput
+  /**
+   * Limit how many MigrationErrors to update.
+   */
+  limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MigrationErrorIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**

@@ -244,7 +244,6 @@ export type PlatformUserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   platformUserRoles?: Prisma.PlatformUserRoleOrderByRelationAggregateInput
-  _relevance?: Prisma.PlatformUserOrderByRelevanceInput
 }
 
 export type PlatformUserWhereUniqueInput = Prisma.AtLeast<{
@@ -358,12 +357,6 @@ export type PlatformUserUncheckedUpdateManyInput = {
   status?: Prisma.EnumPlatformUserStatusFieldUpdateOperationsInput | $Enums.PlatformUserStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type PlatformUserOrderByRelevanceInput = {
-  fields: Prisma.PlatformUserOrderByRelevanceFieldEnum | Prisma.PlatformUserOrderByRelevanceFieldEnum[]
-  sort: Prisma.SortOrder
-  search: string
 }
 
 export type PlatformUserCountOrderByAggregateInput = {
@@ -524,7 +517,25 @@ export type PlatformUserSelect<ExtArgs extends runtime.Types.Extensions.Internal
   _count?: boolean | Prisma.PlatformUserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["platformUser"]>
 
+export type PlatformUserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  username?: boolean
+  passwordHash?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["platformUser"]>
 
+export type PlatformUserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
+  id?: boolean
+  name?: boolean
+  username?: boolean
+  passwordHash?: boolean
+  status?: boolean
+  createdAt?: boolean
+  updatedAt?: boolean
+}, ExtArgs["result"]["platformUser"]>
 
 export type PlatformUserSelectScalar = {
   id?: boolean
@@ -541,6 +552,8 @@ export type PlatformUserInclude<ExtArgs extends runtime.Types.Extensions.Interna
   platformUserRoles?: boolean | Prisma.PlatformUser$platformUserRolesArgs<ExtArgs>
   _count?: boolean | Prisma.PlatformUserCountOutputTypeDefaultArgs<ExtArgs>
 }
+export type PlatformUserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type PlatformUserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $PlatformUserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "PlatformUser"
@@ -673,6 +686,30 @@ export interface PlatformUserDelegate<ExtArgs extends runtime.Types.Extensions.I
   createMany<T extends PlatformUserCreateManyArgs>(args?: Prisma.SelectSubset<T, PlatformUserCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
+   * Create many PlatformUsers and returns the data saved in the database.
+   * @param {PlatformUserCreateManyAndReturnArgs} args - Arguments to create many PlatformUsers.
+   * @example
+   * // Create many PlatformUsers
+   * const platformUser = await prisma.platformUser.createManyAndReturn({
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Create many PlatformUsers and only return the `id`
+   * const platformUserWithIdOnly = await prisma.platformUser.createManyAndReturn({
+   *   select: { id: true },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  createManyAndReturn<T extends PlatformUserCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, PlatformUserCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformUserPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+  /**
    * Delete a PlatformUser.
    * @param {PlatformUserDeleteArgs} args - Arguments to delete one PlatformUser.
    * @example
@@ -735,6 +772,36 @@ export interface PlatformUserDelegate<ExtArgs extends runtime.Types.Extensions.I
    * 
    */
   updateMany<T extends PlatformUserUpdateManyArgs>(args: Prisma.SelectSubset<T, PlatformUserUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
+
+  /**
+   * Update zero or more PlatformUsers and returns the data updated in the database.
+   * @param {PlatformUserUpdateManyAndReturnArgs} args - Arguments to update many PlatformUsers.
+   * @example
+   * // Update many PlatformUsers
+   * const platformUser = await prisma.platformUser.updateManyAndReturn({
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * 
+   * // Update zero or more PlatformUsers and only return the `id`
+   * const platformUserWithIdOnly = await prisma.platformUser.updateManyAndReturn({
+   *   select: { id: true },
+   *   where: {
+   *     // ... provide filter here
+   *   },
+   *   data: [
+   *     // ... provide data here
+   *   ]
+   * })
+   * Note, that providing `undefined` is treated as the value not being there.
+   * Read more here: https://pris.ly/d/null-undefined
+   * 
+   */
+  updateManyAndReturn<T extends PlatformUserUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, PlatformUserUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PlatformUserPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one PlatformUser.
@@ -1170,6 +1237,25 @@ export type PlatformUserCreateManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * PlatformUser createManyAndReturn
+ */
+export type PlatformUserCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformUser
+   */
+  select?: Prisma.PlatformUserSelectCreateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformUser
+   */
+  omit?: Prisma.PlatformUserOmit<ExtArgs> | null
+  /**
+   * The data used to create many PlatformUsers.
+   */
+  data: Prisma.PlatformUserCreateManyInput | Prisma.PlatformUserCreateManyInput[]
+  skipDuplicates?: boolean
+}
+
+/**
  * PlatformUser update
  */
 export type PlatformUserUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1199,6 +1285,32 @@ export type PlatformUserUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
  * PlatformUser updateMany
  */
 export type PlatformUserUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * The data used to update PlatformUsers.
+   */
+  data: Prisma.XOR<Prisma.PlatformUserUpdateManyMutationInput, Prisma.PlatformUserUncheckedUpdateManyInput>
+  /**
+   * Filter which PlatformUsers to update
+   */
+  where?: Prisma.PlatformUserWhereInput
+  /**
+   * Limit how many PlatformUsers to update.
+   */
+  limit?: number
+}
+
+/**
+ * PlatformUser updateManyAndReturn
+ */
+export type PlatformUserUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlatformUser
+   */
+  select?: Prisma.PlatformUserSelectUpdateManyAndReturn<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlatformUser
+   */
+  omit?: Prisma.PlatformUserOmit<ExtArgs> | null
   /**
    * The data used to update PlatformUsers.
    */
