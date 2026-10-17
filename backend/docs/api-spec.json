@@ -1,0 +1,3510 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Leave Management API (Pencatatan Cuti Bumblebee)",
+    "description": "API specification for the Leave Management (Pencatatan Cuti) backend.\n\nMulti-tenant (company-scoped) application with a separate Platform (super-admin) area.\n\n**Authentication** is cookie-based (httpOnly JWT, HS256, 8h expiry):\n- Company users: cookie `hr_management_token` (payload: `sub`, `companyId`)\n- Platform users: cookie `hr_platform_token` (payload: `sub`, `type: 'platform'`)\n\n**Authorization** is permission-key based:\n- Company routes: `authMiddleware` + `requirePermission(key)` -> 403 body includes `permission`\n- Platform routes: `platformAuthMiddleware` + `requirePlatformPermission(key)` -> 403 body includes `requiredPermission`\n\n**Tenant scope** always comes from the authenticated user's company (no tenant header/query).\n\n**Response envelope** (all endpoints):\n- Success: `{ \"success\": true, \"message\"?: string, \"data\"?: object }`\n- Error: `{ \"success\": false, \"message\": string }`\n\nDates are ISO-8601 strings; date-only values (leave start/end, holidays) are sent and returned as `YYYY-MM-DD`.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Pencatatan Cuti Bumblebee"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Local development server (PORT env, default 3000). All routes are mounted under /api."
+    }
+  ],
+  "tags": [
+    {
+      "name": "System",
+      "description": "Health check and auth diagnostics"
+    },
+    {
+      "name": "Auth (Company)",
+      "description": "Company user login / session"
+    },
+    {
+      "name": "Auth (Platform)",
+      "description": "Platform (super-admin) user login / session"
+    },
+    {
+      "name": "Platform Companies",
+      "description": "Platform-level company and company-module management"
+    },
+    {
+      "name": "Employees",
+      "description": "Employee master data (company scope)"
+    },
+    {
+      "name": "Users",
+      "description": "Company user accounts"
+    },
+    {
+      "name": "Roles",
+      "description": "Company roles"
+    },
+    {
+      "name": "Access Management",
+      "description": "Permission catalog, role assignment, direct user permissions"
+    },
+    {
+      "name": "Permission Delegations",
+      "description": "Delegation of permission authority between users"
+    },
+    {
+      "name": "Leaves",
+      "description": "Leave requests, approvals, balance, calendar, history"
+    }
+  ],
+  "security": [
+    {
+      "companySession": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "companySession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "hr_management_token",
+        "description": "JWT issued by POST /auth/login. httpOnly cookie, HS256, 8h expiry. Payload: `{ sub: userId, companyId }`."
+      },
+      "platformSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "hr_platform_token",
+        "description": "JWT issued by POST /platform/auth/login. httpOnly cookie, HS256, 8h expiry. Payload: `{ sub: platformUserId, type: 'platform' }`."
+      }
+    },
+    "parameters": {
+      "page": {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "description": "Page number. Invalid or <= 0 falls back to 1."
+      },
+      "limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10
+        },
+        "description": "Page size (1-100). Invalid, <= 0 or > 100 falls back to 10."
+      },
+      "search": {
+        "name": "search",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Free-text search, trimmed."
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Validation error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "message": "Data tidak valid."
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Missing, invalid or expired session.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "message": "Sesi kamu sudah tidak valid. Silakan login lagi."
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Authenticated but not allowed (business rule).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "message": "Kamu tidak memiliki akses untuk melakukan tindakan ini."
+            }
+          }
+        }
+      },
+      "ForbiddenPermission": {
+        "description": "Missing required permission key. Company routes include `permission`; platform routes include `requiredPermission`.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "message": "Kamu tidak memiliki izin untuk melakukan tindakan ini.",
+              "permission": "leave.read"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found (in the caller's tenant).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "message": "Data tidak ditemukan."
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflict (duplicate or state conflict).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "message": "Data sudah digunakan."
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Unhandled server error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "message": "Terjadi kesalahan pada server."
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["success", "message"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [false]
+          },
+          "message": {
+            "type": "string"
+          },
+          "permission": {
+            "type": "string",
+            "description": "Only present on company `requirePermission` 403 responses."
+          },
+          "requiredPermission": {
+            "type": "string",
+            "description": "Only present on platform `requirePlatformPermission` 403 responses."
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "required": ["success"],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [true]
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object"
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer" },
+          "limit": { "type": "integer" },
+          "total": { "type": "integer" },
+          "totalPages": { "type": "integer" }
+        }
+      },
+      "CompanyStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "INACTIVE", "SUSPENDED"]
+      },
+      "UserStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "INACTIVE"]
+      },
+      "EmployeeStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "INACTIVE", "RESIGNED", "TERMINATED"]
+      },
+      "PermissionEffect": {
+        "type": "string",
+        "enum": ["ALLOW", "DENY"]
+      },
+      "ModuleStatus": {
+        "type": "string",
+        "enum": ["ACTIVE", "INACTIVE"]
+      },
+      "LeaveType": {
+        "type": "string",
+        "enum": ["ANNUAL", "MARRIAGE", "OTHER"]
+      },
+      "LeaveStatus": {
+        "type": "string",
+        "enum": ["DRAFT", "PENDING_MANAGEMENT", "PENDING_OWNER", "APPROVED", "REJECTED", "CANCELLED"]
+      },
+      "ApprovalStatus": {
+        "type": "string",
+        "enum": ["PENDING", "APPROVED", "REJECTED", "SKIPPED"]
+      },
+      "ExceptionType": {
+        "type": "string",
+        "enum": ["HOLIDAY_ADJACENCY", "OVERLAP", "HOLIDAY_ADJACENCY_AND_OVERLAP"]
+      },
+      "ExceptionStatus": {
+        "type": "string",
+        "enum": ["NOT_REQUIRED", "PENDING", "APPROVED", "REJECTED"]
+      },
+      "AuditActorType": {
+        "type": "string",
+        "enum": ["PLATFORM", "COMPANY", "SYSTEM"]
+      },
+      "Permission": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "key": {
+            "type": "string",
+            "example": "leave.read",
+            "description": "Globally unique permission key, e.g. `leave.read`, `users.manage_permissions`."
+          },
+          "name": { "type": "string" },
+          "description": { "type": "string", "nullable": true },
+          "module": { "type": "string", "example": "leave" },
+          "action": { "type": "string", "example": "read" }
+        }
+      },
+      "AuthPermission": {
+        "type": "object",
+        "description": "Permission object returned in the auth payload (no description).",
+        "properties": {
+          "id": { "type": "integer" },
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "module": { "type": "string" },
+          "action": { "type": "string" }
+        }
+      },
+      "RoleSummary": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "level": { "type": "integer" },
+          "isSystemRole": { "type": "boolean" }
+        }
+      },
+      "AuthUser": {
+        "type": "object",
+        "description": "Company user session payload returned by /auth/login and /auth/me (`data.user`).",
+        "properties": {
+          "id": { "type": "integer" },
+          "company": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "code": { "type": "string" },
+              "name": { "type": "string" },
+              "status": { "$ref": "#/components/schemas/CompanyStatus" }
+            }
+          },
+          "name": { "type": "string" },
+          "username": { "type": "string" },
+          "roles": {
+            "type": "array",
+            "description": "Sorted by level descending.",
+            "items": { "$ref": "#/components/schemas/RoleSummary" }
+          },
+          "permissions": {
+            "type": "array",
+            "description": "Effective permissions (role permissions merged with direct user permissions; DENY removes; Owner gets all).",
+            "items": { "$ref": "#/components/schemas/AuthPermission" }
+          }
+        }
+      },
+      "PlatformAuthUser": {
+        "type": "object",
+        "description": "Platform user session payload returned by /platform/auth/login and /platform/auth/me.",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "username": { "type": "string" },
+          "roles": {
+            "type": "array",
+            "description": "Sorted by level descending.",
+            "items": { "$ref": "#/components/schemas/RoleSummary" }
+          },
+          "permissions": {
+            "type": "array",
+            "description": "Sorted permission keys, e.g. `platform.companies.read`.",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "Company": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "code": { "type": "string", "maxLength": 50 },
+          "name": { "type": "string", "maxLength": 150 },
+          "legalName": { "type": "string", "nullable": true },
+          "email": { "type": "string", "nullable": true },
+          "phone": { "type": "string", "nullable": true },
+          "address": { "type": "string", "nullable": true },
+          "timezone": { "type": "string", "default": "Asia/Jakarta" },
+          "status": { "$ref": "#/components/schemas/CompanyStatus" },
+          "ownerUserId": { "type": "integer", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CompanyCounts": {
+        "type": "object",
+        "properties": {
+          "users": { "type": "integer" },
+          "employees": { "type": "integer" },
+          "companyModules": { "type": "integer" }
+        }
+      },
+      "CompanyListItem": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Company" },
+          {
+            "type": "object",
+            "properties": {
+              "_count": { "$ref": "#/components/schemas/CompanyCounts" }
+            }
+          }
+        ]
+      },
+      "CompanyDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/CompanyListItem" },
+          {
+            "type": "object",
+            "properties": {
+              "ownerUser": {
+                "type": "object",
+                "nullable": true,
+                "properties": {
+                  "id": { "type": "integer" },
+                  "name": { "type": "string" },
+                  "username": { "type": "string" },
+                  "status": { "$ref": "#/components/schemas/UserStatus" }
+                }
+              },
+              "companyModules": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/CompanyModuleLink" }
+              }
+            }
+          }
+        ]
+      },
+      "Module": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string", "nullable": true }
+        }
+      },
+      "CompanyModuleLink": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "description": "CompanyModule row id" },
+          "companyId": { "type": "integer" },
+          "moduleId": { "type": "integer" },
+          "status": { "$ref": "#/components/schemas/ModuleStatus" },
+          "activatedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "module": { "$ref": "#/components/schemas/Module" }
+        }
+      },
+      "CompanyModuleCatalogItem": {
+        "type": "object",
+        "description": "Module catalog entry normalized against the company's CompanyModule row.",
+        "properties": {
+          "id": { "type": "integer", "description": "Module id" },
+          "key": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string", "nullable": true },
+          "status": {
+            "$ref": "#/components/schemas/ModuleStatus"
+          },
+          "companyModuleId": { "type": "integer", "nullable": true },
+          "activatedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time", "nullable": true },
+          "updatedAt": { "type": "string", "format": "date-time", "nullable": true }
+        }
+      },
+      "DepartmentRef": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" }
+        }
+      },
+      "PositionRef": {
+        "type": "object",
+        "nullable": true,
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" }
+        }
+      },
+      "Employee": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "companyId": { "type": "integer" },
+          "employeeCode": { "type": "string", "nullable": true },
+          "name": { "type": "string" },
+          "departmentId": { "type": "integer", "nullable": true },
+          "positionId": { "type": "integer", "nullable": true },
+          "employmentDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Employment start date. Drives annual leave entitlement (1 year of service required)."
+          },
+          "status": { "$ref": "#/components/schemas/EmployeeStatus" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "department": { "$ref": "#/components/schemas/DepartmentRef" },
+          "position": { "$ref": "#/components/schemas/PositionRef" }
+        }
+      },
+      "EmployeeRef": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "employeeCode": { "type": "string", "nullable": true },
+          "name": { "type": "string" },
+          "employmentDate": { "type": "string", "format": "date" },
+          "status": { "$ref": "#/components/schemas/EmployeeStatus" },
+          "department": { "$ref": "#/components/schemas/DepartmentRef" },
+          "position": { "$ref": "#/components/schemas/PositionRef" }
+        }
+      },
+      "UserRef": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "username": { "type": "string" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "companyId": { "type": "integer" },
+          "name": { "type": "string" },
+          "username": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/UserStatus" },
+          "employeeId": { "type": "integer", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UserListItem": {
+        "allOf": [
+          { "$ref": "#/components/schemas/User" },
+          {
+            "type": "object",
+            "properties": {
+              "userRoles": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": { "$ref": "#/components/schemas/RoleSummary" }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "RolePermissionLink": {
+        "type": "object",
+        "properties": {
+          "permission": { "$ref": "#/components/schemas/Permission" }
+        }
+      },
+      "UserDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/User" },
+          {
+            "type": "object",
+            "properties": {
+              "userRoles": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "allOf": [
+                        { "$ref": "#/components/schemas/RoleSummary" },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "description": { "type": "string", "nullable": true },
+                            "rolePermissions": {
+                              "type": "array",
+                              "items": { "$ref": "#/components/schemas/RolePermissionLink" }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "userPermissions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "effect": { "$ref": "#/components/schemas/PermissionEffect" },
+                    "permission": { "$ref": "#/components/schemas/Permission" }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "companyId": { "type": "integer" },
+          "name": { "type": "string", "maxLength": 100 },
+          "description": { "type": "string", "nullable": true },
+          "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 999,
+            "default": 100,
+            "description": "Authority level. The system `owner` role has level 1000. Non-owner actors cannot create/update roles with level >= their own highest role level."
+          },
+          "isSystemRole": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "RoleListItem": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Role" },
+          {
+            "type": "object",
+            "properties": {
+              "_count": {
+                "type": "object",
+                "properties": {
+                  "userRoles": { "type": "integer" },
+                  "rolePermissions": { "type": "integer" }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "RoleDetail": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Role" },
+          {
+            "type": "object",
+            "properties": {
+              "rolePermissions": {
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/RolePermissionLink" }
+              }
+            }
+          }
+        ]
+      },
+      "UserRoleAssignment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "roleId": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "user": { "$ref": "#/components/schemas/UserRef" },
+          "role": { "$ref": "#/components/schemas/RoleSummary" }
+        }
+      },
+      "UserPermissionRecord": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "permissionId": { "type": "integer" },
+          "effect": { "$ref": "#/components/schemas/PermissionEffect" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Delegation": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "companyId": { "type": "integer" },
+          "delegatorUserId": { "type": "integer" },
+          "delegateUserId": { "type": "integer" },
+          "permissionId": { "type": "integer" },
+          "targetUserId": { "type": "integer", "nullable": true },
+          "targetRoleId": { "type": "integer", "nullable": true },
+          "canDelegate": {
+            "type": "boolean",
+            "default": false,
+            "description": "Whether the delegate may further delegate this authority."
+          },
+          "expiresAt": { "type": "string", "format": "date-time", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "delegatorUser": { "$ref": "#/components/schemas/UserRef" },
+          "delegateUser": { "$ref": "#/components/schemas/UserRef" },
+          "permission": { "$ref": "#/components/schemas/Permission" },
+          "targetRole": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "level": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "DelegationListItem": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Delegation" },
+          {
+            "type": "object",
+            "properties": {
+              "actorUserId": { "type": "integer", "description": "The authenticated user who requested the list." }
+            }
+          }
+        ]
+      },
+      "DelegationCreated": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "companyId": { "type": "integer" },
+          "delegatorUserId": { "type": "integer" },
+          "delegateUserId": { "type": "integer" },
+          "permissionId": { "type": "integer" },
+          "targetUserId": { "type": "integer", "nullable": true },
+          "targetRoleId": { "type": "integer", "nullable": true },
+          "canDelegate": { "type": "boolean" },
+          "expiresAt": { "type": "string", "format": "date-time", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "permission": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "key": { "type": "string" },
+              "name": { "type": "string" }
+            }
+          }
+        }
+      },
+      "LeaveApproval": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "leaveRequestId": { "type": "integer" },
+          "managementStatus": { "$ref": "#/components/schemas/ApprovalStatus" },
+          "managementApprovedById": { "type": "integer", "nullable": true },
+          "managementApprovedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "managementNotes": { "type": "string", "nullable": true },
+          "ownerStatus": { "$ref": "#/components/schemas/ApprovalStatus" },
+          "ownerApprovedById": { "type": "integer", "nullable": true },
+          "ownerApprovedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "ownerNotes": { "type": "string", "nullable": true },
+          "needsException": {
+            "type": "boolean",
+            "description": "True when the request overlaps other employees' leave AND is adjacent to an active company holiday (exception workflow required)."
+          },
+          "exceptionType": {
+            "allOf": [{ "$ref": "#/components/schemas/ExceptionType" }],
+            "nullable": true
+          },
+          "exceptionStatus": { "$ref": "#/components/schemas/ExceptionStatus" },
+          "exceptionApprovedById": { "type": "integer", "nullable": true },
+          "exceptionApprovedAt": { "type": "string", "format": "date-time", "nullable": true },
+          "exceptionNotes": { "type": "string", "nullable": true },
+          "managementApprovedBy": {
+            "allOf": [{ "$ref": "#/components/schemas/UserRef" }],
+            "nullable": true
+          },
+          "ownerApprovedBy": {
+            "allOf": [{ "$ref": "#/components/schemas/UserRef" }],
+            "nullable": true
+          },
+          "exceptionApprovedBy": {
+            "allOf": [{ "$ref": "#/components/schemas/UserRef" }],
+            "nullable": true
+          }
+        }
+      },
+      "Leave": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "companyId": { "type": "integer" },
+          "employeeId": { "type": "integer" },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "totalDays": {
+            "type": "integer",
+            "description": "Computed working days (Mon-Fri excluding active company holidays), inclusive of start and end dates."
+          },
+          "type": { "$ref": "#/components/schemas/LeaveType" },
+          "reason": { "type": "string", "nullable": true },
+          "notes": { "type": "string", "nullable": true },
+          "status": { "$ref": "#/components/schemas/LeaveStatus" },
+          "leavePeriodStart": {
+            "type": "string",
+            "format": "date",
+            "description": "Start of the employee's annual leave period (anniversary-to-anniversary). Equals startDate for non-ANNUAL types."
+          },
+          "leavePeriodEnd": { "type": "string", "format": "date" },
+          "createdById": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" },
+          "employee": { "$ref": "#/components/schemas/EmployeeRef" },
+          "createdBy": { "$ref": "#/components/schemas/UserRef" },
+          "approval": {
+            "allOf": [{ "$ref": "#/components/schemas/LeaveApproval" }],
+            "nullable": true
+          }
+        }
+      },
+      "LeaveBalance": {
+        "type": "object",
+        "properties": {
+          "employee": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "employeeCode": { "type": "string", "nullable": true },
+              "employmentDate": { "type": "string", "format": "date" }
+            }
+          },
+          "period": {
+            "type": "object",
+            "properties": {
+              "startDate": { "type": "string", "format": "date" },
+              "endDate": { "type": "string", "format": "date" }
+            }
+          },
+          "completedYears": { "type": "integer" },
+          "entitlement": {
+            "type": "integer",
+            "description": "Annual leave entitlement by completed years of service (settings: HAK_CUTI_1_TAHUN=7, HAK_CUTI_2_TAHUN=10, HAK_CUTI_3_TAHUN=12)."
+          },
+          "usedDays": { "type": "integer", "description": "Sum of APPROVED ANNUAL requests in the current period." },
+          "pendingDays": { "type": "integer", "description": "Sum of PENDING_MANAGEMENT/PENDING_OWNER ANNUAL requests in the current period." },
+          "remainingDays": { "type": "integer", "description": "max(0, entitlement - usedDays)" },
+          "availableDays": { "type": "integer", "description": "max(0, entitlement - usedDays - pendingDays)" },
+          "eligible": {
+            "type": "boolean",
+            "description": "Only present in the not-eligible fallback response (employee with < 1 year of service)."
+          },
+          "message": {
+            "type": "string",
+            "description": "Only present in the not-eligible fallback response."
+          }
+        }
+      },
+      "CalendarLeaveItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "employeeId": { "type": "integer" },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "totalDays": { "type": "integer" },
+          "type": { "$ref": "#/components/schemas/LeaveType" },
+          "status": { "$ref": "#/components/schemas/LeaveStatus" },
+          "employee": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "employeeCode": { "type": "string", "nullable": true }
+            }
+          }
+        }
+      },
+      "ApprovalDecision": {
+        "type": "object",
+        "required": ["decision"],
+        "description": "Decision body for all leave approval endpoints.",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": ["APPROVE", "APPROVED", "REJECT", "REJECTED"],
+            "description": "Case-insensitive and trimmed. `APPROVE`/`APPROVED` -> APPROVED, `REJECT`/`REJECTED` -> REJECTED."
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional approval/rejection note, trimmed."
+          }
+        }
+      },
+      "SetUserPermissionResponse": {
+        "type": "object",
+        "properties": {
+          "userPermission": { "$ref": "#/components/schemas/UserPermissionRecord" },
+          "permission": { "$ref": "#/components/schemas/Permission" }
+        }
+      },
+      "Holiday": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "date": { "type": "string", "format": "date" },
+          "name": { "type": "string" },
+          "description": { "type": "string", "nullable": true }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health check",
+        "description": "Public liveness endpoint.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service is running.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "message": "Leave Management API is running"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/test-auth": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Auth middleware diagnostic",
+        "description": "Returns the authenticated company user attached by `authMiddleware`.",
+        "responses": {
+          "200": {
+            "description": "Authenticated user.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/AuthUser" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth (Company)"],
+        "summary": "Company user login",
+        "description": "Verifies credentials, checks user and company status, and issues the httpOnly `hr_management_token` cookie (8h).",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": { "type": "string", "example": "hr.admin" },
+                  "password": { "type": "string", "example": "secret123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful; sets `hr_management_token` cookie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/AuthUser" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Username dan password wajib diisi.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "`Username atau password salah.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "403": {
+            "description": "`Akun kamu sedang tidak aktif.` or `Perusahaan kamu sedang tidak aktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": ["Auth (Company)"],
+        "summary": "Current company session",
+        "description": "Reads and verifies the `hr_management_token` cookie, re-loads the user's roles and effective permissions. Not protected by `authMiddleware` - it performs its own verification.",
+        "responses": {
+          "200": {
+            "description": "Current session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/AuthUser" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "`Perusahaan kamu sedang tidak aktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["Auth (Company)"],
+        "summary": "Company user logout",
+        "description": "Clears the `hr_management_token` cookie. No auth middleware; safe to call without a valid session.",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Cookie cleared.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" },
+                "example": { "success": true, "message": "Logout berhasil." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/platform/auth/login": {
+      "post": {
+        "tags": ["Auth (Platform)"],
+        "summary": "Platform user login",
+        "description": "Verifies platform credentials and issues the httpOnly `hr_platform_token` cookie (8h).",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful; sets `hr_platform_token` cookie.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/PlatformAuthUser" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Username wajib diisi.` or `Password wajib diisi.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": {
+            "description": "`Username atau password salah.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "403": {
+            "description": "`Akun platform kamu sedang tidak aktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/auth/me": {
+      "get": {
+        "tags": ["Auth (Platform)"],
+        "summary": "Current platform session",
+        "security": [{ "platformSession": [] }],
+        "responses": {
+          "200": {
+            "description": "Current platform session.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "$ref": "#/components/schemas/PlatformAuthUser" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "`Akun platform kamu sedang tidak aktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/auth/logout": {
+      "post": {
+        "tags": ["Auth (Platform)"],
+        "summary": "Platform user logout",
+        "description": "Clears the `hr_platform_token` cookie.",
+        "security": [{ "platformSession": [] }],
+        "responses": {
+          "200": {
+            "description": "Cookie cleared.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" },
+                "example": { "success": true, "message": "Logout platform berhasil." }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/companies": {
+      "get": {
+        "tags": ["Platform Companies"],
+        "summary": "List companies",
+        "description": "Returns all companies ordered by createdAt descending. No pagination or filters.",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.companies.read",
+        "responses": {
+          "200": {
+            "description": "Company list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/CompanyListItem" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Platform Companies"],
+        "summary": "Create company (with owner account)",
+        "description": "Creates the company (status ACTIVE), the owner user, the system `Owner` role (level 1000) with all company permission keys assigned, and links the owner to the role.",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.companies.create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code", "name", "ownerName", "ownerUsername", "ownerPassword"],
+                "properties": {
+                  "code": { "type": "string", "maxLength": 50, "description": "Unique company code." },
+                  "name": { "type": "string", "maxLength": 150 },
+                  "legalName": { "type": "string", "nullable": true },
+                  "email": { "type": "string", "nullable": true },
+                  "phone": { "type": "string", "nullable": true },
+                  "address": { "type": "string", "nullable": true },
+                  "timezone": { "type": "string", "default": "Asia/Jakarta" },
+                  "ownerName": { "type": "string" },
+                  "ownerUsername": { "type": "string", "description": "Globally unique." },
+                  "ownerPassword": { "type": "string", "minLength": 8, "description": "Bcrypt-hashed (12 rounds)." }
+                }
+              },
+              "example": {
+                "code": "BUMBLEBEE",
+                "name": "PT Bumblebee Sentosa",
+                "timezone": "Asia/Jakarta",
+                "ownerName": "Owner Utama",
+                "ownerUsername": "owner",
+                "ownerPassword": "rahasia123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Company created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "company": { "$ref": "#/components/schemas/Company" },
+                        "owner": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer" },
+                            "name": { "type": "string" },
+                            "username": { "type": "string" },
+                            "status": { "$ref": "#/components/schemas/UserStatus" }
+                          }
+                        },
+                        "role": { "$ref": "#/components/schemas/RoleSummary" },
+                        "permissionCount": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing/invalid fields: `Kode perusahaan wajib diisi.`, `Nama perusahaan wajib diisi.`, `Nama Owner wajib diisi.`, `Username Owner wajib diisi.`, `Password Owner wajib diisi.`, `Password Owner minimal 8 karakter.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "409": {
+            "description": "`Kode perusahaan sudah digunakan.` or `Username Owner sudah digunakan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": {
+            "description": "`Data permission company belum lengkap. Jalankan seed terlebih dahulu.` or generic server error.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      }
+    },
+    "/platform/companies/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Platform Companies"],
+        "summary": "Get company detail",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.companies.read",
+        "responses": {
+          "200": {
+            "description": "Company detail (includes ownerUser, _count and companyModules).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "$ref": "#/components/schemas/CompanyDetail" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID perusahaan tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Perusahaan tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Platform Companies"],
+        "summary": "Update company info",
+        "description": "Partial update. At least one field must be provided. Nullable fields accept `null` to clear.",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.companies.update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "name": { "type": "string", "description": "Required if present; must be non-empty." },
+                  "legalName": { "type": "string", "nullable": true },
+                  "email": { "type": "string", "nullable": true },
+                  "phone": { "type": "string", "nullable": true },
+                  "address": { "type": "string", "nullable": true },
+                  "timezone": { "type": "string", "description": "Required if present; must be non-empty." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Company updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/Company" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID perusahaan tidak valid.`, `Data perusahaan tidak valid.`, `Tidak ada data perusahaan yang perlu diperbarui.`, or per-field validation errors.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Perusahaan tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/companies/{id}/suspend": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "patch": {
+        "tags": ["Platform Companies"],
+        "summary": "Suspend company",
+        "description": "Sets company status to SUSPENDED. Suspended companies cannot log in.",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.companies.suspend",
+        "responses": {
+          "200": {
+            "description": "Company suspended.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "code": { "type": "string" },
+                        "name": { "type": "string" },
+                        "status": { "type": "string", "enum": ["SUSPENDED"] },
+                        "ownerUserId": { "type": "integer", "nullable": true },
+                        "updatedAt": { "type": "string", "format": "date-time" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID perusahaan tidak valid.` or `Perusahaan sudah dalam status suspended.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Perusahaan tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/companies/{id}/activate": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "patch": {
+        "tags": ["Platform Companies"],
+        "summary": "Activate company",
+        "description": "Sets company status back to ACTIVE.",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.companies.activate",
+        "responses": {
+          "200": {
+            "description": "Company activated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "code": { "type": "string" },
+                        "name": { "type": "string" },
+                        "status": { "type": "string", "enum": ["ACTIVE"] },
+                        "ownerUserId": { "type": "integer", "nullable": true },
+                        "updatedAt": { "type": "string", "format": "date-time" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID perusahaan tidak valid.` or `Perusahaan sudah dalam status active.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Perusahaan tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/companies/{id}/modules": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Platform Companies"],
+        "summary": "List module catalog with company activation state",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.modules.read",
+        "responses": {
+          "200": {
+            "description": "All modules (ordered by name) with the company's activation state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "company": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer" },
+                            "code": { "type": "string" },
+                            "name": { "type": "string" }
+                          }
+                        },
+                        "modules": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/CompanyModuleCatalogItem" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID perusahaan tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Perusahaan tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/companies/{id}/modules/{moduleId}/activate": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        },
+        {
+          "name": "moduleId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "patch": {
+        "tags": ["Platform Companies"],
+        "summary": "Activate module for company",
+        "description": "Upserts the CompanyModule with status ACTIVE and sets activatedAt.",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.modules.manage",
+        "responses": {
+          "200": {
+            "description": "Module activated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "company": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer" },
+                            "code": { "type": "string" },
+                            "name": { "type": "string" }
+                          }
+                        },
+                        "module": { "$ref": "#/components/schemas/Module" },
+                        "companyModule": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer" },
+                            "companyId": { "type": "integer" },
+                            "moduleId": { "type": "integer" },
+                            "status": { "type": "string", "enum": ["ACTIVE"] },
+                            "activatedAt": { "type": "string", "format": "date-time", "nullable": true },
+                            "createdAt": { "type": "string", "format": "date-time" },
+                            "updatedAt": { "type": "string", "format": "date-time" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID perusahaan tidak valid.`, `ID module tidak valid.`, or `Module sudah aktif untuk perusahaan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Perusahaan tidak ditemukan.` or `Module tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/platform/companies/{id}/modules/{moduleId}/deactivate": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        },
+        {
+          "name": "moduleId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "patch": {
+        "tags": ["Platform Companies"],
+        "summary": "Deactivate module for company",
+        "description": "Sets the existing CompanyModule to INACTIVE and clears activatedAt.",
+        "security": [{ "platformSession": [] }],
+        "x-required-permission": "platform.modules.manage",
+        "responses": {
+          "200": {
+            "description": "Module deactivated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "companyId": { "type": "integer" },
+                        "moduleId": { "type": "integer" },
+                        "status": { "type": "string", "enum": ["INACTIVE"] },
+                        "activatedAt": { "type": "string", "format": "date-time", "nullable": true },
+                        "createdAt": { "type": "string", "format": "date-time" },
+                        "updatedAt": { "type": "string", "format": "date-time" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID perusahaan tidak valid.`, `ID module tidak valid.`, or `Module sudah tidak aktif untuk perusahaan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Module belum dikonfigurasi untuk perusahaan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/employees": {
+      "get": {
+        "tags": ["Employees"],
+        "summary": "List employees",
+        "description": "Company-scoped. Search matches `name` or `employeeCode` (contains).",
+        "x-required-permission": "employees.read",
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/limit" },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Matches employee name or employeeCode."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Employee list (ordered by name asc).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "employees": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Employee" }
+                        },
+                        "pagination": { "$ref": "#/components/schemas/Pagination" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Employees"],
+        "summary": "Create employee",
+        "x-required-permission": "employees.create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "employmentDate"],
+                "properties": {
+                  "employeeCode": { "type": "string", "nullable": true, "description": "Optional; unique per company." },
+                  "name": { "type": "string" },
+                  "departmentId": { "type": "integer", "nullable": true, "description": "Must belong to the same company." },
+                  "positionId": { "type": "integer", "nullable": true, "description": "Must belong to the same company." },
+                  "employmentDate": { "type": "string", "format": "date", "description": "`YYYY-MM-DD`." },
+                  "status": { "$ref": "#/components/schemas/EmployeeStatus" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "employee": { "$ref": "#/components/schemas/Employee" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Nama karyawan wajib diisi.`, `Tanggal masuk karyawan wajib diisi.`, `Format tanggal masuk tidak valid.`, `Department tidak valid.`, `Position tidak valid.`, `Status karyawan tidak valid.`, `Department tidak ditemukan di perusahaan ini.`, or `Position tidak ditemukan di perusahaan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "409": {
+            "description": "`Kode karyawan sudah digunakan di perusahaan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List users",
+        "description": "Company-scoped. Search matches `name` or `username`. Unknown `status` values are ignored (no filter).",
+        "x-required-permission": "users.read",
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/limit" },
+          { "$ref": "#/components/parameters/search" },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": { "$ref": "#/components/schemas/UserStatus" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list (ordered by name asc).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "users": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/UserListItem" }
+                        },
+                        "pagination": { "$ref": "#/components/schemas/Pagination" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create user",
+        "description": "Creates an ACTIVE user. Password is bcrypt-hashed (12 rounds). Optionally links an employee and assigns roles.",
+        "x-required-permission": "users.create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "username", "password"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "username": { "type": "string", "description": "Globally unique." },
+                  "password": { "type": "string", "minLength": 8 },
+                  "employeeId": { "type": "integer", "nullable": true, "description": "Must exist in the company and not already have a user account." },
+                  "roleIds": {
+                    "type": "array",
+                    "items": { "type": "integer" },
+                    "description": "All roles must belong to the company. Assigning the system `owner` role is restricted to the company owner."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/User" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Nama pengguna wajib diisi.`, `Username wajib diisi.`, `Password minimal 8 karakter.`, `Employee ID tidak valid.`, or `Salah satu role tidak valid untuk perusahaan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission, or `Hanya Owner perusahaan yang dapat memberikan role Owner.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Karyawan tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Username sudah digunakan.` or `Karyawan tersebut sudah memiliki akun pengguna.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/users/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user detail",
+        "description": "Includes roles (with role permissions) and direct user permissions. `currentUser` is true when the actor is this user.",
+        "x-required-permission": "users.read",
+        "responses": {
+          "200": {
+            "description": "User detail.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/UserDetail" },
+                        "currentUser": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengguna tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update user",
+        "description": "Partial update of name, username and/or password. `employeeId`/`roleIds` are ignored. The company owner account cannot be edited by others.",
+        "x-required-permission": "users.update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "name": { "type": "string" },
+                  "username": { "type": "string" },
+                  "password": { "type": "string", "minLength": 8 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/User" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengguna tidak valid.`, `Nama pengguna tidak boleh kosong.`, `Username tidak boleh kosong.`, `Password minimal 8 karakter.`, or `Tidak ada data pengguna yang diubah.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Akun Owner tidak dapat diubah oleh pengguna lain.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Username sudah digunakan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/users/{id}/activate": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Activate user",
+        "x-required-permission": "users.update",
+        "responses": {
+          "200": {
+            "description": "User activated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer" },
+                            "companyId": { "type": "integer" },
+                            "name": { "type": "string" },
+                            "username": { "type": "string" },
+                            "status": { "type": "string", "enum": ["ACTIVE"] },
+                            "employeeId": { "type": "integer", "nullable": true }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengguna tidak valid.` or `Pengguna sudah aktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Akun Owner tidak dapat dinonaktifkan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/users/{id}/deactivate": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Deactivate user",
+        "x-required-permission": "users.update",
+        "responses": {
+          "200": {
+            "description": "User deactivated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer" },
+                            "companyId": { "type": "integer" },
+                            "name": { "type": "string" },
+                            "username": { "type": "string" },
+                            "status": { "type": "string", "enum": ["INACTIVE"] },
+                            "employeeId": { "type": "integer", "nullable": true }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengguna tidak valid.` or `Pengguna sudah nonaktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Akun Owner tidak dapat dinonaktifkan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": ["Roles"],
+        "summary": "List roles",
+        "description": "Company-scoped, ordered by level desc then name asc.",
+        "x-required-permission": "roles.read",
+        "responses": {
+          "200": {
+            "description": "Role list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "roles": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/RoleListItem" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Roles"],
+        "summary": "Create role",
+        "description": "Non-owner actors cannot create roles with level >= their own highest role level.",
+        "x-required-permission": "roles.create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string", "maxLength": 100, "description": "Unique per company." },
+                  "description": { "type": "string", "nullable": true },
+                  "level": { "type": "integer", "minimum": 1, "maximum": 999, "default": 100 },
+                  "permissionIds": {
+                    "type": "array",
+                    "items": { "type": "integer" },
+                    "description": "All permission ids must exist."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Role created (`isSystemRole: false`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "role": { "$ref": "#/components/schemas/RoleDetail" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Nama role wajib diisi.`, `Level role harus antara 1 sampai 999.`, or `Salah satu permission tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu tidak dapat membuat role dengan level yang sama atau lebih tinggi dari authority kamu.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Nama role sudah digunakan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/roles/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Roles"],
+        "summary": "Get role detail",
+        "x-required-permission": "roles.read",
+        "responses": {
+          "200": {
+            "description": "Role detail (with rolePermissions).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "role": { "$ref": "#/components/schemas/RoleDetail" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID role tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "404": {
+            "description": "`Role tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Roles"],
+        "summary": "Update role",
+        "description": "Partial update. The system `owner` role cannot be modified.",
+        "x-required-permission": "roles.update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string", "nullable": true },
+                  "level": { "type": "integer", "minimum": 1, "maximum": 999 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "role": { "$ref": "#/components/schemas/RoleDetail" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID role tidak valid.`, `Nama role tidak boleh kosong.`, `Level role harus antara 1 sampai 999.`, or `Tidak ada data role yang diubah.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission, `Role Owner adalah system role dan tidak dapat diubah.`, or `Kamu tidak dapat memberikan level role yang sama atau lebih tinggi dari authority kamu.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Role tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Nama role sudah digunakan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["Roles"],
+        "summary": "Delete role",
+        "description": "Deletes role permissions, delegations targeting the role, then the role.",
+        "x-required-permission": "roles.delete",
+        "responses": {
+          "200": {
+            "description": "Role deleted. No `data` field.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" },
+                "example": { "success": true, "message": "Role berhasil dihapus." }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID role tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Role Owner tidak dapat dihapus.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Role tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Role masih digunakan oleh pengguna. Lepaskan role dari semua pengguna terlebih dahulu.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/access/permissions": {
+      "get": {
+        "tags": ["Access Management"],
+        "summary": "List permission catalog",
+        "description": "Global permission catalog (not company-filtered), ordered by module, action, name.",
+        "x-required-permission": "users.manage_permissions",
+        "responses": {
+          "200": {
+            "description": "Permission list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "permissions": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Permission" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/access/users/{userId}/roles/{roleId}": {
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        },
+        {
+          "name": "roleId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "post": {
+        "tags": ["Access Management"],
+        "summary": "Assign role to user",
+        "description": "Actor must be able to manage both the target user and the role (authority/level rules).",
+        "x-required-permission": "users.update",
+        "responses": {
+          "201": {
+            "description": "Role assigned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "userRole": { "$ref": "#/components/schemas/UserRoleAssignment" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`User ID atau Role ID tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or authority errors: `Kamu tidak memiliki authority untuk mengubah user ini.`, `Kamu tidak memiliki authority untuk memberikan role ini.`, `Hanya Owner yang dapat memberikan role Owner.`, `Role Owner hanya boleh dimiliki oleh Owner utama perusahaan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.` or `Role tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Pengguna sudah memiliki role tersebut.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["Access Management"],
+        "summary": "Revoke role from user",
+        "x-required-permission": "users.update",
+        "responses": {
+          "200": {
+            "description": "Role revoked. No `data` field.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" },
+                "example": { "success": true, "message": "Role berhasil dicabut dari pengguna." }
+              }
+            }
+          },
+          "400": {
+            "description": "`User ID atau Role ID tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or: `Kamu tidak memiliki authority untuk mengubah user ini.`, `Kamu tidak memiliki authority untuk mencabut role ini.`, `Role Owner tidak dapat dicabut.`, `Role milik Owner utama tidak dapat diubah.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.`, `Role tidak ditemukan.`, or `User tidak memiliki role tersebut.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/access/users/{userId}/permissions/{permissionId}": {
+      "parameters": [
+        {
+          "name": "userId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        },
+        {
+          "name": "permissionId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "put": {
+        "tags": ["Access Management"],
+        "summary": "Set direct user permission (upsert)",
+        "description": "Creates or updates a direct ALLOW/DENY permission for the user. DENY overrides role permissions. Actor cannot manage own direct permissions; the company owner's permissions cannot be changed.",
+        "x-required-permission": "users.manage_permissions",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["effect"],
+                "properties": {
+                  "effect": { "$ref": "#/components/schemas/PermissionEffect" }
+                }
+              },
+              "example": { "effect": "ALLOW" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Existing direct permission updated.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SetUserPermissionResponse" }
+              }
+            }
+          },
+          "201": {
+            "description": "Direct permission created.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SetUserPermissionResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "`User ID atau Permission ID tidak valid.` or `Effect permission harus ALLOW atau DENY.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or: `Kamu tidak dapat mengubah permission langsung untuk akun sendiri.`, `Permission Owner tidak dapat diubah melalui direct permission.`, `Kamu tidak memiliki authority untuk mengubah user ini.`, `Kamu tidak boleh memberikan permission yang tidak kamu miliki.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.` or `Permission tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "delete": {
+        "tags": ["Access Management"],
+        "summary": "Revoke direct user permission",
+        "x-required-permission": "users.manage_permissions",
+        "responses": {
+          "200": {
+            "description": "Direct permission revoked. No `data` field.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" },
+                "example": { "success": true, "message": "Direct permission berhasil dicabut." }
+              }
+            }
+          },
+          "400": {
+            "description": "`User ID atau Permission ID tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or: `Permission Owner tidak dapat dicabut.`, `Kamu tidak dapat mencabut permission langsung dari akun sendiri.`, `Kamu tidak memiliki authority untuk mengubah user ini.`, `Kamu tidak boleh mengelola permission yang tidak kamu miliki.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengguna tidak ditemukan.`, `Permission tidak ditemukan.`, or `Direct permission tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/access/delegations": {
+      "get": {
+        "tags": ["Permission Delegations"],
+        "summary": "List delegations",
+        "description": "Company-scoped, ordered by createdAt desc.",
+        "x-required-permission": "users.manage_permissions",
+        "responses": {
+          "200": {
+            "description": "Delegation list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "delegations": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/DelegationListItem" }
+                        },
+                        "actorUserId": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Permission Delegations"],
+        "summary": "Create delegation",
+        "description": "The actor delegates one of their own permissions to a delegate user, optionally scoped to a target user or target role (not both). The actor becomes delegatorUserId. Validations enforce manage-ability, level rules, and that the actor holds (or is Owner with) the permission.",
+        "x-required-permission": "users.manage_permissions",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["delegateUserId", "permissionId"],
+                "properties": {
+                  "delegateUserId": { "type": "integer", "description": "Active user in the same company." },
+                  "permissionId": { "type": "integer" },
+                  "targetUserId": { "type": "integer", "nullable": true, "description": "Scope: single target user. Mutually exclusive with targetRoleId. Omit both for a global delegation." },
+                  "targetRoleId": { "type": "integer", "nullable": true, "description": "Scope: all members of a role. Cannot target the Owner role." },
+                  "canDelegate": { "type": "boolean", "default": false },
+                  "expiresAt": { "type": "string", "format": "date-time", "nullable": true, "description": "Must be in the future." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Delegation created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "delegation": { "$ref": "#/components/schemas/DelegationCreated" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Delegate user ID tidak valid.`, `Permission ID tidak valid.`, `Target user ID tidak valid.`, `Target role ID tidak valid.`, `Gunakan targetUserId atau targetRoleId, bukan keduanya sekaligus.`, `Target delegation tidak boleh berupa diri sendiri atau delegate user.`, `Tanggal expiration harus berupa string tanggal.`, `Tanggal expiration tidak valid.`, or `Tanggal expiration harus berada di masa depan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or authority errors: `Target user tidak dapat dikelola oleh penerima delegation.`, `Delegate user tidak memiliki authority terhadap target user tersebut.`, `Delegation tidak boleh menargetkan role Owner.`, `Authority atau scope delegation tidak dapat diverifikasi.`, `Kamu tidak memiliki authority atau scope yang sesuai untuk mendelegasikan permission ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`User penerima delegation tidak ditemukan.`, `Permission tidak ditemukan.`, `Target user tidak ditemukan.`, or `Target role tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/access/delegations/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "delete": {
+        "tags": ["Permission Delegations"],
+        "summary": "Delete delegation",
+        "description": "Only the original delegator or the company owner may delete a delegation.",
+        "x-required-permission": "users.manage_permissions",
+        "responses": {
+          "200": {
+            "description": "Delegation deleted. No `data` field.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessResponse" },
+                "example": { "success": true, "message": "Permission delegation berhasil dihapus." }
+              }
+            }
+          },
+          "400": {
+            "description": "`Delegation ID tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu tidak memiliki authority untuk menghapus delegation ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Delegation tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves": {
+      "get": {
+        "tags": ["Leaves"],
+        "summary": "List leave requests",
+        "description": "Company-scoped, ordered by createdAt desc. Users without `leave.approve_management`/`leave.approve_owner` (non-owner) only see their own linked employee's requests; requesting another employeeId returns 403.",
+        "x-required-permission": "leave.read",
+        "parameters": [
+          { "$ref": "#/components/parameters/page" },
+          { "$ref": "#/components/parameters/limit" },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": { "$ref": "#/components/schemas/LeaveStatus" },
+            "description": "Invalid value -> 400 `Status cuti tidak valid.`"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": { "$ref": "#/components/schemas/LeaveType" },
+            "description": "Invalid value -> 400 `Jenis cuti tidak valid.`"
+          },
+          {
+            "name": "employeeId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "minimum": 1 },
+            "description": "Invalid -> 400 `Employee ID tidak valid.`; not allowed -> 403 `Kamu tidak dapat melihat cuti karyawan lain.`"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date" },
+            "description": "`YYYY-MM-DD`; filters leave.startDate >= startDate. Invalid -> 400 `Filter startDate harus berformat YYYY-MM-DD.`"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date" },
+            "description": "`YYYY-MM-DD`; filters leave.endDate <= endDate. Invalid -> 400 `Filter endDate harus berformat YYYY-MM-DD.`"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Leave list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leaves": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Leave" }
+                        },
+                        "pagination": { "$ref": "#/components/schemas/Pagination" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "post": {
+        "tags": ["Leaves"],
+        "summary": "Create leave request",
+        "description": "Validates working days, minimum notice (setting MIN_HARI_PENGAJUAN, default 7 days before), maximum duration (setting MAX_HARI_CUTI, default 3 working days), annual leave entitlement/period, same-employee overlap, and company-wide overlap (overlap adjacent to an active holiday triggers the exception workflow). Created with status PENDING_MANAGEMENT and an approval record.",
+        "x-required-permission": "leave.create",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["startDate", "endDate", "type"],
+                "properties": {
+                  "employeeId": { "type": "integer", "nullable": true, "description": "Defaults to the actor's linked employee. Providing another employee requires `leave.approve_management` or `leave.approve_owner` (or owner)." },
+                  "startDate": { "type": "string", "format": "date", "description": "`YYYY-MM-DD`." },
+                  "endDate": { "type": "string", "format": "date", "description": "`YYYY-MM-DD`; must not be before startDate." },
+                  "type": { "$ref": "#/components/schemas/LeaveType" },
+                  "reason": { "type": "string", "nullable": true },
+                  "notes": { "type": "string", "nullable": true }
+                }
+              },
+              "example": {
+                "startDate": "2026-11-02",
+                "endDate": "2026-11-04",
+                "type": "ANNUAL",
+                "reason": "Libur keluarga"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Leave created (`PENDING_MANAGEMENT`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leave": { "$ref": "#/components/schemas/Leave" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "message": "Pengajuan cuti berhasil dibuat dan menunggu persetujuan Management."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Tanggal mulai dan selesai wajib berformat YYYY-MM-DD.`, `Jenis cuti harus ANNUAL, MARRIAGE, atau OTHER.`, `Tanggal selesai tidak boleh sebelum tanggal mulai.`, `Karyawan belum mencapai masa kerja 1 tahun sehingga belum memiliki hak cuti.`, `Pengajuan cuti harus dilakukan minimal H-N sebelum tanggal mulai.`, `Rentang tanggal tidak memiliki hari kerja yang dapat dihitung sebagai cuti.`, `Cuti normal maksimal N hari kerja.`, `Sisa hak cuti tidak mencukupi...`, `Employee ID tidak valid.`, or `Akun ini belum terhubung dengan data karyawan. Minta HR menghubungkan akun ke karyawan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu hanya dapat mengajukan cuti untuk diri sendiri.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Karyawan tidak ditemukan atau tidak aktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Karyawan sudah memiliki pengajuan cuti lain yang tanggalnya bertumpang tindih.` or `Pada tanggal tersebut sudah ada karyawan lain yang mengajukan atau mengambil cuti. ...` (without holiday adjacency)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/approvals": {
+      "get": {
+        "tags": ["Leaves"],
+        "summary": "Pending approval queue",
+        "description": "Requires `leave.approve_management` or `leave.approve_owner` (or owner); otherwise 403 `Kamu tidak memiliki izin untuk melihat antrean approval.`. Management sees PENDING_MANAGEMENT; owner sees PENDING_OWNER with management approved; returns ordered by createdAt asc, without pagination.",
+        "responses": {
+          "200": {
+            "description": "Approval queue.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leaves": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Leave" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "`Kamu tidak memiliki izin untuk melihat antrean approval.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/calendar": {
+      "get": {
+        "tags": ["Leaves"],
+        "summary": "Leave calendar",
+        "description": "Active leave requests overlapping the range plus active company holidays in the range. Non-privileged users are scoped to their own employee.",
+        "x-required-permission": "leave.read",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Calendar data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leaves": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/CalendarLeaveItem" }
+                        },
+                        "holidays": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Holiday" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`startDate dan endDate wajib berformat YYYY-MM-DD.` or `endDate tidak boleh sebelum startDate.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/ForbiddenPermission" },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/balance/{employeeId}": {
+      "parameters": [
+        {
+          "name": "employeeId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Leaves"],
+        "summary": "Annual leave balance",
+        "description": "Non-privileged users may only read their own linked employee's balance.",
+        "x-required-permission": "leave.read",
+        "responses": {
+          "200": {
+            "description": "Leave balance. For employees with < 1 year of service the response has `entitlement: 0`, `eligible: false` and a `message`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "balance": { "$ref": "#/components/schemas/LeaveBalance" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Employee ID tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu hanya dapat melihat saldo cuti sendiri.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Karyawan tidak ditemukan atau tidak aktif.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/history/{employeeId}": {
+      "parameters": [
+        {
+          "name": "employeeId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Leaves"],
+        "summary": "Leave history",
+        "description": "All leave requests of the employee (any status), ordered by startDate desc, without pagination.",
+        "x-required-permission": "leave.read",
+        "responses": {
+          "200": {
+            "description": "Leave history.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leaves": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Leave" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`Employee ID tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu hanya dapat melihat riwayat cuti sendiri.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "get": {
+        "tags": ["Leaves"],
+        "summary": "Get leave detail",
+        "description": "Non-privileged users may only read their own linked employee's requests.",
+        "x-required-permission": "leave.read",
+        "responses": {
+          "200": {
+            "description": "Leave detail.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leave": { "$ref": "#/components/schemas/Leave" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengajuan cuti tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu tidak memiliki akses ke pengajuan cuti ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengajuan cuti tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      },
+      "patch": {
+        "tags": ["Leaves"],
+        "summary": "Update leave request",
+        "description": "Only requests in PENDING_MANAGEMENT can be edited, and only by the creator or a privileged user. Re-runs full validation (excluding this request) and RESETS the whole approval record back to pending; status returns to PENDING_MANAGEMENT and totalDays is recomputed.",
+        "x-required-permission": "leave.update",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "startDate": { "type": "string", "format": "date", "description": "`YYYY-MM-DD`; omitted keeps the existing value." },
+                  "endDate": { "type": "string", "format": "date" },
+                  "type": { "$ref": "#/components/schemas/LeaveType" },
+                  "reason": { "type": "string", "nullable": true },
+                  "notes": { "type": "string", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Leave updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leave": { "$ref": "#/components/schemas/Leave" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengajuan cuti tidak valid.`, `Tanggal harus berformat YYYY-MM-DD.`, `Jenis cuti tidak valid.`, `Alasan cuti harus berupa teks.`, `Catatan cuti harus berupa teks.`, or any create-time validation error.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu tidak memiliki akses untuk mengubah pengajuan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengajuan cuti tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Hanya pengajuan yang menunggu Management yang dapat diedit.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/{id}/cancel": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "patch": {
+        "tags": ["Leaves"],
+        "summary": "Cancel leave request",
+        "description": "Only PENDING_MANAGEMENT or PENDING_OWNER requests can be cancelled, by the creator or a privileged user. Sets status CANCELLED; approval stages become SKIPPED (exception REJECTED if required, else NOT_REQUIRED). Body is ignored.",
+        "x-required-permission": "leave.delete",
+        "responses": {
+          "200": {
+            "description": "Leave cancelled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leave": { "$ref": "#/components/schemas/Leave" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengajuan cuti tidak valid.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Kamu tidak memiliki akses untuk membatalkan pengajuan ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengajuan cuti tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Pengajuan yang sudah diputuskan tidak dapat dibatalkan melalui endpoint ini.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/{id}/approvals/management": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "post": {
+        "tags": ["Leaves"],
+        "summary": "Management stage decision",
+        "description": "Stage 1 of the workflow. The actor must NOT be the owner. Self-approval is never allowed. APPROVE moves the request to PENDING_OWNER; REJECT ends it as REJECTED (owner stage SKIPPED).",
+        "x-required-permission": "leave.approve_management",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApprovalDecision" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision recorded.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leave": { "$ref": "#/components/schemas/Leave" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "message": "Pengajuan disetujui Management dan diteruskan ke Owner."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengajuan cuti tidak valid.`, `decision harus APPROVE atau REJECT.`, or `Catatan approval harus berupa teks.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission, `Owner tidak dapat menggantikan tahap persetujuan Management.`, or `Kamu tidak dapat menyetujui pengajuan cuti milik sendiri.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengajuan cuti tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Pengajuan ini tidak sedang menunggu approval Management.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/{id}/approvals/owner": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "post": {
+        "tags": ["Leaves"],
+        "summary": "Owner stage decision",
+        "description": "Stage 2 of the workflow. Actor must be the company owner. Requires management APPROVED and status PENDING_OWNER. If the request needs an exception, the exception must already be APPROVED.",
+        "x-required-permission": "leave.approve_owner",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApprovalDecision" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Decision recorded; final status APPROVED or REJECTED.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leave": { "$ref": "#/components/schemas/Leave" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "message": "Pengajuan cuti disetujui Owner."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengajuan cuti tidak valid.`, `decision harus APPROVE atau REJECT.`, or `Catatan approval harus berupa teks.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission or `Persetujuan tahap Owner hanya dapat dilakukan oleh Owner.` / self-approval blocked.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengajuan cuti tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Pengajuan belum disetujui Management atau tidak sedang menunggu Owner.` or `Pengecualian harus disetujui Owner terlebih dahulu.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    },
+    "/leaves/{id}/approvals/exception": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "minimum": 1 }
+        }
+      ],
+      "post": {
+        "tags": ["Leaves"],
+        "summary": "Exception decision (Owner only)",
+        "description": "Decides the holiday-adjacency/overlap exception before the final owner stage. Actor must be the company owner. APPROVED keeps the request in PENDING_OWNER awaiting the owner decision; REJECTED also rejects the whole request.",
+        "x-required-permission": "leave.approve_exception",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ApprovalDecision" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exception decided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "leave": { "$ref": "#/components/schemas/Leave" }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "success": true,
+                  "message": "Pengecualian disetujui. Pengajuan menunggu keputusan akhir Owner."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`ID pengajuan cuti tidak valid.`, `decision harus APPROVE atau REJECT.`, or `Catatan approval harus berupa teks.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": {
+            "description": "Missing permission, `Keputusan pengecualian hanya dapat dilakukan oleh Owner.`, or self-approval blocked.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "404": {
+            "description": "`Pengajuan cuti tidak ditemukan.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "409": {
+            "description": "`Pengajuan ini tidak memiliki pengecualian yang menunggu keputusan Owner.` or `Pengecualian hanya dapat diputuskan setelah tahap Management selesai.`",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "500": { "$ref": "#/components/responses/ServerError" }
+        }
+      }
+    }
+  }
+}
